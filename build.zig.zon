@@ -1,0 +1,17 @@
+.{
+    .name = "liza",
+    .version = "0.1.0",
+    .dependencies = .{
+        .clap = .{
+            .url = "https://github.com/Hejsil/zig-clap/archive/0f2db77.tar.gz",
+            .hash = "12203896de6eedec14712f4f1eaac8b646939cfed213c56accf231a0abb05f9dbb77",
+        },
+    },
+    .paths = .{
+        "src/",
+        "build.zig",
+        "README.md",
+        "LICENSE.md",
+        "build.zig.zon",
+    },
+}
