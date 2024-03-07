@@ -63,10 +63,10 @@ pub fn initialize(
     var src_dir = try codebase_dir.makeOpenPath(SRC_PATH, .{});
     defer src_dir.close();
 
+    try createLicense(user_name, codebase_dir);
     try createPlain(GITIGNORE_PATH, GITIGNORE, codebase_dir);
     try createPlain(CD_WORKFLOW_PATH, CD_WORKFLOW, workflows_dir);
     try createPlain(GITATTRIBUTES_PATH, GITATTRIBUTES, codebase_dir);
-    try createLicense(LICENSE_PATH, LICENSE, user_name, codebase_dir);
 
     if (is_lib) {
         var example1_dir = try codebase_dir.makeOpenPath(EXAMPLE1_PATH, .{});
@@ -147,18 +147,16 @@ fn createCi(
 }
 
 fn createLicense(
-    comptime PATH: []const u8,
-    comptime TEXT: []const u8,
     user_name: []const u8,
     codebase_dir: std.fs.Dir,
 ) !void {
-    var license_file = try codebase_dir.createFile(PATH, .{});
+    var license_file = try codebase_dir.createFile(LICENSE_PATH, .{});
     defer license_file.close();
 
-    const idx = std.mem.indexOfScalar(u8, TEXT, '?').?;
-    try license_file.writeAll(TEXT[0..idx]);
+    const idx = std.mem.indexOfScalar(u8, LICENSE, '?').?;
+    try license_file.writeAll(LICENSE[0..idx]);
     try license_file.writeAll(user_name);
-    try license_file.writeAll(TEXT[idx + 1 ..]);
+    try license_file.writeAll(LICENSE[idx + 1 ..]);
 }
 
 fn createPlain(
