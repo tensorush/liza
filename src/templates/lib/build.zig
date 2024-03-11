@@ -67,7 +67,7 @@ pub fn build(b: *std.Build) void {
     b.default_step.dependOn(tests_step);
 
     // Coverage
-    const cov_step = b.step("cov", "Generate code coverage report");
+    const cov_step = b.step("cov", "Generate coverage");
 
     const cov_run = b.addSystemCommand(&.{ "kcov", "--clean", "--include-pattern=src/", "kcov-output" });
     cov_run.addArtifactArg(tests);
