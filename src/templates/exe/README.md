@@ -10,7 +10,7 @@
 
 ### :rocket: Usage
 
-```zig
+```sh
 git clone https://github.com/?h/?t.git
 cd ?t/
 zig build exe -- -h
