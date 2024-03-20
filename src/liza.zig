@@ -52,7 +52,7 @@ pub fn initialize(
 ) !void {
     var codebase_dir = blk: {
         const cur_dir = std.fs.cwd();
-        _ = cur_dir.openDir(codebase_title, .{}) catch break :blk try cur_dir.makeOpenPath(codebase_title, .{});
+        _ = cur_dir.access(codebase_title, .{}) catch break :blk try cur_dir.makeOpenPath(codebase_title, .{});
         @panic("Codebase directory already exists!");
     };
     defer codebase_dir.close();

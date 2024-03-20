@@ -3,8 +3,8 @@
     .version = "0.1.0",
     .dependencies = .{
         .clap = .{
-            .url = "https://github.com/Hejsil/zig-clap/archive/0f2db77.tar.gz",
-            .hash = "12203896de6eedec14712f4f1eaac8b646939cfed213c56accf231a0abb05f9dbb77",
+            .url = "https://github.com/Hejsil/zig-clap/archive/209ba4d.tar.gz",
+            .hash = "12200103e7b4a0cb162f2912df4fe97914024a25b5c9fcce6ea4119744f3f2a7f24e",
         },
     },
     .paths = .{
