@@ -22,7 +22,7 @@ zig build exe -- -h
 [ci-url]: https://github.com/?h/?t/blob/main/.github/workflows/ci.yaml
 [cd-shd]: https://img.shields.io/github/actions/workflow/status/?h/?t/cd.yaml?branch=main&style=for-the-badge&logo=github&label=CD&labelColor=black
 [cd-url]: https://github.com/?h/?t/blob/main/.github/workflows/cd.yaml
-[dc-shd]: https://img.shields.io/badge/click-F6A516?style=for-the-badge&logo=zig&logoColor=F6A516&label=docs&labelColor=black
+[dc-shd]: https://img.shields.io/badge/click-F6A516?style=for-the-badge&logo=zig&logoColor=F6A516&label=doc&labelColor=black
 [dc-url]: https://?h.github.io/?t
 [cc-shd]: https://img.shields.io/codecov/c/github/?h/?t?style=for-the-badge&labelColor=black
 [cc-url]: https://app.codecov.io/gh/?h/?t
