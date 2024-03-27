@@ -17,23 +17,12 @@
     <summary><code>build.zig.zon</code> example</summary>
 
     ```zig
-    .{
-        .name = "<name_of_your_package>",
-        .version = "<version_of_your_package>",
-        .dependencies = .{
-            .?t = .{
-                .url = "https://github.com/?h/?t/archive/<git_tag_or_commit_hash>.tar.gz",
-                .hash = "<package_hash>",
-            },
+    .dependencies = .{
+        .?t = .{
+            .url = "https://github.com/?h/?t/archive/<git_tag_or_commit_hash>.tar.gz",
+            .hash = "<package_hash>",
         },
-        .paths = .{
-            "src/",
-            "build.zig",
-            "README.md",
-            "LICENSE.md",
-            "build.zig.zon",
-        },
-    }
+    },
     ```
 
     Set `<package_hash>` to `12200000000000000000000000000000000000000000000000000000000000000000` and build your package to find the correct value specified in a compiler error message.
