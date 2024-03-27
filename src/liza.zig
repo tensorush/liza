@@ -78,13 +78,13 @@ pub fn initialize(
         try createPlain(LIB_SRC_PATH, LIB_SRC, src_dir);
         try createPlain(EXE_SRC_PATH, LIB_EXAMPLE1, example1_dir);
         try createPlain(EXE_SRC_PATH, LIB_EXAMPLE2, example2_dir);
-        try createCi(EXAMPLES_PATH[0 .. EXAMPLES_PATH.len - 1], workflows_dir);
+        try createCi("example", workflows_dir);
         try createBuild(BUILD_ZIG_PATH, LIB_BUILD_ZIG, codebase_title, codebase_dir);
         try createBuild(BUILD_ZIG_ZON_PATH, LIB_BUILD_ZIG_ZON, codebase_title, codebase_dir);
         try createReadme(LIB_README, codebase_title, codebase_desc, user_handle, codebase_dir);
     } else {
         try createPlain(EXE_SRC_PATH, EXE_SRC, src_dir);
-        try createCi(EXE_PATH[0 .. EXE_PATH.len - 1], workflows_dir);
+        try createCi("exe", workflows_dir);
         try createBuild(BUILD_ZIG_PATH, EXE_BUILD_ZIG, codebase_title, codebase_dir);
         try createBuild(BUILD_ZIG_ZON_PATH, EXE_BUILD_ZIG_ZON, codebase_title, codebase_dir);
         try createReadme(EXE_README, codebase_title, codebase_desc, user_handle, codebase_dir);
