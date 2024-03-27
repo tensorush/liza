@@ -21,17 +21,18 @@ zig build exe -- -h
     - `fmt`: Formatting checks.
 
 - #### [Continuous delivery GitHub workflow](src/templates/.github/workflows/cd.yaml):
-    - Docs emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow).
+    - `deploy`: documentation deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow).
+    - `emit`: documentation emission.
 
 - #### [Zig executable template](src/templates/exe/):
     - Dependency package usage.
-    - `build.zig.zon`.
     - Custom README.
+    - `build.zig.zon`.
 
 - #### [Zig library template](src/templates/lib/):
     - Examples' directory setup.
-    - `build.zig.zon`.
     - Custom README.
+    - `build.zig.zon`.
 
 - #### [MIT license template](src/templates/LICENSE.md).
 
