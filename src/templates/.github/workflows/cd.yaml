@@ -31,15 +31,15 @@ jobs:
       - name: Set up Zig
         uses: goto-bus-stop/setup-zig@v2
 
-      - name: Emit docs
+      - name: Run `doc`
         run: |
-          zig build docs
-          rm -rf zig-out/docs/src/std/
+          zig build doc
+          rm -rf zig-out/doc/src/std/
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v1
         with:
-          path: zig-out/docs/
+          path: zig-out/doc/
 
   deploy:
     needs: emit

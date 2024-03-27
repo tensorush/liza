@@ -28,7 +28,7 @@ jobs:
           rm -rf liza/
           zig build exe -- -l
 
-  lints:
+  fmt:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,5 +38,5 @@ jobs:
       - name: Set up Zig
         uses: goto-bus-stop/setup-zig@v2
 
-      - name: Run lints
-        run: zig build lints
+      - name: Run formatting checks
+        run: zig build fmt

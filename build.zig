@@ -4,7 +4,7 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = std.Build.LazyPath.relative("src/main.zig");
-    const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 0 };
+    const version = std.SemanticVersion{ .major = 0, .minor = 2, .patch = 0 };
 
     // Dependencies
     const clap_dep = b.dependency("clap", .{
@@ -33,13 +33,13 @@ pub fn build(b: *std.Build) void {
     exe_step.dependOn(&exe_run.step);
     b.default_step.dependOn(exe_step);
 
-    // Lints
-    const lints_step = b.step("lints", "Run lints");
+    // Formatting checks
+    const fmt_step = b.step("fmt", "Run formatting checks");
 
-    const lints = b.addFmt(.{
+    const fmt = b.addFmt(.{
         .paths = &.{ "src/", "build.zig" },
         .check = true,
     });
-    lints_step.dependOn(&lints.step);
-    b.default_step.dependOn(lints_step);
+    fmt_step.dependOn(&fmt.step);
+    b.default_step.dependOn(fmt_step);
 }

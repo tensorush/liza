@@ -24,19 +24,19 @@ pub fn build(b: *std.Build) void {
     lib_step.dependOn(&lib_install.step);
     b.default_step.dependOn(lib_step);
 
-    // Docs
-    const docs_step = b.step("docs", "Emit docs");
+    // Documentation
+    const doc_step = b.step("doc", "Emit documentation");
 
-    const docs_install = b.addInstallDirectory(.{
+    const doc_install = b.addInstallDirectory(.{
         .install_dir = .prefix,
-        .install_subdir = "docs",
-        .source_dir = lib.getEmittedDocs(),
+        .install_subdir = "doc",
+        .source_dir = lib.getEmittedDoc(),
     });
-    docs_step.dependOn(&docs_install.step);
-    b.default_step.dependOn(docs_step);
+    doc_step.dependOn(&doc_install.step);
+    b.default_step.dependOn(doc_step);
 
-    // Examples
-    const examples_step = b.step("examples", "Run examples");
+    // Example suite
+    const examples_step = b.step("example", "Run example suite");
 
     inline for (EXAMPLE_NAMES) |EXAMPLE_NAME| {
         const example = b.addExecutable(.{
@@ -54,11 +54,12 @@ pub fn build(b: *std.Build) void {
 
     b.default_step.dependOn(examples_step);
 
-    // Tests
-    const tests_step = b.step("tests", "Run tests");
+    // Test suite
+    const tests_step = b.step("test", "Run test suite");
 
     const tests = b.addTest(.{
         .target = target,
+        .version = version,
         .root_source_file = root_source_file,
     });
 
@@ -66,23 +67,23 @@ pub fn build(b: *std.Build) void {
     tests_step.dependOn(&tests_run.step);
     b.default_step.dependOn(tests_step);
 
-    // Coverage
-    const cov_step = b.step("cov", "Generate coverage");
+    // Code coverage
+    const cov_step = b.step("cov", "Generate code coverage");
 
     const cov_run = b.addSystemCommand(&.{ "kcov", "--clean", "--include-pattern=src/", "kcov-output" });
     cov_run.addArtifactArg(tests);
     cov_step.dependOn(&cov_run.step);
     b.default_step.dependOn(cov_step);
 
-    // Lints
-    const lints_step = b.step("lints", "Run lints");
+    // Formatting checks
+    const fmt_step = b.step("fmt", "Run formatting checks");
 
-    const lints = b.addFmt(.{
-        .paths = &.{ "src/", "build.zig" },
+    const fmt = b.addFmt(.{
+        .paths = &.{ "src/", "examples/", "build.zig" },
         .check = true,
     });
-    lints_step.dependOn(&lints.step);
-    b.default_step.dependOn(lints_step);
+    fmt_step.dependOn(&fmt.step);
+    b.default_step.dependOn(fmt_step);
 }
 
 const EXAMPLES_DIR = "examples/";
