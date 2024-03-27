@@ -21,8 +21,7 @@ zig build exe -- -h
     - `fmt`: Formatting checks.
 
 - #### [Continuous delivery GitHub workflow](src/templates/.github/workflows/cd.yaml):
-    - `deploy`: documentation deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow).
-    - `emit`: documentation emission.
+    - `emit` -> `deploy`: documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow).
 
 - #### [Zig executable template](src/templates/exe/):
     - Dependency package usage.
