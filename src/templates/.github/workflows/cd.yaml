@@ -37,7 +37,7 @@ jobs:
           rm -rf zig-out/doc/src/std/
 
       - name: Upload artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: zig-out/doc/
 
@@ -53,4 +53,4 @@ jobs:
     steps:
       - name: Deploy artifact to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
