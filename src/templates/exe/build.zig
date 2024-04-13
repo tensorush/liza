@@ -7,10 +7,7 @@ pub fn build(b: *std.Build) void {
     const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 0 };
 
     // Dependencies
-    const clap_dep = b.dependency("clap", .{
-        .target = target,
-        .optimize = optimize,
-    });
+    const clap_dep = b.dependency("clap", .{ .target = target, .optimize = optimize });
     const clap_mod = clap_dep.module("clap");
 
     // Executable
@@ -39,7 +36,7 @@ pub fn build(b: *std.Build) void {
     const doc_install = b.addInstallDirectory(.{
         .install_dir = .prefix,
         .install_subdir = "doc",
-        .source_dir = exe.getEmittedDoc(),
+        .source_dir = exe.getEmittedDocs(),
     });
     doc_step.dependOn(&doc_install.step);
     b.default_step.dependOn(doc_step);

@@ -30,7 +30,7 @@ pub fn build(b: *std.Build) void {
     const doc_install = b.addInstallDirectory(.{
         .install_dir = .prefix,
         .install_subdir = "doc",
-        .source_dir = lib.getEmittedDoc(),
+        .source_dir = lib.getEmittedDocs(),
     });
     doc_step.dependOn(&doc_install.step);
     b.default_step.dependOn(doc_step);
