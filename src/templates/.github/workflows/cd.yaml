@@ -32,9 +32,7 @@ jobs:
         uses: goto-bus-stop/setup-zig@v2
 
       - name: Run `doc`
-        run: |
-          zig build doc
-          rm -rf zig-out/doc/src/std/
+        run: zig build doc
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
