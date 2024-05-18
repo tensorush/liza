@@ -1,4 +1,4 @@
-# :lizard: :star: liza
+# :star: liza
 
 [![CI][ci-shd]][ci-url]
 [![LC][lc-shd]][lc-url]
