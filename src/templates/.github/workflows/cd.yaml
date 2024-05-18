@@ -11,15 +11,6 @@ on:
 
   workflow_dispatch:
 
-permissions:
-  pages: write
-  contents: read
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   emit:
     runs-on: ubuntu-latest
@@ -37,12 +28,16 @@ jobs:
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: zig-out/doc/
+          path: ./zig-out/doc/
 
   deploy:
     needs: emit
 
     runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
 
     environment:
       name: github-pages
