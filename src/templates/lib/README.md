@@ -1,4 +1,4 @@
-# :zap: ?t
+# ?t
 
 [![CI][ci-shd]][ci-url]
 [![CD][cd-shd]][cd-url]
