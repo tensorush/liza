@@ -21,8 +21,10 @@ jobs:
 
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
+        with:
+          version: 0.13.0
 
-      - name: Run executable
+      - name: Run `exe`
         run: |
           zig build exe
           rm -rf liza/
@@ -37,6 +39,8 @@ jobs:
 
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
+        with:
+          version: 0.13.0
 
-      - name: Run formatting checks
+      - name: Run `fmt`
         run: zig build fmt

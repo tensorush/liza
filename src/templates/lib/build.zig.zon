@@ -6,8 +6,9 @@
         "src/",
         "examples/",
         "build.zig",
-        "README.md",
-        "LICENSE.md",
         "build.zig.zon",
+
+        "LICENSE",
+        "README.md",
     },
 }

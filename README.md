@@ -16,7 +16,7 @@ zig build exe -- -h
 ### :sparkles: Features
 
 - #### [Continuous integration GitHub workflow](src/templates/.github/workflows/ci.yaml):
-    - `?` (`exe` or `example`): executable's run or library's example suite execution.
+    - `exe` or `example` (`?`): executable's run or library's example suite execution.
     - `test`: Test suite execution and code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration).
     - `fmt`: Formatting checks execution.
 
@@ -25,12 +25,12 @@ zig build exe -- -h
 
 - #### [Zig executable template](src/templates/exe/):
     - Dependency package usage.
-    - Custom README.
+    - README with badges.
     - `build.zig.zon`.
 
 - #### [Zig library template](src/templates/lib/):
     - Examples' directory setup.
-    - Custom README.
+    - README with badges.
     - `build.zig.zon`.
 
 - #### [MIT license template](src/templates/LICENSE.md).

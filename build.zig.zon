@@ -1,6 +1,6 @@
 .{
     .name = "liza",
-    .version = "0.2.2",
+    .version = "0.3.0",
     .minimum_zig_version = "0.13.0",
     .dependencies = .{
         .clap = .{
@@ -11,8 +11,9 @@
     .paths = .{
         "src/",
         "build.zig",
-        "README.md",
-        "LICENSE.md",
         "build.zig.zon",
+
+        "LICENSE",
+        "README.md",
     },
 }
