@@ -10,38 +10,22 @@
 
 ### :rocket: Usage
 
-1. Add `?t` as a dependency in your `build.zig.zon`.
+- Add `?t` as a dependency in your `build.zig.zon`.
 
-    <details>
+```sh
+zig fetch --save https://github.com/?h/?t/archive/<git_tag_or_commit_hash>.tar.gz
+```
 
-    <summary><code>build.zig.zon</code> example</summary>
+- Use `?t` as a module in your `build.zig`.
 
-    ```zig
-    .dependencies = .{
-        .?t = .{
-            .url = "https://github.com/?h/?t/archive/<git_tag_or_commit_hash>.tar.gz",
-            .hash = "<package_hash>",
-        },
-    },
-    ```
-
-    Set `<package_hash>` to `12200000000000000000000000000000000000000000000000000000000000000000` and build your package to find the correct value specified in a compiler error message.
-
-    </details>
-
-2. Add `?t` as a module in your `build.zig`.
-
-    <details>
-
-    <summary><code>build.zig</code> example</summary>
-
-    ```zig
-    const ?t_dep = b.dependency("?t", .{});
-    const ?t_mod = ?t.module("?t");
-    exe.root_module.addImport("?t", ?t_mod);
-    ```
-
-    </details>
+```zig
+const ?t_dep = b.dependency("?t", .{
+    .target = target,
+    .optimize = optimize,
+});
+const ?t_mod = ?t.module("?t");
+exe.root_module.addImport("?t", ?t_mod);
+```
 
 <!-- MARKDOWN LINKS -->
 
