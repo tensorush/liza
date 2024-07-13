@@ -7,7 +7,10 @@ pub fn build(b: *std.Build) void {
     const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 0 };
 
     // Dependencies
-    const clap_dep = b.dependency("clap", .{ .target = target, .optimize = optimize });
+    const clap_dep = b.dependency("clap", .{
+        .target = target,
+        .optimize = optimize,
+    });
     const clap_mod = clap_dep.module("clap");
 
     // Executable
