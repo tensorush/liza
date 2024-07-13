@@ -44,7 +44,7 @@ const LIB_EXAMPLE1 = @embedFile(TEMPLATES_PATH ++ LIB_PATH ++ EXAMPLE1_PATH ++ E
 const LIB_EXAMPLE2 = @embedFile(TEMPLATES_PATH ++ LIB_PATH ++ EXAMPLE2_PATH ++ EXE_SRC_PATH);
 
 pub fn initialize(
-    codebase_title: []const u8,
+    codebase_name: []const u8,
     codebase_desc: []const u8,
     user_handle: []const u8,
     user_name: []const u8,
@@ -52,7 +52,7 @@ pub fn initialize(
 ) !void {
     var codebase_dir = blk: {
         const cur_dir = std.fs.cwd();
-        _ = cur_dir.access(codebase_title, .{}) catch break :blk try cur_dir.makeOpenPath(codebase_title, .{});
+        _ = cur_dir.access(codebase_name, .{}) catch break :blk try cur_dir.makeOpenPath(codebase_name, .{});
         @panic("Codebase directory already exists!");
     };
     defer codebase_dir.close();
@@ -79,21 +79,21 @@ pub fn initialize(
         try createPlain(EXE_SRC_PATH, LIB_EXAMPLE1, example1_dir);
         try createPlain(EXE_SRC_PATH, LIB_EXAMPLE2, example2_dir);
         try createCi("example", workflows_dir);
-        try createBuild(BUILD_ZIG_PATH, LIB_BUILD_ZIG, codebase_title, codebase_dir);
-        try createBuild(BUILD_ZIG_ZON_PATH, LIB_BUILD_ZIG_ZON, codebase_title, codebase_dir);
-        try createReadme(LIB_README, codebase_title, codebase_desc, user_handle, codebase_dir);
+        try createBuild(BUILD_ZIG_PATH, LIB_BUILD_ZIG, codebase_name, codebase_dir);
+        try createBuild(BUILD_ZIG_ZON_PATH, LIB_BUILD_ZIG_ZON, codebase_name, codebase_dir);
+        try createReadme(LIB_README, codebase_name, codebase_desc, user_handle, codebase_dir);
     } else {
         try createPlain(EXE_SRC_PATH, EXE_SRC, src_dir);
         try createCi("exe", workflows_dir);
-        try createBuild(BUILD_ZIG_PATH, EXE_BUILD_ZIG, codebase_title, codebase_dir);
-        try createBuild(BUILD_ZIG_ZON_PATH, EXE_BUILD_ZIG_ZON, codebase_title, codebase_dir);
-        try createReadme(EXE_README, codebase_title, codebase_desc, user_handle, codebase_dir);
+        try createBuild(BUILD_ZIG_PATH, EXE_BUILD_ZIG, codebase_name, codebase_dir);
+        try createBuild(BUILD_ZIG_ZON_PATH, EXE_BUILD_ZIG_ZON, codebase_name, codebase_dir);
+        try createReadme(EXE_README, codebase_name, codebase_desc, user_handle, codebase_dir);
     }
 }
 
 fn createReadme(
     comptime README: []const u8,
-    codebase_title: []const u8,
+    codebase_name: []const u8,
     codebase_desc: []const u8,
     user_handle: []const u8,
     codebase_dir: std.fs.Dir,
@@ -105,7 +105,7 @@ fn createReadme(
     while (std.mem.indexOfScalar(u8, README[idx..], '?')) |i| : (idx += i + 2) {
         try readme_file.writeAll(README[idx .. idx + i]);
         switch (README[idx + i + 1]) {
-            't' => try readme_file.writeAll(codebase_title),
+            't' => try readme_file.writeAll(codebase_name),
             'd' => try readme_file.writeAll(codebase_desc),
             'h' => try readme_file.writeAll(user_handle),
             else => try readme_file.writeAll(README[idx + i .. idx + i + 2]),
@@ -117,7 +117,7 @@ fn createReadme(
 fn createBuild(
     comptime PATH: []const u8,
     comptime TEXT: []const u8,
-    codebase_title: []const u8,
+    codebase_name: []const u8,
     codebase_dir: std.fs.Dir,
 ) !void {
     var build_file = try codebase_dir.createFile(PATH, .{});
@@ -126,7 +126,7 @@ fn createBuild(
     var idx: usize = 0;
     while (std.mem.indexOfScalar(u8, TEXT[idx..], '?')) |i| : (idx += i + 1) {
         try build_file.writeAll(TEXT[idx .. idx + i]);
-        try build_file.writeAll(codebase_title);
+        try build_file.writeAll(codebase_name);
     }
     try build_file.writeAll(TEXT[idx..]);
 }

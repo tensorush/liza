@@ -29,14 +29,14 @@ pub fn main() !void {
     };
     defer res.deinit();
 
-    var codebase_title: []const u8 = "liza";
+    var codebase_name: []const u8 = "liza";
     var codebase_desc: []const u8 = "Zig codebase initializer.";
     var user_handle: []const u8 = "tensorush";
     var user_name: []const u8 = "Jora Troosh";
     var is_lib = false;
 
     if (res.positionals.len > 0) {
-        codebase_title = res.positionals[0];
+        codebase_name = res.positionals[0];
         codebase_desc = res.positionals[1];
         user_handle = res.positionals[2];
         user_name = res.positionals[3];
@@ -50,5 +50,5 @@ pub fn main() !void {
         return clap.help(std.io.getStdErr().writer(), clap.Help, &PARAMS, .{});
     }
 
-    try liza.initialize(codebase_title, codebase_desc, user_handle, user_name, is_lib);
+    try liza.initialize(codebase_name, codebase_desc, user_handle, user_name, is_lib);
 }
