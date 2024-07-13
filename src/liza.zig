@@ -1,7 +1,7 @@
 const std = @import("std");
 
 // Common paths.
-const LICENSE_PATH = "LICENSE.md";
+const LICENSE_PATH = "LICENSE";
 const CD_WORKFLOW_PATH = "cd.yaml";
 const CI_WORKFLOW_PATH = "ci.yaml";
 const GITIGNORE_PATH = ".gitignore";

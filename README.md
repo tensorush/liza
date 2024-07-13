@@ -33,7 +33,7 @@ zig build exe -- -h
     - README with badges.
     - `build.zig.zon`.
 
-- #### [MIT license template](src/templates/LICENSE.md).
+- #### [MIT license template](src/templates/LICENSE).
 
 - #### [`.gitattributes`](src/templates/.gitattributes).
 
@@ -44,4 +44,4 @@ zig build exe -- -h
 [ci-shd]: https://img.shields.io/github/actions/workflow/status/tensorush/liza/ci.yaml?branch=main&style=for-the-badge&logo=github&label=CI&labelColor=black
 [ci-url]: https://github.com/tensorush/liza/blob/main/.github/workflows/ci.yaml
 [lc-shd]: https://img.shields.io/github/license/tensorush/liza.svg?style=for-the-badge&labelColor=black
-[lc-url]: https://github.com/tensorush/liza/blob/main/LICENSE.md
+[lc-url]: https://github.com/tensorush/liza/blob/main/LICENSE

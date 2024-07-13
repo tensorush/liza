@@ -54,4 +54,4 @@
 [cc-shd]: https://img.shields.io/codecov/c/github/?h/?t?style=for-the-badge&labelColor=black
 [cc-url]: https://app.codecov.io/gh/?h/?t
 [lc-shd]: https://img.shields.io/github/license/?h/?t.svg?style=for-the-badge&labelColor=black
-[lc-url]: https://github.com/?h/?t/blob/main/LICENSE.md
+[lc-url]: https://github.com/?h/?t/blob/main/LICENSE
