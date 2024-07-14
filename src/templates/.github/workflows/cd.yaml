@@ -16,8 +16,6 @@ jobs:
 
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
-        with:
-          version: 0.13.0
 
       - name: Run `doc`
         run: zig build doc
