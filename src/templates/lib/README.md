@@ -23,7 +23,7 @@ const ?t_dep = b.dependency("?t", .{
     .target = target,
     .optimize = optimize,
 });
-const ?t_mod = ?t.module("?t");
+const ?t_mod = ?t_dep.module("?t");
 exe.root_module.addImport("?t", ?t_mod);
 ```
 
