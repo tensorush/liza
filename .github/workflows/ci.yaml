@@ -24,7 +24,9 @@ jobs:
         run: |
           zig build exe
           rm -rf liza/
-          zig build exe -- -l
+          zig build exe -- -c lib
+          rm -rf liza/
+          zig build exe -- -c prt
 
   fmt:
     runs-on: ubuntu-latest
