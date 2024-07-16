@@ -84,7 +84,9 @@ pub fn initialize(
     try createLicense(user_name, repo_dir);
     try createPlain(GITIGNORE, ALL_GITIGNORE, repo_dir);
     try createPlain(GITATTRIBUTES, ALL_GITATTRIBUTES, repo_dir);
-    try createPlain(CD_WORKFLOW, ALL_CD_WORKFLOW, workflows_dir);
+    if (code_type != .prt) {
+        try createPlain(CD_WORKFLOW, ALL_CD_WORKFLOW, workflows_dir);
+    }
 
     switch (code_type) {
         .exe => {
