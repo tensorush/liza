@@ -41,6 +41,11 @@ pub fn build(b: *std.Build) void {
             "src/",
             "build.zig",
         },
+        .exclude_paths = &.{
+            "src/templates/exe/build.zig",
+            "src/templates/lib/build.zig",
+            "src/templates/prt/build.zig",
+        },
         .check = true,
     });
     fmt_step.dependOn(&fmt.step);
