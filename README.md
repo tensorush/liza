@@ -31,7 +31,7 @@ zig build exe -- -h
     - README with badges.
 
 - #### [GitHub CI template](src/templates/.github/workflows/ci.yaml):
-    - `exe`/`example`/`install` (`?`): executable's run, library's example suite execution, or build's installation.
+    - `exe`/`example`/`install` (`?`): executable's run, library's example suite execution, or port's installation.
     - `test`: Test suite execution and code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration).
     - `fmt`: Formatting checks execution.
 
