@@ -4,7 +4,7 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/main.zig");
-    const version = std.SemanticVersion{ .major = 0, .minor = 1, .patch = 0 };
+    const version = std.SemanticVersion{?v};
 
     // Dependencies
     const clap_dep = b.dependency("clap", .{
@@ -17,7 +17,7 @@ pub fn build(b: *std.Build) void {
     const exe_step = b.step("exe", "Run executable");
 
     const exe = b.addExecutable(.{
-        .name = "?",
+        .name = "?r",
         .target = target,
         .version = version,
         .optimize = optimize,

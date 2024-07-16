@@ -6,8 +6,12 @@ pub fn build(b: *std.Build) void {
     const root_source_file = b.path("src/lib.zig");
     const version = std.SemanticVersion{?v};
 
-    // Module
-    const lib_mod = b.addModule("?r", .{ .root_source_file = root_source_file });
+    // Custom options
+    const use_z = b.option(bool, "use_z", "Use system zlib") orelse false;
+
+    // Dependencies
+    const ?r_dep = b.dependency("?r", .{});
+    const ?r_path = ?r_dep.path("");
 
     // Library
     const lib_step = b.step("lib", "Install library");
@@ -17,42 +21,27 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .version = version,
         .optimize = optimize,
-        .root_source_file = root_source_file,
     });
+    lib.addCSourceFiles(.{ .root = ?r_path, .files = &SOURCES, .flags = &FLAGS });
+    lib.installHeadersDirectory(?r_path, "", .{ .include_extensions = &HEADERS });
+    if (use_z) {
+        lib.linkSystemLibrary("z");
+    }
+    // lib.linkFramework("CoreFoundation");
+    // lib.linkLibCpp();
+    // lib.linkLibC();
 
     const lib_install = b.addInstallArtifact(lib, .{});
     lib_step.dependOn(&lib_install.step);
     b.default_step.dependOn(lib_step);
 
-    // Documentation
-    const doc_step = b.step("doc", "Emit documentation");
-
-    const doc_install = b.addInstallDirectory(.{
-        .install_dir = .prefix,
-        .install_subdir = "doc",
-        .source_dir = lib.getEmittedDocs(),
+    // Module
+    const module = b.addModule("?r", .{
+        .target = target,
+        .optimize = optimize,
+        .root_source_file = root_source_file,
     });
-    doc_step.dependOn(&doc_install.step);
-    b.default_step.dependOn(doc_step);
-
-    // Example suite
-    const examples_step = b.step("example", "Run example suite");
-
-    inline for (EXAMPLE_NAMES) |EXAMPLE_NAME| {
-        const example = b.addExecutable(.{
-            .name = EXAMPLE_NAME,
-            .target = target,
-            .version = version,
-            .optimize = optimize,
-            .root_source_file = b.path(EXAMPLES_DIR ++ EXAMPLE_NAME ++ "/main.zig"),
-        });
-        example.root_module.addImport("?r", lib_mod);
-
-        const example_run = b.addRunArtifact(example);
-        examples_step.dependOn(&example_run.step);
-    }
-
-    b.default_step.dependOn(examples_step);
+    module.linkLibrary(lib);
 
     // Test suite
     const tests_step = b.step("test", "Run test suite");
@@ -80,9 +69,7 @@ pub fn build(b: *std.Build) void {
 
     const fmt = b.addFmt(.{
         .paths = &.{
-            "src/",
             "build.zig",
-            EXAMPLES_DIR,
         },
         .check = true,
     });
@@ -90,9 +77,14 @@ pub fn build(b: *std.Build) void {
     b.default_step.dependOn(fmt_step);
 }
 
-const EXAMPLES_DIR = "examples/";
+const HEADERS = .{
+    // "lib.h",
+};
 
-const EXAMPLE_NAMES = &.{
-    "example1",
-    "example2",
+const SOURCES = .{
+    // "lib.c",
+};
+
+const FLAGS = .{
+    // "-std=c89",
 };

@@ -3,8 +3,6 @@
     .version = "?v",
     .minimum_zig_version = "0.13.0",
     .paths = .{
-        "src/",
-        "examples/",
         "build.zig",
         "build.zig.zon",
         "LICENSE",

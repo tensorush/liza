@@ -1,6 +1,6 @@
 .{
-    .name = "?",
-    .version = "0.1.0",
+    .name = "?r",
+    .version = "?v",
     .minimum_zig_version = "0.13.0",
     .dependencies = .{
         .clap = .{

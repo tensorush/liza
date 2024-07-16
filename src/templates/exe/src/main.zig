@@ -1,10 +1,10 @@
-//! Root executable file that exposes the main function.
+//! Root file that exposes the main function.
 
 const std = @import("std");
 const clap = @import("clap");
 
 const PARAMS = clap.parseParamsComptime(
-    \\-h, --help   Display help menu.
+    \\-h, --help   Display help
     \\
 );
 
@@ -21,11 +21,7 @@ pub fn main() !void {
     const allocator = arena.allocator();
 
     // Set up CLI argument parsing.
-    var diag = clap.Diagnostic{};
-    var res = clap.parse(clap.Help, &PARAMS, clap.parsers.default, .{ .allocator = allocator, .diagnostic = &diag }) catch |err| {
-        diag.report(std.io.getStdErr().writer(), err) catch {};
-        return err;
-    };
+    var res = try clap.parse(clap.Help, &PARAMS, clap.parsers.default, .{ .allocator = allocator });
     defer res.deinit();
 
     // Parse help argument.

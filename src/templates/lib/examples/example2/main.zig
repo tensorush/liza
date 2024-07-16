@@ -1,5 +1,3 @@
-//! Root example file that exposes the main function.
-
 const std = @import("std");
 
 pub fn main() !void {

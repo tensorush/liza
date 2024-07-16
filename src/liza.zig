@@ -1,171 +1,216 @@
 const std = @import("std");
 
 // Common paths.
-const LICENSE_PATH = "LICENSE";
-const CD_WORKFLOW_PATH = "cd.yaml";
-const CI_WORKFLOW_PATH = "ci.yaml";
-const GITIGNORE_PATH = ".gitignore";
-const TEMPLATES_PATH = "templates/";
-const GITATTRIBUTES_PATH = ".gitattributes";
-const WORKFLOWS_PATH = ".github/workflows/";
+const LICENSE = "LICENSE";
+const CD_WORKFLOW = "cd.yaml";
+const CI_WORKFLOW = "ci.yaml";
+const TEMPLATES = "templates/";
+const GITIGNORE = ".gitignore";
+const WORKFLOWS = ".github/workflows/";
+const GITATTRIBUTES = ".gitattributes";
 
 // Custom paths.
-const SRC_PATH = "src/";
-const EXE_PATH = "exe/";
-const LIB_PATH = "lib/";
-const LIB_SRC_PATH = "lib.zig";
-const EXE_SRC_PATH = "main.zig";
-const README_PATH = "README.md";
-const EXAMPLES_PATH = "examples/";
-const BUILD_ZIG_PATH = "build.zig";
-const BUILD_ZIG_ZON_PATH = "build.zig.zon";
-const EXAMPLE1_PATH = EXAMPLES_PATH ++ "example1/";
-const EXAMPLE2_PATH = EXAMPLES_PATH ++ "example2/";
+const SRC = "src/";
+const EXE = "exe/";
+const LIB = "lib/";
+const PRT = "prt/";
+const README = "README.md";
+const LIB_ROOT = "lib.zig";
+const EXE_ROOT = "main.zig";
+const EXAMPLES = "examples/";
+const BUILD_ZIG = "build.zig";
+const BUILD_ZON = "build.zig.zon";
+const EXAMPLE1 = EXAMPLES ++ "example1/";
+const EXAMPLE2 = EXAMPLES ++ "example2/";
 
 // Common templates.
-const LICENSE = @embedFile(TEMPLATES_PATH ++ LICENSE_PATH);
-const GITIGNORE = @embedFile(TEMPLATES_PATH ++ GITIGNORE_PATH);
-const GITATTRIBUTES = @embedFile(TEMPLATES_PATH ++ GITATTRIBUTES_PATH);
-const CD_WORKFLOW = @embedFile(TEMPLATES_PATH ++ WORKFLOWS_PATH ++ CD_WORKFLOW_PATH);
-const CI_WORKFLOW = @embedFile(TEMPLATES_PATH ++ WORKFLOWS_PATH ++ CI_WORKFLOW_PATH);
+const ALL_LICENSE = @embedFile(TEMPLATES ++ LICENSE);
+const ALL_GITIGNORE = @embedFile(TEMPLATES ++ GITIGNORE);
+const ALL_GITATTRIBUTES = @embedFile(TEMPLATES ++ GITATTRIBUTES);
+const ALL_CD_WORKFLOW = @embedFile(TEMPLATES ++ WORKFLOWS ++ CD_WORKFLOW);
+const ALL_CI_WORKFLOW = @embedFile(TEMPLATES ++ WORKFLOWS ++ CI_WORKFLOW);
 
 // Executable templates.
-const EXE_README = @embedFile(TEMPLATES_PATH ++ EXE_PATH ++ README_PATH);
-const EXE_BUILD_ZIG = @embedFile(TEMPLATES_PATH ++ EXE_PATH ++ BUILD_ZIG_PATH);
-const EXE_SRC = @embedFile(TEMPLATES_PATH ++ EXE_PATH ++ SRC_PATH ++ EXE_SRC_PATH);
-const EXE_BUILD_ZIG_ZON = @embedFile(TEMPLATES_PATH ++ EXE_PATH ++ BUILD_ZIG_ZON_PATH);
+const EXE_CI_STEP = "exe";
+const EXE_README = @embedFile(TEMPLATES ++ EXE ++ README);
+const EXE_BUILD_ZIG = @embedFile(TEMPLATES ++ EXE ++ BUILD_ZIG);
+const EXE_BUILD_ZON = @embedFile(TEMPLATES ++ EXE ++ BUILD_ZON);
+const EXE_TEXT = @embedFile(TEMPLATES ++ EXE ++ SRC ++ EXE_ROOT);
 
 // Library templates.
-const LIB_README = @embedFile(TEMPLATES_PATH ++ LIB_PATH ++ README_PATH);
-const LIB_BUILD_ZIG = @embedFile(TEMPLATES_PATH ++ LIB_PATH ++ BUILD_ZIG_PATH);
-const LIB_SRC = @embedFile(TEMPLATES_PATH ++ LIB_PATH ++ SRC_PATH ++ LIB_SRC_PATH);
-const LIB_BUILD_ZIG_ZON = @embedFile(TEMPLATES_PATH ++ LIB_PATH ++ BUILD_ZIG_ZON_PATH);
-const LIB_EXAMPLE1 = @embedFile(TEMPLATES_PATH ++ LIB_PATH ++ EXAMPLE1_PATH ++ EXE_SRC_PATH);
-const LIB_EXAMPLE2 = @embedFile(TEMPLATES_PATH ++ LIB_PATH ++ EXAMPLE2_PATH ++ EXE_SRC_PATH);
+const LIB_CI_STEP = "example";
+const LIB_README = @embedFile(TEMPLATES ++ LIB ++ README);
+const LIB_BUILD_ZIG = @embedFile(TEMPLATES ++ LIB ++ BUILD_ZIG);
+const LIB_BUILD_ZON = @embedFile(TEMPLATES ++ LIB ++ BUILD_ZON);
+const LIB_TEXT = @embedFile(TEMPLATES ++ LIB ++ SRC ++ LIB_ROOT);
+const LIB_EXAMPLE1 = @embedFile(TEMPLATES ++ LIB ++ EXAMPLE1 ++ EXE_ROOT);
+const LIB_EXAMPLE2 = @embedFile(TEMPLATES ++ LIB ++ EXAMPLE2 ++ EXE_ROOT);
+
+// Port templates.
+const PRT_CI_STEP = "install";
+const PRT_README = @embedFile(TEMPLATES ++ PRT ++ README);
+const PRT_BUILD_ZIG = @embedFile(TEMPLATES ++ PRT ++ BUILD_ZIG);
+const PRT_BUILD_ZON = @embedFile(TEMPLATES ++ PRT ++ BUILD_ZON);
+const PRT_TEXT = @embedFile(TEMPLATES ++ PRT ++ SRC ++ LIB_ROOT);
+
+pub const Codebase = enum {
+    exe,
+    lib,
+    prt,
+};
 
 pub fn initialize(
-    codebase_name: []const u8,
-    codebase_desc: []const u8,
-    user_handle: []const u8,
+    code_type: Codebase,
+    code_vrsn: std.SemanticVersion,
+    code_vrsn_str: []const u8,
+    repo_name: []const u8,
+    repo_desc: []const u8,
+    user_hndl: []const u8,
     user_name: []const u8,
-    is_lib: bool,
 ) !void {
-    var codebase_dir = blk: {
+    var repo_dir = blk: {
         const cur_dir = std.fs.cwd();
-        _ = cur_dir.access(codebase_name, .{}) catch break :blk try cur_dir.makeOpenPath(codebase_name, .{});
-        @panic("Codebase directory already exists!");
+        _ = cur_dir.access(repo_name, .{}) catch break :blk try cur_dir.makeOpenPath(repo_name, .{});
+        @panic("Directory already exists!");
     };
-    defer codebase_dir.close();
+    defer repo_dir.close();
 
-    var workflows_dir = try codebase_dir.makeOpenPath(WORKFLOWS_PATH, .{});
+    var workflows_dir = try repo_dir.makeOpenPath(WORKFLOWS, .{});
     defer workflows_dir.close();
 
-    var src_dir = try codebase_dir.makeOpenPath(SRC_PATH, .{});
+    var src_dir = try repo_dir.makeOpenPath(SRC, .{});
     defer src_dir.close();
 
-    try createLicense(user_name, codebase_dir);
-    try createPlain(GITIGNORE_PATH, GITIGNORE, codebase_dir);
-    try createPlain(CD_WORKFLOW_PATH, CD_WORKFLOW, workflows_dir);
-    try createPlain(GITATTRIBUTES_PATH, GITATTRIBUTES, codebase_dir);
+    try createLicense(user_name, repo_dir);
+    try createPlain(GITIGNORE, ALL_GITIGNORE, repo_dir);
+    try createPlain(GITATTRIBUTES, ALL_GITATTRIBUTES, repo_dir);
+    try createPlain(CD_WORKFLOW, ALL_CD_WORKFLOW, workflows_dir);
 
-    if (is_lib) {
-        var example1_dir = try codebase_dir.makeOpenPath(EXAMPLE1_PATH, .{});
-        defer example1_dir.close();
+    switch (code_type) {
+        .exe => {
+            try createCi(EXE_CI_STEP, workflows_dir);
+            try createPlain(EXE_ROOT, EXE_TEXT, src_dir);
+            try createBuild(.zig, .exe, repo_name, code_vrsn, repo_dir);
+            try createBuild(.zon, .exe, repo_name, code_vrsn_str, repo_dir);
+            try createReadme(EXE_README, repo_name, repo_desc, user_hndl, repo_dir);
+        },
+        .lib => {
+            var example1_dir = try repo_dir.makeOpenPath(EXAMPLE1, .{});
+            defer example1_dir.close();
 
-        var example2_dir = try codebase_dir.makeOpenPath(EXAMPLE2_PATH, .{});
-        defer example2_dir.close();
+            var example2_dir = try repo_dir.makeOpenPath(EXAMPLE2, .{});
+            defer example2_dir.close();
 
-        try createPlain(LIB_SRC_PATH, LIB_SRC, src_dir);
-        try createPlain(EXE_SRC_PATH, LIB_EXAMPLE1, example1_dir);
-        try createPlain(EXE_SRC_PATH, LIB_EXAMPLE2, example2_dir);
-        try createCi("example", workflows_dir);
-        try createBuild(BUILD_ZIG_PATH, LIB_BUILD_ZIG, codebase_name, codebase_dir);
-        try createBuild(BUILD_ZIG_ZON_PATH, LIB_BUILD_ZIG_ZON, codebase_name, codebase_dir);
-        try createReadme(LIB_README, codebase_name, codebase_desc, user_handle, codebase_dir);
-    } else {
-        try createPlain(EXE_SRC_PATH, EXE_SRC, src_dir);
-        try createCi("exe", workflows_dir);
-        try createBuild(BUILD_ZIG_PATH, EXE_BUILD_ZIG, codebase_name, codebase_dir);
-        try createBuild(BUILD_ZIG_ZON_PATH, EXE_BUILD_ZIG_ZON, codebase_name, codebase_dir);
-        try createReadme(EXE_README, codebase_name, codebase_desc, user_handle, codebase_dir);
+            try createCi(LIB_CI_STEP, workflows_dir);
+            try createPlain(LIB_ROOT, LIB_TEXT, src_dir);
+            try createPlain(EXE_ROOT, LIB_EXAMPLE1, example1_dir);
+            try createPlain(EXE_ROOT, LIB_EXAMPLE2, example2_dir);
+            try createBuild(.zig, .lib, repo_name, code_vrsn, repo_dir);
+            try createBuild(.zon, .lib, repo_name, code_vrsn_str, repo_dir);
+            try createReadme(LIB_README, repo_name, repo_desc, user_hndl, repo_dir);
+        },
+        .prt => {
+            try createCi(PRT_CI_STEP, workflows_dir);
+            try createPlain(LIB_ROOT, PRT_TEXT, src_dir);
+            try createBuild(.zig, .prt, repo_name, code_vrsn, repo_dir);
+            try createBuild(.zon, .prt, repo_name, code_vrsn_str, repo_dir);
+            try createReadme(PRT_README, repo_name, repo_desc, user_hndl, repo_dir);
+        },
     }
 }
 
 fn createReadme(
-    comptime README: []const u8,
-    codebase_name: []const u8,
-    codebase_desc: []const u8,
-    user_handle: []const u8,
-    codebase_dir: std.fs.Dir,
+    comptime text: []const u8,
+    repo_name: []const u8,
+    repo_desc: []const u8,
+    user_hndl: []const u8,
+    repo_dir: std.fs.Dir,
 ) !void {
-    var readme_file = try codebase_dir.createFile(README_PATH, .{});
+    var readme_file = try repo_dir.createFile(README, .{});
     defer readme_file.close();
 
     var idx: usize = 0;
-    while (std.mem.indexOfScalar(u8, README[idx..], '?')) |i| : (idx += i + 2) {
-        try readme_file.writeAll(README[idx .. idx + i]);
-        switch (README[idx + i + 1]) {
-            't' => try readme_file.writeAll(codebase_name),
-            'd' => try readme_file.writeAll(codebase_desc),
-            'h' => try readme_file.writeAll(user_handle),
-            else => try readme_file.writeAll(README[idx + i .. idx + i + 2]),
+    while (std.mem.indexOfScalar(u8, text[idx..], '?')) |i| : (idx += i + 2) {
+        try readme_file.writeAll(text[idx .. idx + i]);
+        switch (text[idx + i + 1]) {
+            'r' => try readme_file.writeAll(repo_name),
+            'd' => try readme_file.writeAll(repo_desc),
+            'u' => try readme_file.writeAll(user_hndl),
+            else => try readme_file.writeAll(text[idx + i .. idx + i + 2]),
         }
     }
-    try readme_file.writeAll(README[idx..]);
+    try readme_file.writeAll(text[idx..]);
 }
 
 fn createBuild(
-    comptime PATH: []const u8,
-    comptime TEXT: []const u8,
-    codebase_name: []const u8,
-    codebase_dir: std.fs.Dir,
+    comptime mode: std.zig.Ast.Mode,
+    comptime codebase: Codebase,
+    repo_name: []const u8,
+    version: anytype,
+    repo_dir: std.fs.Dir,
 ) !void {
-    var build_file = try codebase_dir.createFile(PATH, .{});
+    const text = switch (codebase) {
+        .exe => if (mode == .zig) EXE_BUILD_ZIG else EXE_BUILD_ZON,
+        .lib => if (mode == .zig) LIB_BUILD_ZIG else LIB_BUILD_ZON,
+        .prt => if (mode == .zig) PRT_BUILD_ZIG else PRT_BUILD_ZON,
+    };
+    var build_file = try repo_dir.createFile(if (mode == .zig) BUILD_ZIG else BUILD_ZON, .{});
+    const build_writer = build_file.writer();
     defer build_file.close();
 
     var idx: usize = 0;
-    while (std.mem.indexOfScalar(u8, TEXT[idx..], '?')) |i| : (idx += i + 1) {
-        try build_file.writeAll(TEXT[idx .. idx + i]);
-        try build_file.writeAll(codebase_name);
+    while (std.mem.indexOfScalar(u8, text[idx..], '?')) |i| : (idx += i + 2) {
+        try build_file.writeAll(text[idx .. idx + i]);
+        switch (text[idx + i + 1]) {
+            'r' => try build_writer.writeAll(repo_name),
+            'v' => switch (mode) {
+                .zig => try build_writer.print(
+                    " .major = {}, .minor = {}, .patch = {} ",
+                    .{ version.major, version.minor, version.patch },
+                ),
+                .zon => try build_writer.writeAll(version),
+            },
+            else => try build_writer.writeAll(text[idx + i .. idx + i + 2]),
+        }
     }
-    try build_file.writeAll(TEXT[idx..]);
+    try build_file.writeAll(text[idx..]);
 }
 
 fn createCi(
-    comptime STEP: []const u8,
+    comptime step: []const u8,
     workflows_dir: std.fs.Dir,
 ) !void {
-    var ci_file = try workflows_dir.createFile(CI_WORKFLOW_PATH, .{});
+    var ci_file = try workflows_dir.createFile(CI_WORKFLOW, .{});
     defer ci_file.close();
 
     var idx: usize = 0;
-    while (std.mem.indexOfScalar(u8, CI_WORKFLOW[idx..], '?')) |i| : (idx += i + 1) {
-        try ci_file.writeAll(CI_WORKFLOW[idx .. idx + i]);
-        try ci_file.writeAll(STEP);
+    while (std.mem.indexOfScalar(u8, ALL_CI_WORKFLOW[idx..], '?')) |i| : (idx += i + 1) {
+        try ci_file.writeAll(ALL_CI_WORKFLOW[idx .. idx + i]);
+        try ci_file.writeAll(step);
     }
-    try ci_file.writeAll(CI_WORKFLOW[idx..]);
+    try ci_file.writeAll(ALL_CI_WORKFLOW[idx..]);
 }
 
 fn createLicense(
     user_name: []const u8,
-    codebase_dir: std.fs.Dir,
+    repo_dir: std.fs.Dir,
 ) !void {
-    var license_file = try codebase_dir.createFile(LICENSE_PATH, .{});
+    var license_file = try repo_dir.createFile(LICENSE, .{});
     defer license_file.close();
 
-    const idx = std.mem.indexOfScalar(u8, LICENSE, '?').?;
-    try license_file.writeAll(LICENSE[0..idx]);
+    const idx = std.mem.indexOfScalar(u8, ALL_LICENSE, '?').?;
+    try license_file.writeAll(ALL_LICENSE[0..idx]);
     try license_file.writeAll(user_name);
-    try license_file.writeAll(LICENSE[idx + 1 ..]);
+    try license_file.writeAll(ALL_LICENSE[idx + 1 ..]);
 }
 
 fn createPlain(
-    comptime PATH: []const u8,
-    comptime TEXT: []const u8,
+    comptime path: []const u8,
+    comptime text: []const u8,
     dir: std.fs.Dir,
 ) !void {
-    var plain_file = try dir.createFile(PATH, .{});
+    var plain_file = try dir.createFile(path, .{});
     defer plain_file.close();
 
-    try plain_file.writeAll(TEXT);
+    try plain_file.writeAll(text);
 }
