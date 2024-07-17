@@ -24,6 +24,10 @@ pub fn build(b: *std.Build) void {
     });
     lib.addCSourceFiles(.{ .root = ?r_path, .files = &SOURCES, .flags = &FLAGS });
     lib.installHeadersDirectory(?r_path, "", .{ .include_extensions = &HEADERS });
+    lib.addConfigHeader(b.addConfigHeader(.{
+        .style = .{ .autoconf = b.path("config/config.h.in") },
+        .include_path = "config/config.h",
+    }, VALUES));
     if (use_z) {
         lib.linkSystemLibrary("z");
     }
@@ -35,13 +39,13 @@ pub fn build(b: *std.Build) void {
     lib_step.dependOn(&lib_install.step);
     b.default_step.dependOn(lib_step);
 
-    // Module
-    const module = b.addModule("?r", .{
+    // Bindings
+    const bindings_mod = b.addModule("?r", .{
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
     });
-    module.linkLibrary(lib);
+    bindings_mod.linkLibrary(lib);
 
     // Test suite
     const tests_step = b.step("test", "Run test suite");
@@ -77,14 +81,18 @@ pub fn build(b: *std.Build) void {
     b.default_step.dependOn(fmt_step);
 }
 
-const HEADERS = .{
-    // "lib.h",
-};
-
 const SOURCES = .{
     // "lib.c",
 };
 
 const FLAGS = .{
     // "-std=c89",
+};
+
+const HEADERS = .{
+    // "lib.h",
+};
+
+const VALUES = .{
+    // .HAVE_STD_BOOL = 1,
 };
