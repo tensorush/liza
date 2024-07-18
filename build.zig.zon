@@ -4,8 +4,8 @@
     .minimum_zig_version = "0.13.0",
     .dependencies = .{
         .clap = .{
-            .url = "https://github.com/Hejsil/zig-clap/archive/c0193e9.tar.gz",
-            .hash = "12207ee987ce045596cb992cfb15b0d6d9456e50d4721c3061c69dabc2962053644d",
+            .url = "https://github.com/Hejsil/zig-clap/archive/39fce9b.tar.gz",
+            .hash = "122048537d7f3dd8e4c2f565e034dfceacc277f465fe440263233fd1e580ce5e8792",
         },
     },
     .paths = .{
