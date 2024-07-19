@@ -22,24 +22,27 @@ pub fn build(b: *std.Build) void {
         .version = version,
         .optimize = optimize,
     });
+    lib.root_module.addCMacro("VERSION", b.fmt("\"{}\"", .{version}));
     lib.addCSourceFiles(.{ .root = ?r_path, .files = &SOURCES, .flags = &FLAGS });
     lib.installHeadersDirectory(?r_path, "", .{ .include_extensions = &HEADERS });
     lib.addConfigHeader(b.addConfigHeader(.{
-        .style = .{ .autoconf = b.path("config/config.h.in") },
-        .include_path = "config/config.h",
+        .style = .{ .cmake = ?r_path.path(b, "config.h.cmake.in") },
+        .include_path = "config.h",
     }, VALUES));
-    if (use_z) {
-        lib.linkSystemLibrary("z");
-    }
     // lib.linkFramework("CoreFoundation");
     // lib.linkLibCpp();
     // lib.linkLibC();
+
+    if (use_z) {
+        lib.root_module.addCMacro("HAVE_Z", "1");
+        lib.linkSystemLibrary("z");
+    }
 
     const lib_install = b.addInstallArtifact(lib, .{});
     lib_step.dependOn(&lib_install.step);
     b.default_step.dependOn(lib_step);
 
-    // Bindings
+    // Bindings module
     const bindings_mod = b.addModule("?r", .{
         .target = target,
         .optimize = optimize,
@@ -73,6 +76,7 @@ pub fn build(b: *std.Build) void {
 
     const fmt = b.addFmt(.{
         .paths = &.{
+            "src/",
             "build.zig",
         },
         .check = true,

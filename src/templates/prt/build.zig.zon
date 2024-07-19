@@ -2,7 +2,14 @@
     .name = "?r",
     .version = "?v",
     .minimum_zig_version = "0.13.0",
+    .dependencies = .{
+        .?r = .{
+            .url = "",
+            .hash = "",
+        },
+    },
     .paths = .{
+        "src/",
         "build.zig",
         "build.zig.zon",
         "LICENSE",
