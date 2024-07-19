@@ -45,6 +45,7 @@ pub fn build(b: *std.Build) void {
             "src/templates/exe/build.zig",
             "src/templates/lib/build.zig",
             "src/templates/prt/build.zig",
+            "src/templates/prt/build.zig.zon",
         },
         .check = true,
     });
