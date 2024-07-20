@@ -92,8 +92,8 @@ pub fn initialize(
         .exe => {
             try createCi(EXE_CI_STEP, workflows_dir);
             try createPlain(EXE_ROOT, EXE_TEXT, src_dir);
-            try createBuild(.zig, .exe, repo_name, code_vrsn, repo_dir);
-            try createBuild(.zon, .exe, repo_name, code_vrsn_str, repo_dir);
+            try createBuild(.zig, .exe, repo_name, user_hndl, code_vrsn, repo_dir);
+            try createBuild(.zon, .exe, repo_name, user_hndl, code_vrsn_str, repo_dir);
             try createReadme(EXE_README, repo_name, repo_desc, user_hndl, repo_dir);
         },
         .lib => {
@@ -107,15 +107,15 @@ pub fn initialize(
             try createPlain(LIB_ROOT, LIB_TEXT, src_dir);
             try createPlain(EXE_ROOT, LIB_EXAMPLE1, example1_dir);
             try createPlain(EXE_ROOT, LIB_EXAMPLE2, example2_dir);
-            try createBuild(.zig, .lib, repo_name, code_vrsn, repo_dir);
-            try createBuild(.zon, .lib, repo_name, code_vrsn_str, repo_dir);
+            try createBuild(.zig, .lib, repo_name, user_hndl, code_vrsn, repo_dir);
+            try createBuild(.zon, .lib, repo_name, user_hndl, code_vrsn_str, repo_dir);
             try createReadme(LIB_README, repo_name, repo_desc, user_hndl, repo_dir);
         },
         .prt => {
             try createCi(PRT_CI_STEP, workflows_dir);
             try createPlain(LIB_ROOT, PRT_TEXT, src_dir);
-            try createBuild(.zig, .prt, repo_name, code_vrsn, repo_dir);
-            try createBuild(.zon, .prt, repo_name, code_vrsn_str, repo_dir);
+            try createBuild(.zig, .prt, repo_name, user_hndl, code_vrsn, repo_dir);
+            try createBuild(.zon, .prt, repo_name, user_hndl, code_vrsn_str, repo_dir);
             try createReadme(PRT_README, repo_name, repo_desc, user_hndl, repo_dir);
         },
     }
@@ -148,6 +148,7 @@ fn createBuild(
     comptime mode: std.zig.Ast.Mode,
     comptime codebase: Codebase,
     repo_name: []const u8,
+    user_hndl: []const u8,
     version: anytype,
     repo_dir: std.fs.Dir,
 ) !void {
@@ -172,6 +173,7 @@ fn createBuild(
                 ),
                 .zon => try build_writer.writeAll(version),
             },
+            'u' => try build_writer.writeAll(user_hndl),
             else => try build_writer.writeAll(text[idx + i .. idx + i + 2]),
         }
     }
