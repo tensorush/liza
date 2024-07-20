@@ -25,8 +25,8 @@ pub fn main() !void {
     };
 
     var arena = std.heap.ArenaAllocator.init(gpa.allocator());
-    defer arena.deinit();
     const allocator = arena.allocator();
+    defer arena.deinit();
 
     var res = try clap.parse(clap.Help, &PARAMS, PARSERS, .{ .allocator = allocator });
     defer res.deinit();

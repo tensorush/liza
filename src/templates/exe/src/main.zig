@@ -17,8 +17,8 @@ pub fn main() !void {
 
     // Set up arena allocator.
     var arena = std.heap.ArenaAllocator.init(gpa.allocator());
-    defer arena.deinit();
     const allocator = arena.allocator();
+    defer arena.deinit();
 
     // Set up CLI argument parsing.
     var res = try clap.parse(clap.Help, &PARAMS, clap.parsers.default, .{ .allocator = allocator });
