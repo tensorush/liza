@@ -4,7 +4,7 @@
     .minimum_zig_version = "0.13.0",
     .dependencies = .{
         .?r = .{
-            .url = "https://github.com/?u/?r/archive/<git_tag_or_commit_hash>.tar.gz",
+            .url = "https://github.com/?u/?r/archive/v?v.tar.gz",
             .hash = "12200000000000000000000000000000000000000000000000000000000000000000",
         },
     },
