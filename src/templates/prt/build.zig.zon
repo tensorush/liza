@@ -3,10 +3,8 @@
     .version = "?v",
     .minimum_zig_version = "0.13.0",
     .dependencies = .{
-        .?r = .{
-            .url = "https://github.com/?r/?r/archive/v?v.tar.gz",
-            .hash = "12200000000000000000000000000000000000000000000000000000000000000000",
-        },
+        // Depend on upstream repository by running:
+        // zig fetch --save git+https://github.com/?r/?r#v?v
     },
     .paths = .{
         "src/",

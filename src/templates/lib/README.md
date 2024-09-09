@@ -13,7 +13,7 @@
 - Add `?r` dependency to `build.zig.zon`.
 
 ```sh
-zig fetch --save https://github.com/?u/?r/archive/<git_tag_or_commit_hash>.tar.gz
+zig fetch --save git+https://github.com/?u/?r#<git_tag_or_commit_hash>
 ```
 
 - Use `?r` dependency in `build.zig`.

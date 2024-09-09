@@ -1,11 +1,11 @@
 .{
     .name = "liza",
-    .version = "0.5.0",
+    .version = "0.6.0",
     .minimum_zig_version = "0.13.0",
     .dependencies = .{
         .clap = .{
-            .url = "https://github.com/Hejsil/zig-clap/archive/c0193e9.tar.gz",
-            .hash = "12207ee987ce045596cb992cfb15b0d6d9456e50d4721c3061c69dabc2962053644d",
+            .url = "git+https://github.com/Hejsil/zig-clap?ref=0.9.1#d71cc39a94f3e6ccbad00c25d350c9147de4df9f",
+            .hash = "122062d301a203d003547b414237229b09a7980095061697349f8bef41be9c30266b",
         },
     },
     .paths = .{

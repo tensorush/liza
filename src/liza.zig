@@ -47,7 +47,7 @@ const LIB_EXAMPLE1 = @embedFile(TEMPLATES ++ LIB ++ EXAMPLE1 ++ EXE_ROOT);
 const LIB_EXAMPLE2 = @embedFile(TEMPLATES ++ LIB ++ EXAMPLE2 ++ EXE_ROOT);
 
 // Port templates.
-const PRT_CI_STEP = "install";
+const PRT_CI_STEP = "lib";
 const PRT_README = @embedFile(TEMPLATES ++ PRT ++ README);
 const PRT_BUILD_ZIG = @embedFile(TEMPLATES ++ PRT ++ BUILD_ZIG);
 const PRT_BUILD_ZON = @embedFile(TEMPLATES ++ PRT ++ BUILD_ZON);
