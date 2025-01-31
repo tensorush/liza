@@ -5,7 +5,7 @@
 
 ## Zig codebase initializer.
 
-### :rocket: Usage
+### Usage
 
 ```sh
 git clone https://github.com/tensorush/liza.git
@@ -13,7 +13,7 @@ cd liza/
 zig build exe -- -h
 ```
 
-### :sparkles: Features
+### Features
 
 - #### [Zig executable template](src/templates/exe/):
     - Dependency package usage.

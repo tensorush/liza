@@ -1,10 +1,10 @@
 .{
     .name = "?r",
     .version = "?v",
-    .minimum_zig_version = "0.13.0",
+    .minimum_zig_version = "0.14.0",
     .dependencies = .{
         // Depend on clap by running:
-        // zig fetch --save git+https://github.com/Hejsil/zig-clap#0.9.1
+        // zig fetch --save git+https://github.com/Hejsil/zig-clap#<git_tag_or_commit_hash>
     },
     .paths = .{
         "src/",

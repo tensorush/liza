@@ -8,7 +8,7 @@
 
 ## ?d
 
-### :rocket: Usage
+### Usage
 
 ```sh
 git clone https://github.com/?u/?r.git

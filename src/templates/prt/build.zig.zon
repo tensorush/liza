@@ -1,7 +1,7 @@
 .{
     .name = "?r",
     .version = "?v",
-    .minimum_zig_version = "0.13.0",
+    .minimum_zig_version = "0.14.0",
     .dependencies = .{
         // Depend on upstream repository by running:
         // zig fetch --save git+https://github.com/?r/?r#v?v

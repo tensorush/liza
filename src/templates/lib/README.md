@@ -8,7 +8,7 @@
 
 ## ?d
 
-### :rocket: Usage
+### Usage
 
 - Add `?r` dependency to `build.zig.zon`.
 

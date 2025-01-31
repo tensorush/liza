@@ -6,10 +6,10 @@ const PARAMS = clap.parseParamsComptime(
     \\-c, --code <CBS>   Codebase type: exe, lib, prt (default: exe)
     \\-v, --ver <STR>    Codebase semantic version (default: 0.1.0)
     \\-h, --help         Display help
-    \\<STR>              Repository name
-    \\<STR>              Repository description
-    \\<STR>              User handle
-    \\<STR>              User name
+    \\<STR>              Repository name (default: liza)
+    \\<STR>              Repository description (default: "Zig codebase initializer.")
+    \\<STR>              User handle (default: tensorush)
+    \\<STR>              User name (default: "Jora Troosh")
     \\
 );
 
@@ -35,10 +35,10 @@ pub fn main() !void {
     var code_vrsn_str: []const u8 = "0.1.0";
     var code_vrsn = try std.SemanticVersion.parse(code_vrsn_str);
 
-    var repo_name: []const u8 = "liza";
-    var repo_desc: []const u8 = "Zig codebase initializer.";
-    var user_hndl: []const u8 = "tensorush";
-    var user_name: []const u8 = "Jora Troosh";
+    const repo_name = res.positionals[0] orelse "liza";
+    const repo_desc = res.positionals[1] orelse "Zig codebase initializer.";
+    const user_hndl = res.positionals[2] orelse "tensorush";
+    const user_name = res.positionals[3] orelse "Jora Troosh";
 
     if (res.args.code) |code| {
         code_type = code;
@@ -47,13 +47,6 @@ pub fn main() !void {
     if (res.args.ver) |ver| {
         code_vrsn_str = ver;
         code_vrsn = try std.SemanticVersion.parse(ver);
-    }
-
-    if (res.positionals.len > 0) {
-        repo_name = res.positionals[0];
-        repo_desc = res.positionals[1];
-        user_hndl = res.positionals[2];
-        user_name = res.positionals[3];
     }
 
     if (res.args.help != 0) {
