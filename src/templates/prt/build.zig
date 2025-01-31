@@ -29,9 +29,9 @@ pub fn build(b: *std.Build) void {
         .style = .{ .cmake = ?r_path.path(b, "config.h.cmake.in") },
         .include_path = "config.h",
     }, VALUES));
-    // lib.linkFramework("CoreFoundation");
-    // lib.linkLibCpp();
-    // lib.linkLibC();
+    lib.linkFramework("CoreFoundation");
+    lib.linkLibCpp();
+    lib.linkLibC();
 
     if (use_z) {
         lib.root_module.addCMacro("HAVE_Z", "1");
@@ -86,17 +86,17 @@ pub fn build(b: *std.Build) void {
 }
 
 const SOURCES = .{
-    // "lib.c",
+    "lib.c",
 };
 
 const FLAGS = .{
-    // "-std=c89",
+    "-std=c89",
 };
 
 const HEADERS = .{
-    // "lib.h",
+    "lib.h",
 };
 
 const VALUES = .{
-    // .HAVE_STD_BOOL = 1,
+    .HAVE_STD_BOOL = 1,
 };

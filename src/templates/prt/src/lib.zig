@@ -3,7 +3,7 @@
 const std = @import("std");
 
 pub const c = @cImport({
-    // @cInclude("lib.h");
+    @cInclude("lib.h");
 });
 
 test {
