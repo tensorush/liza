@@ -10,7 +10,7 @@ pub fn main() !void {
 
     // Set up arena allocator.
     var arena_state = std.heap.ArenaAllocator.init(gpa);
-    const arena = arena_state.allocator();
+    // const arena = arena_state.allocator();
     defer arena_state.deinit();
 
     // Set up buffered standard output writer.

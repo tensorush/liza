@@ -22,12 +22,9 @@ jobs:
 
       - name: Run `exe` step
         run: |
-          zig build exe
-          rm -rf liza/
-          zig build exe -- -c lib
-          rm -rf liza/
+          zig build exe && cd liza/ && zig build && cd ../ && rm -rf liza/
+          zig build exe -- -c lib && cd liza/ && zig build && cd ../ && rm -rf liza/
           zig build exe -- -c prt
-          rm -rf liza/
 
   fmt:
     runs-on: ubuntu-latest

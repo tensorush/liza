@@ -16,22 +16,19 @@ zig build exe -- -h
 ### Features
 
 - #### [Zig executable template](src/templates/exe/):
-    - Dependency package usage.
-    - Custom `build.zig.zon`.
-    - README with badges.
+    - Zig executable compilation.
+    - Dependency usage.
 
 - #### [Zig library template](src/templates/lib/):
-    - Examples' directory setup.
-    - Custom `build.zig.zon`.
-    - README with badges.
+    - Zig static library compilation.
+    - Example suite setup.
 
 - #### [Zig port template](src/templates/prt/):
-    - C/C++/ObjC codebase compilation.
-    - Custom `build.zig.zon`.
-    - README with badges.
+    - C/C++ library compilation.
+    - Lazy dependency usage.
 
 - #### [GitHub CI template](src/templates/.github/workflows/ci.yaml):
-    - `exe`/`example`/`lib` (`?`): either executable's run, library's example suite execution, or port's library installation.
+    - `exe`/`example`/`lib` (`?`): executable's run, library's example suite execution, or port's library installation.
     - `test`: Test suite execution and code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration).
     - `fmt`: Formatting checks execution.
 

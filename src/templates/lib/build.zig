@@ -12,12 +12,14 @@ pub fn build(b: *std.Build) void {
     // Library
     const lib_step = b.step("lib", "Install library");
 
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "?r",
-        .target = target,
         .version = version,
-        .optimize = optimize,
-        .root_source_file = root_source_file,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+            .root_source_file = root_source_file,
+        }),
     });
 
     const lib_install = b.addInstallArtifact(lib, .{});
@@ -41,10 +43,12 @@ pub fn build(b: *std.Build) void {
     inline for (EXAMPLE_NAMES) |EXAMPLE_NAME| {
         const example = b.addExecutable(.{
             .name = EXAMPLE_NAME,
-            .target = target,
             .version = version,
-            .optimize = optimize,
-            .root_source_file = b.path(EXAMPLES_DIR ++ EXAMPLE_NAME ++ "/main.zig"),
+            .root_module = b.createModule(.{
+                .target = target,
+                .optimize = optimize,
+                .root_source_file = b.path(EXAMPLES_DIR ++ EXAMPLE_NAME ++ "/main.zig"),
+            }),
         });
         example.root_module.addImport("?r", lib_mod);
 
@@ -58,9 +62,11 @@ pub fn build(b: *std.Build) void {
     const tests_step = b.step("test", "Run test suite");
 
     const tests = b.addTest(.{
-        .target = target,
         .version = version,
-        .root_source_file = root_source_file,
+        .root_module = b.createModule(.{
+            .target = target,
+            .root_source_file = root_source_file,
+        }),
     });
 
     const tests_run = b.addRunArtifact(tests);

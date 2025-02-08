@@ -18,10 +18,12 @@ pub fn build(b: *std.Build) void {
 
     const exe = b.addExecutable(.{
         .name = "?r",
-        .target = target,
         .version = version,
-        .optimize = optimize,
-        .root_source_file = root_source_file,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+            .root_source_file = root_source_file,
+        }),
     });
     exe.root_module.addImport("clap", clap_mod);
     b.installArtifact(exe);
@@ -48,9 +50,11 @@ pub fn build(b: *std.Build) void {
     const tests_step = b.step("test", "Run test suite");
 
     const tests = b.addTest(.{
-        .target = target,
         .version = version,
-        .root_source_file = root_source_file,
+        .root_module = b.createModule(.{
+            .target = target,
+            .root_source_file = root_source_file,
+        }),
     });
     tests.root_module.addImport("clap", clap_mod);
 

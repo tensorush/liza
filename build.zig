@@ -18,10 +18,12 @@ pub fn build(b: *std.Build) void {
 
     const exe = b.addExecutable(.{
         .name = "liza",
-        .target = target,
         .version = version,
-        .optimize = optimize,
-        .root_source_file = root_source_file,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+            .root_source_file = root_source_file,
+        }),
     });
     exe.root_module.addImport("clap", clap_mod);
     b.installArtifact(exe);
