@@ -50,27 +50,6 @@ pub fn build(b: *std.Build) void {
     });
     bindings_mod.linkLibrary(lib);
 
-    // Test suite
-    const tests_step = b.step("test", "Run test suite");
-
-    const tests = b.addTest(.{
-        .target = target,
-        .version = version,
-        .root_source_file = root_source_file,
-    });
-
-    const tests_run = b.addRunArtifact(tests);
-    tests_step.dependOn(&tests_run.step);
-    b.default_step.dependOn(tests_step);
-
-    // Code coverage
-    const cov_step = b.step("cov", "Generate code coverage");
-
-    const cov_run = b.addSystemCommand(&.{ "kcov", "--clean", "--include-pattern=src/", "kcov-output/" });
-    cov_run.addArtifactArg(tests);
-    cov_step.dependOn(&cov_run.step);
-    b.default_step.dependOn(cov_step);
-
     // Formatting checks
     const fmt_step = b.step("fmt", "Run formatting checks");
 

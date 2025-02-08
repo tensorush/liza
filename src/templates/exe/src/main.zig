@@ -1,4 +1,4 @@
-//! Root file that exposes the main function.
+//! Root source file that exposes the executable's main function.
 
 const std = @import("std");
 const clap = @import("clap");
@@ -10,22 +10,23 @@ const PARAMS = clap.parseParamsComptime(
 
 pub fn main() !void {
     // Set up general-purpose allocator.
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer if (gpa.deinit() == .leak) {
+    var gpa_state: std.heap.GeneralPurposeAllocator(.{}) = .init;
+    const gpa = gpa_state.allocator();
+    defer if (gpa_state.deinit() == .leak) {
         @panic("Memory leak has occurred!");
     };
 
     // Set up arena allocator.
-    var arena = std.heap.ArenaAllocator.init(gpa.allocator());
-    const allocator = arena.allocator();
-    defer arena.deinit();
+    var arena_state = std.heap.ArenaAllocator.init(gpa);
+    const arena = arena_state.allocator();
+    defer arena_state.deinit();
 
     // Set up CLI argument parsing.
-    var res = try clap.parse(clap.Help, &PARAMS, clap.parsers.default, .{ .allocator = allocator });
-    defer res.deinit();
+    var cli = try clap.parse(clap.Help, &PARAMS, clap.parsers.default, .{ .allocator = arena });
+    defer cli.deinit();
 
     // Parse help argument.
-    if (res.args.help != 0) {
+    if (cli.args.help != 0) {
         return clap.help(std.io.getStdErr().writer(), clap.Help, &PARAMS, .{});
     }
 
@@ -41,6 +42,6 @@ pub fn main() !void {
     try buf_writer.flush();
 }
 
-test {
+comptime {
     std.testing.refAllDecls(@This());
 }

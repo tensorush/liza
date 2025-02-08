@@ -1,3 +1,6 @@
-kcov-output/
+# Zig artifacts
 .zig-cache/
 zig-out/
+
+# Kcov artifacts
+kcov-output/

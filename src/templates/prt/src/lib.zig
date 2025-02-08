@@ -1,4 +1,4 @@
-//! Root file that exposes the public API.
+//! Root source file that exposes the library's API.
 
 const std = @import("std");
 
@@ -6,6 +6,6 @@ pub const c = @cImport({
     @cInclude("lib.h");
 });
 
-test {
+comptime {
     std.testing.refAllDecls(@This());
 }

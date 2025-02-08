@@ -20,7 +20,7 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
 
-      - name: Run `?`
+      - name: Run `?` step
         run: zig build ?
 
   test:
@@ -33,13 +33,13 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
 
-      - name: Run `test`
+      - name: Run `test` step
         run: zig build test --summary all
 
       - name: Set up kcov
         run: sudo apt install kcov
 
-      - name: Run `cov`
+      - name: Run `cov` step
         run: zig build cov
 
       - name: Upload coverage to Codecov
@@ -60,5 +60,5 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
 
-      - name: Run `fmt`
+      - name: Run `fmt` step
         run: zig build fmt

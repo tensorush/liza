@@ -19,37 +19,34 @@ const PARSERS = .{
 };
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer if (gpa.deinit() == .leak) {
+    var gpa_state: std.heap.GeneralPurposeAllocator(.{}) = .init;
+    const gpa = gpa_state.allocator();
+    defer if (gpa_state.deinit() == .leak) {
         @panic("Memory leak has occurred!");
     };
 
-    var arena = std.heap.ArenaAllocator.init(gpa.allocator());
-    const allocator = arena.allocator();
-    defer arena.deinit();
-
-    var res = try clap.parse(clap.Help, &PARAMS, PARSERS, .{ .allocator = allocator });
-    defer res.deinit();
+    var cli = try clap.parse(clap.Help, &PARAMS, PARSERS, .{ .allocator = gpa });
+    defer cli.deinit();
 
     var code_type = liza.Codebase.exe;
     var code_vrsn_str: []const u8 = "0.1.0";
     var code_vrsn = try std.SemanticVersion.parse(code_vrsn_str);
 
-    const repo_name = res.positionals[0] orelse "liza";
-    const repo_desc = res.positionals[1] orelse "Zig codebase initializer.";
-    const user_hndl = res.positionals[2] orelse "tensorush";
-    const user_name = res.positionals[3] orelse "Jora Troosh";
+    const repo_name = cli.positionals[0] orelse "liza";
+    const repo_desc = cli.positionals[1] orelse "Zig codebase initializer.";
+    const user_hndl = cli.positionals[2] orelse "tensorush";
+    const user_name = cli.positionals[3] orelse "Jora Troosh";
 
-    if (res.args.code) |code| {
+    if (cli.args.code) |code| {
         code_type = code;
     }
 
-    if (res.args.ver) |ver| {
+    if (cli.args.ver) |ver| {
         code_vrsn_str = ver;
         code_vrsn = try std.SemanticVersion.parse(ver);
     }
 
-    if (res.args.help != 0) {
+    if (cli.args.help != 0) {
         return clap.help(std.io.getStdErr().writer(), clap.Help, &PARAMS, .{});
     }
 
