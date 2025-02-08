@@ -7,7 +7,7 @@ pub fn build(b: *std.Build) void {
     const version = std.SemanticVersion{?v};
 
     // Custom options
-    const use_zlib = b.option(bool, "use_zlib", "Use zlib packaged for Zig") orelse false;
+    const use_zlib = b.option(bool, "use_zlib", "Use zlib built with Zig") orelse false;
 
     // Dependencies
     const ?r_dep = b.dependency("?r", .{
