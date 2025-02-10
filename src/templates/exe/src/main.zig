@@ -16,13 +16,8 @@ pub fn main() !void {
         @panic("Memory leak has occurred!");
     };
 
-    // Set up arena allocator.
-    var arena_state = std.heap.ArenaAllocator.init(gpa);
-    const arena = arena_state.allocator();
-    defer arena_state.deinit();
-
     // Set up CLI argument parsing.
-    var cli = try clap.parse(clap.Help, &PARAMS, clap.parsers.default, .{ .allocator = arena });
+    var cli = try clap.parse(clap.Help, &PARAMS, clap.parsers.default, .{ .allocator = gpa });
     defer cli.deinit();
 
     // Parse help argument.
