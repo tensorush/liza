@@ -11,7 +11,7 @@ on:
 
 jobs:
   exe:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check out repository
@@ -54,4 +54,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Spell check repository
-        uses: crate-ci/typos@v1
+        uses: crate-ci/typos@v1.29.5
