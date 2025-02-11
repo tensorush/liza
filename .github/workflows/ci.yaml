@@ -19,6 +19,8 @@ jobs:
 
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
+        with:
+          version: master
 
       - name: Set up kcov
         run: sudo apt install kcov
@@ -38,6 +40,18 @@ jobs:
 
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
+        with:
+          version: master
 
       - name: Run `fmt` step
         run: zig build fmt
+
+  spell:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Spell check repository
+        uses: crate-ci/typos@v1

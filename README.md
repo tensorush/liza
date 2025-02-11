@@ -31,6 +31,7 @@ zig build exe -- -h
     - `exe`/`example`/`lib` (`?`): executable's run, library's example suite execution, or port's installation.
     - `test`: Test suite execution and code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration).
     - `fmt`: Formatting checks execution.
+    - `spell`: Spell checking with [Typos](https://github.com/crate-ci/typos).
 
 - #### [GitHub CD workflow](src/templates/.github/workflows/cd.yaml):
     - `emit` -> `deploy`: documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow).

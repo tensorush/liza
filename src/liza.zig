@@ -61,6 +61,7 @@ pub const Codebase = enum {
 
 pub fn initialize(
     code_type: Codebase,
+    out_dir_str: []const u8,
     code_vrsn: std.SemanticVersion,
     code_vrsn_str: []const u8,
     repo_name: []const u8,
@@ -69,8 +70,8 @@ pub fn initialize(
     user_name: []const u8,
 ) !void {
     var repo_dir = blk: {
-        const cur_dir = std.fs.cwd();
-        _ = cur_dir.access(repo_name, .{}) catch break :blk try cur_dir.makeOpenPath(repo_name, .{});
+        const out_dir = try std.fs.cwd().openDir(out_dir_str, .{});
+        _ = out_dir.access(repo_name, .{}) catch break :blk try out_dir.makeOpenPath(repo_name, .{});
         @panic("Directory already exists!");
     };
     defer repo_dir.close();

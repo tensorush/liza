@@ -5,6 +5,7 @@ const liza = @import("liza.zig");
 const PARAMS = clap.parseParamsComptime(
     \\-c, --code <CBS>   Codebase type: exe, lib, prt (default: exe)
     \\-v, --ver <STR>    Codebase semantic version (default: 0.1.0)
+    \\-o, --out <STR>    Output directory path (default: ./)
     \\-h, --help         Display help
     \\<STR>              Repository name (default: liza)
     \\<STR>              Repository description (default: "Zig codebase initializer.")
@@ -19,7 +20,7 @@ const PARSERS = .{
 };
 
 pub fn main() !void {
-    var gpa_state: std.heap.GeneralPurposeAllocator(.{}) = .init;
+    var gpa_state: std.heap.DebugAllocator(.{}) = .init;
     const gpa = gpa_state.allocator();
     defer if (gpa_state.deinit() == .leak) {
         @panic("Memory leak has occurred!");
@@ -29,6 +30,7 @@ pub fn main() !void {
     defer cli.deinit();
 
     const code_type = cli.args.code orelse .exe;
+    const out_dir_str = cli.args.out orelse "./";
     const code_vrsn_str = cli.args.ver orelse "0.1.0";
     const code_vrsn = try std.SemanticVersion.parse(code_vrsn_str);
 
@@ -41,5 +43,5 @@ pub fn main() !void {
         return clap.help(std.io.getStdErr().writer(), clap.Help, &PARAMS, .{});
     }
 
-    try liza.initialize(code_type, code_vrsn, code_vrsn_str, repo_name, repo_desc, user_hndl, user_name);
+    try liza.initialize(code_type, out_dir_str, code_vrsn, code_vrsn_str, repo_name, repo_desc, user_hndl, user_name);
 }
