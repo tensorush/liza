@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Zig
-        run: ./.forgejo/workflows/set_up_zig.sh
+        run: sudo ./.forgejo/workflows/set_up_zig.sh
 
       - name: Run `exe` step
         run: |
@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Zig
-        run: ./.forgejo/workflows/set_up_zig.sh
+        run: sudo ./.forgejo/workflows/set_up_zig.sh
 
       - name: Run `fmt` step
         run: zig build fmt
