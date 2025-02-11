@@ -21,14 +21,11 @@ jobs:
         run: |
           chmod +x .forgejo/workflows/set_up_zig.sh
           ./.forgejo/workflows/set_up_zig.sh
-          echo $PATH
 
-      - name: Run `exe` step
-        run: |
-          echo $PATH
+          echo "Run `exe` step"
           zig build exe && rm -rf liza/
           zig build exe -- -c lib && rm -rf liza/
           zig build exe -- -c prt
 
-      - name: Run `fmt` step
-        run: zig build fmt
+          echo "Run `fmt` step"
+          zig build fmt
