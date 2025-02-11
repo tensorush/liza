@@ -1,4 +1,6 @@
 curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz
 tar -xf zig.tar.xz
 mv zig*/ zig/
-export PATH="$(pwd)/zig:\$PATH"
+./zig/zig version
+chmod +x zig/zig
+echo "export PATH="$(pwd)/zig:\$PATH"" >> ~/.profile
