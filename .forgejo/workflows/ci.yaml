@@ -11,7 +11,7 @@ on:
 
 jobs:
   exe:
-    runs-on: codeberg-tiny
+    runs-on: codeberg-tiny-lazy
 
     steps:
       - name: Check out repository
@@ -19,8 +19,9 @@ jobs:
 
       - name: Set up Zig
         run: |
-          chmod +x .forgejo/workflows/set_up_zig.sh
-          ./.forgejo/workflows/set_up_zig.sh
+          curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz
+          tar -xf zig.tar.xz
+          mv zig*/ zig/
 
       - name: Run `exe` step
         run: |
