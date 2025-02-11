@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  exe:
+    runs-on: codeberg-tiny
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Zig
+        run: |
+          curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz
+          tar -xf zig.tar.xz
+          ./zig*/zig version
+
+      - name: Set up kcov
+        run: sudo apt install kcov
+
+      - name: Run `exe` step
+        run: |
+          ./zig*/zig build exe && cd liza/ && ./zig*/zig build && cd ../ && rm -rf liza/
+          ./zig*/zig build exe -- -c lib && cd liza/ && ./zig*/zig build && cd ../ && rm -rf liza/
+          ./zig*/zig build exe -- -c prt
