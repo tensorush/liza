@@ -24,6 +24,7 @@ jobs:
 
       - name: Run `exe` step
         run: |
+          echo $PATH
           zig build exe && rm -rf liza/
           zig build exe -- -c lib && rm -rf liza/
           zig build exe -- -c prt
