@@ -22,8 +22,11 @@ jobs:
           chmod +x .forgejo/workflows/set_up_zig.sh
           ./.forgejo/workflows/set_up_zig.sh
 
-          zig build exe && rm -rf liza/
-          zig build exe -- -c lib && rm -rf liza/
-          zig build exe -- -c prt
+      - name: Run `exe` step
+        run: |
+          ./zig/zig build exe && rm -rf liza/
+          ./zig/zig build exe -- -c lib && rm -rf liza/
+          ./zig/zig build exe -- -c prt
 
-          zig build fmt
+      - name: Run `fmt` step
+        run: ./zig/zig build fmt
