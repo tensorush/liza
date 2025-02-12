@@ -98,7 +98,7 @@ pub fn initialize(
             try createWorkflows(EXE_CI_STEP, codebase, platform, repo_dir);
             try createBuild(.zig, .exe, repo_name, user_hndl, version, repo_dir);
             try createBuild(.zon, .exe, repo_name, user_hndl, version_str, repo_dir);
-            try createReadme(EXE_README, repo_name, repo_desc, user_hndl, repo_dir);
+            try createReadme(EXE_README, platform, repo_name, repo_desc, user_hndl, repo_dir);
         },
         .lib => {
             var example1_dir = try repo_dir.makeOpenPath(EXAMPLE1, .{});
@@ -113,20 +113,21 @@ pub fn initialize(
             try createPlain(EXE_ROOT, LIB_EXAMPLE2, example2_dir);
             try createBuild(.zig, .lib, repo_name, user_hndl, version, repo_dir);
             try createBuild(.zon, .lib, repo_name, user_hndl, version_str, repo_dir);
-            try createReadme(LIB_README, repo_name, repo_desc, user_hndl, repo_dir);
+            try createReadme(LIB_README, platform, repo_name, repo_desc, user_hndl, repo_dir);
         },
         .prt => {
             try createPlain(LIB_ROOT, PRT_TEXT, src_dir);
             try createWorkflows(PRT_CI_STEP, codebase, platform, repo_dir);
             try createBuild(.zig, .prt, repo_name, user_hndl, version, repo_dir);
             try createBuild(.zon, .prt, repo_name, user_hndl, version_str, repo_dir);
-            try createReadme(PRT_README, repo_name, repo_desc, user_hndl, repo_dir);
+            try createReadme(PRT_README, platform, repo_name, repo_desc, user_hndl, repo_dir);
         },
     }
 }
 
 fn createReadme(
     comptime text: []const u8,
+    platform: Platform,
     repo_name: []const u8,
     repo_desc: []const u8,
     user_hndl: []const u8,
@@ -136,13 +137,24 @@ fn createReadme(
     defer readme_file.close();
 
     var idx: usize = 0;
-    while (std.mem.indexOfScalar(u8, text[idx..], '?')) |i| : (idx += i + 2) {
+    while (std.mem.indexOfAny(u8, text[idx..], "?[")) |i| {
         try readme_file.writeAll(text[idx .. idx + i]);
-        switch (text[idx + i + 1]) {
-            'r' => try readme_file.writeAll(repo_name),
-            'd' => try readme_file.writeAll(repo_desc),
-            'u' => try readme_file.writeAll(user_hndl),
-            else => try readme_file.writeAll(text[idx + i .. idx + i + 2]),
+
+        switch (text[idx + i]) {
+            '?' => {
+                switch (text[idx + i + 1]) {
+                    'r' => try readme_file.writeAll(repo_name),
+                    'd' => try readme_file.writeAll(repo_desc),
+                    'u' => try readme_file.writeAll(user_hndl),
+                    else => try readme_file.writeAll(text[idx + i .. idx + i + 2]),
+                }
+                idx += i + 2;
+            },
+            '[' => switch (platform) {
+                .github => idx += i,
+                .forgejo => idx += i + std.mem.indexOfScalar(u8, text[idx + i ..], '\n').? + 1,
+            },
+            else => unreachable,
         }
     }
     try readme_file.writeAll(text[idx..]);
