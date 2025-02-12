@@ -11,54 +11,46 @@ on:
 
 jobs:
   ?:
-    runs-on: ubuntu-latest
+    runs-on: codeberg-tiny-lazy
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Zig
-        uses: mlugg/setup-zig@v1
+        run: |
+          chmod +x .forgejo/workflows/set_up_zig.sh
+          ./.forgejo/workflows/set_up_zig.sh
 
       - name: Run `?` step
         run: zig build ?
 
   test:
-    runs-on: ubuntu-22.04
+    runs-on: codeberg-tiny-lazy
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Zig
-        uses: mlugg/setup-zig@v1
+        run: |
+          chmod +x .forgejo/workflows/set_up_zig.sh
+          ./.forgejo/workflows/set_up_zig.sh
 
       - name: Run `test` step
         run: zig build test --summary all
 
-      - name: Set up kcov
-        run: sudo apt install kcov
-
-      - name: Run `cov` step
-        run: zig build cov
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: kcov-output/
-          fail_ci_if_error: true
-          verbose: true
-
   fmt:
-    runs-on: ubuntu-latest
+    runs-on: codeberg-tiny-lazy
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Zig
-        uses: mlugg/setup-zig@v1
+        run: |
+          chmod +x .forgejo/workflows/set_up_zig.sh
+          ./.forgejo/workflows/set_up_zig.sh
 
       - name: Run `fmt` step
         run: zig build fmt

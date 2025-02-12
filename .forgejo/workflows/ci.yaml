@@ -28,5 +28,17 @@ jobs:
           zig build exe -- -c lib && rm -rf liza/
           zig build exe -- -c prt
 
+  fmt:
+    runs-on: codeberg-tiny-lazy
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Zig
+        run: |
+          chmod +x .forgejo/workflows/set_up_zig.sh
+          ./.forgejo/workflows/set_up_zig.sh
+
       - name: Run `fmt` step
         run: zig build fmt

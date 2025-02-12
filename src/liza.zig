@@ -6,8 +6,9 @@ const CD_WORKFLOW = "cd.yaml";
 const CI_WORKFLOW = "ci.yaml";
 const TEMPLATES = "templates/";
 const GITIGNORE = ".gitignore";
-const WORKFLOWS = ".github/workflows/";
 const GITATTRIBUTES = ".gitattributes";
+const GITHUB_WORKFLOWS = ".github/workflows/";
+const FORGEJO_WORKFLOWS = ".forgejo/workflows/";
 
 // Custom paths.
 const SRC = "src/";
@@ -27,8 +28,10 @@ const EXAMPLE2 = EXAMPLES ++ "example2/";
 const ALL_LICENSE = @embedFile(TEMPLATES ++ LICENSE);
 const ALL_GITIGNORE = @embedFile(TEMPLATES ++ GITIGNORE);
 const ALL_GITATTRIBUTES = @embedFile(TEMPLATES ++ GITATTRIBUTES);
-const ALL_CD_WORKFLOW = @embedFile(TEMPLATES ++ WORKFLOWS ++ CD_WORKFLOW);
-const ALL_CI_WORKFLOW = @embedFile(TEMPLATES ++ WORKFLOWS ++ CI_WORKFLOW);
+const ALL_GITHUB_CI_WORKFLOW = @embedFile(TEMPLATES ++ GITHUB_WORKFLOWS ++ CI_WORKFLOW);
+const ALL_GITHUB_CD_WORKFLOW = @embedFile(TEMPLATES ++ GITHUB_WORKFLOWS ++ CD_WORKFLOW);
+const ALL_FORGEJO_CI_WORKFLOW = @embedFile(TEMPLATES ++ FORGEJO_WORKFLOWS ++ CI_WORKFLOW);
+const ALL_FORGEJO_CD_WORKFLOW = @embedFile(TEMPLATES ++ FORGEJO_WORKFLOWS ++ CD_WORKFLOW);
 
 // Executable templates.
 const EXE_CI_STEP = "exe";
@@ -59,25 +62,28 @@ pub const Codebase = enum {
     prt,
 };
 
+pub const Platform = enum {
+    github,
+    forgejo,
+};
+
 pub fn initialize(
-    code_type: Codebase,
-    out_dir_str: []const u8,
-    code_vrsn: std.SemanticVersion,
-    code_vrsn_str: []const u8,
+    codebase: Codebase,
+    platform: Platform,
+    out_dir_path: []const u8,
+    version: std.SemanticVersion,
+    version_str: []const u8,
     repo_name: []const u8,
     repo_desc: []const u8,
     user_hndl: []const u8,
     user_name: []const u8,
 ) !void {
     var repo_dir = blk: {
-        const out_dir = try std.fs.cwd().openDir(out_dir_str, .{});
+        const out_dir = try std.fs.cwd().openDir(out_dir_path, .{});
         _ = out_dir.access(repo_name, .{}) catch break :blk try out_dir.makeOpenPath(repo_name, .{});
         @panic("Directory already exists!");
     };
     defer repo_dir.close();
-
-    var workflows_dir = try repo_dir.makeOpenPath(WORKFLOWS, .{});
-    defer workflows_dir.close();
 
     var src_dir = try repo_dir.makeOpenPath(SRC, .{});
     defer src_dir.close();
@@ -85,16 +91,13 @@ pub fn initialize(
     try createLicense(user_name, repo_dir);
     try createPlain(GITIGNORE, ALL_GITIGNORE, repo_dir);
     try createPlain(GITATTRIBUTES, ALL_GITATTRIBUTES, repo_dir);
-    if (code_type != .prt) {
-        try createPlain(CD_WORKFLOW, ALL_CD_WORKFLOW, workflows_dir);
-    }
 
-    switch (code_type) {
+    switch (codebase) {
         .exe => {
-            try createCi(EXE_CI_STEP, workflows_dir);
             try createPlain(EXE_ROOT, EXE_TEXT, src_dir);
-            try createBuild(.zig, .exe, repo_name, user_hndl, code_vrsn, repo_dir);
-            try createBuild(.zon, .exe, repo_name, user_hndl, code_vrsn_str, repo_dir);
+            try createWorkflows(EXE_CI_STEP, codebase, platform, repo_dir);
+            try createBuild(.zig, .exe, repo_name, user_hndl, version, repo_dir);
+            try createBuild(.zon, .exe, repo_name, user_hndl, version_str, repo_dir);
             try createReadme(EXE_README, repo_name, repo_desc, user_hndl, repo_dir);
         },
         .lib => {
@@ -104,19 +107,19 @@ pub fn initialize(
             var example2_dir = try repo_dir.makeOpenPath(EXAMPLE2, .{});
             defer example2_dir.close();
 
-            try createCi(LIB_CI_STEP, workflows_dir);
             try createPlain(LIB_ROOT, LIB_TEXT, src_dir);
+            try createWorkflows(LIB_CI_STEP, codebase, platform, repo_dir);
             try createPlain(EXE_ROOT, LIB_EXAMPLE1, example1_dir);
             try createPlain(EXE_ROOT, LIB_EXAMPLE2, example2_dir);
-            try createBuild(.zig, .lib, repo_name, user_hndl, code_vrsn, repo_dir);
-            try createBuild(.zon, .lib, repo_name, user_hndl, code_vrsn_str, repo_dir);
+            try createBuild(.zig, .lib, repo_name, user_hndl, version, repo_dir);
+            try createBuild(.zon, .lib, repo_name, user_hndl, version_str, repo_dir);
             try createReadme(LIB_README, repo_name, repo_desc, user_hndl, repo_dir);
         },
         .prt => {
-            try createCi(PRT_CI_STEP, workflows_dir);
             try createPlain(LIB_ROOT, PRT_TEXT, src_dir);
-            try createBuild(.zig, .prt, repo_name, user_hndl, code_vrsn, repo_dir);
-            try createBuild(.zon, .prt, repo_name, user_hndl, code_vrsn_str, repo_dir);
+            try createWorkflows(PRT_CI_STEP, codebase, platform, repo_dir);
+            try createBuild(.zig, .prt, repo_name, user_hndl, version, repo_dir);
+            try createBuild(.zon, .prt, repo_name, user_hndl, version_str, repo_dir);
             try createReadme(PRT_README, repo_name, repo_desc, user_hndl, repo_dir);
         },
     }
@@ -181,10 +184,24 @@ fn createBuild(
     try build_file.writeAll(text[idx..]);
 }
 
-fn createCi(
+fn createWorkflows(
     comptime step: []const u8,
-    workflows_dir: std.fs.Dir,
+    codebase: Codebase,
+    platform: Platform,
+    repo_dir: std.fs.Dir,
 ) !void {
+    const WORKFLOWS, const ALL_CI_WORKFLOW, const ALL_CD_WORKFLOW = switch (platform) {
+        .forgejo => .{ FORGEJO_WORKFLOWS, ALL_FORGEJO_CI_WORKFLOW, ALL_FORGEJO_CD_WORKFLOW },
+        .github => .{ GITHUB_WORKFLOWS, ALL_GITHUB_CI_WORKFLOW, ALL_GITHUB_CD_WORKFLOW },
+    };
+
+    var workflows_dir = try repo_dir.makeOpenPath(WORKFLOWS, .{});
+    defer workflows_dir.close();
+
+    if (codebase != .prt) {
+        try createPlain(CD_WORKFLOW, ALL_CD_WORKFLOW, workflows_dir);
+    }
+
     var ci_file = try workflows_dir.createFile(CI_WORKFLOW, .{});
     defer ci_file.close();
 
@@ -211,7 +228,7 @@ fn createLicense(
 
 fn createPlain(
     comptime path: []const u8,
-    comptime text: []const u8,
+    text: []const u8,
     dir: std.fs.Dir,
 ) !void {
     var plain_file = try dir.createFile(path, .{});
