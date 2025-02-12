@@ -27,7 +27,7 @@ jobs:
 
       - name: Run `exe` step
         run: |
-          zig build exe && cd liza/ && zig build && cd ../ && rm -rf liza/
+          zig build exe -- -p forgejo && cd liza/ && zig build && cd ../ && rm -rf liza/
           zig build exe -- -c lib && cd liza/ && zig build && cd ../ && rm -rf liza/
           zig build exe -- -c prt
 

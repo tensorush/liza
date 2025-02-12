@@ -137,9 +137,8 @@ fn createReadme(
     defer readme_file.close();
 
     var idx: usize = 0;
-    while (std.mem.indexOfAny(u8, text[idx..], "?[")) |i| {
+    while (std.mem.indexOfAny(u8, text[idx..], "?[")) |i| : (idx += i + 1) {
         try readme_file.writeAll(text[idx .. idx + i]);
-
         switch (text[idx + i]) {
             '?' => {
                 switch (text[idx + i + 1]) {
@@ -148,11 +147,11 @@ fn createReadme(
                     'u' => try readme_file.writeAll(user_hndl),
                     else => try readme_file.writeAll(text[idx + i .. idx + i + 2]),
                 }
-                idx += i + 2;
+                idx += 1;
             },
             '[' => switch (platform) {
-                .github => idx += i,
-                .forgejo => idx += i + std.mem.indexOfScalar(u8, text[idx + i ..], '\n').? + 1,
+                .github => try readme_file.writeAll("["),
+                .forgejo => idx += std.mem.indexOfScalar(u8, text[idx + i ..], '\n').?,
             },
             else => unreachable,
         }
