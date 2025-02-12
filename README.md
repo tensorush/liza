@@ -1,8 +1,5 @@
 # liza
 
-[![CI][ci-shd]][ci-url]
-[![LC][lc-shd]][lc-url]
-
 ## Zig codebase initializer.
 
 ### Usage
@@ -40,10 +37,3 @@ zig build exe -- -h
 - #### [`.gitattributes`](src/templates/.gitattributes).
 
 - #### [`.gitignore`](src/templates/.gitignore).
-
-<!-- MARKDOWN LINKS -->
-
-[ci-shd]: https://img.shields.io/github/actions/workflow/status/tensorush/liza/ci.yaml?branch=main&style=for-the-badge&logo=github&label=CI&labelColor=black
-[ci-url]: https://github.com/tensorush/liza/blob/main/.github/workflows/ci.yaml
-[lc-shd]: https://img.shields.io/github/license/tensorush/liza.svg?style=for-the-badge&labelColor=black
-[lc-url]: https://github.com/tensorush/liza/blob/main/LICENSE
