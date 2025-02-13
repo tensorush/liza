@@ -19,8 +19,6 @@ jobs:
 
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
-        with:
-          version: master
 
       - name: Run `exe` step
         run: |
@@ -28,17 +26,15 @@ jobs:
           zig build exe -- -c lib && rm -rf liza/
           zig build exe -- -c prt
 
-  # fmt:
-  #   runs-on: codeberg-tiny-lazy
+  fmt:
+    runs-on: codeberg-tiny-lazy
 
-  #   steps:
-  #     - name: Check out repository
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-  #     - name: Set up Zig
-  #       run: |
-  #         chmod +x .forgejo/workflows/set_up_zig.sh
-  #         ./.forgejo/workflows/set_up_zig.sh
+      - name: Set up Zig
+        uses: https://github.com/mlugg/setup-zig@v1
 
-  #     - name: Run `fmt` step
-  #       run: zig build fmt
+      - name: Run `fmt` step
+        run: zig build fmt
