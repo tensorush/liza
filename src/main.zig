@@ -4,7 +4,7 @@ const liza = @import("liza.zig");
 
 const PARAMS = clap.parseParamsComptime(
     \\-c, --cbs <CBS>   Codebase type: exe, lib, prt (default: exe)
-    \\-p, --plt <PLT>   CI/CD Hosting Platform: forgejo, github (default: github)
+    \\-p, --plt <PLT>   CI/CD Hosting Platform: github, forgejo (default: github)
     \\-v, --ver <STR>   Codebase semantic version (default: 0.1.0)
     \\-o, --out <STR>   Output directory path (default: ./)
     \\-h, --help        Display help
