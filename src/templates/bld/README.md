@@ -3,7 +3,7 @@
 [![CI][ci-shd]][ci-url]
 [![LC][lc-shd]][lc-url]
 
-## $d
+## Zig build for $p.
 
 ### Usage
 

@@ -64,7 +64,7 @@ pub const Codebase = enum {
     bld,
 };
 
-pub const Platform = enum {
+pub const Runner = enum {
     github,
     forgejo,
 };
@@ -72,9 +72,8 @@ pub const Platform = enum {
 pub fn initialize(
     gpa: std.mem.Allocator,
     codebase: Codebase,
-    platform: Platform,
+    runner: Runner,
     out_dir_path: []const u8,
-    version: std.SemanticVersion,
     version_str: []const u8,
     pckg_name: []const u8,
     pckg_desc: []const u8,
@@ -95,6 +94,8 @@ pub fn initialize(
     try createPlain(GITIGNORE, ALL_GITIGNORE, pckg_dir);
     try createPlain(GITATTRIBUTES, ALL_GITATTRIBUTES, pckg_dir);
 
+    const version = try std.SemanticVersion.parse(version_str);
+
     switch (codebase) {
         .exe => {
             const exe_core = try std.mem.concat(gpa, u8, &.{ pckg_name, ".zig" });
@@ -102,10 +103,10 @@ pub fn initialize(
 
             try createSource(exe_core, EXE_CORE_TEXT, pckg_name, src_dir);
             try createSource(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
-            try createWorkflows(EXE_CI_STEP, codebase, platform, pckg_dir);
+            try createWorkflows(EXE_CI_STEP, codebase, runner, pckg_dir);
             try createBuild(.zig, .exe, pckg_name, user_hndl, version, pckg_dir);
             try createBuild(.zon, .exe, pckg_name, user_hndl, version_str, pckg_dir);
-            try createReadme(EXE_README, platform, pckg_name, pckg_desc, user_hndl, pckg_dir);
+            try createReadme(EXE_README, runner, pckg_name, pckg_desc, user_hndl, pckg_dir);
         },
         .lib => {
             var example1_dir = try pckg_dir.makeOpenPath(EXAMPLE1, .{});
@@ -115,25 +116,25 @@ pub fn initialize(
             defer example2_dir.close();
 
             try createSource(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
-            try createWorkflows(LIB_CI_STEP, codebase, platform, pckg_dir);
+            try createWorkflows(LIB_CI_STEP, codebase, runner, pckg_dir);
             try createSource(EXE_ROOT, LIB_EXAMPLE1, pckg_name, example1_dir);
             try createSource(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
             try createBuild(.zig, .lib, pckg_name, user_hndl, version, pckg_dir);
             try createBuild(.zon, .lib, pckg_name, user_hndl, version_str, pckg_dir);
-            try createReadme(LIB_README, platform, pckg_name, pckg_desc, user_hndl, pckg_dir);
+            try createReadme(LIB_README, runner, pckg_name, pckg_desc, user_hndl, pckg_dir);
         },
         .bld => {
-            try createWorkflows(BLD_CI_STEP, codebase, platform, pckg_dir);
+            try createWorkflows(BLD_CI_STEP, codebase, runner, pckg_dir);
             try createBuild(.zig, .bld, pckg_name, user_hndl, version, pckg_dir);
             try createBuild(.zon, .bld, pckg_name, user_hndl, version_str, pckg_dir);
-            try createReadme(BLD_README, platform, pckg_name, pckg_desc, user_hndl, pckg_dir);
+            try createReadme(BLD_README, runner, pckg_name, pckg_desc, user_hndl, pckg_dir);
         },
     }
 }
 
 fn createReadme(
     comptime text: []const u8,
-    platform: Platform,
+    runner: Runner,
     pckg_name: []const u8,
     pckg_desc: []const u8,
     user_hndl: []const u8,
@@ -155,7 +156,7 @@ fn createReadme(
                 }
                 idx += 1;
             },
-            '[' => switch (platform) {
+            '[' => switch (runner) {
                 .github => try readme_file.writeAll("["),
                 .forgejo => idx += std.mem.indexOfScalar(u8, text[idx + i ..], '\n').?,
             },
@@ -204,10 +205,10 @@ fn createBuild(
 fn createWorkflows(
     comptime step: []const u8,
     codebase: Codebase,
-    platform: Platform,
+    runner: Runner,
     pckg_dir: std.fs.Dir,
 ) !void {
-    const workflows, const all_ci_workflow, const all_cd_workflow = switch (platform) {
+    const workflows, const all_ci_workflow, const all_cd_workflow = switch (runner) {
         .forgejo => .{ FORGEJO_WORKFLOWS, ALL_FORGEJO_CI_WORKFLOW, ALL_FORGEJO_CD_WORKFLOW },
         .github => .{ GITHUB_WORKFLOWS, ALL_GITHUB_CI_WORKFLOW, ALL_GITHUB_CD_WORKFLOW },
     };
