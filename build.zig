@@ -13,6 +13,12 @@ pub fn build(b: *std.Build) void {
     });
     const clap_mod = clap_dep.module("clap");
 
+    const zeit_dep = b.dependency("zeit", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const zeit_mod = zeit_dep.module("zeit");
+
     // Executable
     const exe_step = b.step("exe", "Run executable");
 
@@ -26,6 +32,7 @@ pub fn build(b: *std.Build) void {
         }),
     });
     exe.root_module.addImport("clap", clap_mod);
+    exe.root_module.addImport("zeit", zeit_mod);
     b.installArtifact(exe);
 
     const exe_run = b.addRunArtifact(exe);
@@ -44,10 +51,11 @@ pub fn build(b: *std.Build) void {
             "build.zig",
         },
         .exclude_paths = &.{
+            "src/templates/exe/src/main.zig",
             "src/templates/exe/build.zig",
             "src/templates/lib/build.zig",
-            "src/templates/prt/build.zig",
-            "src/templates/prt/build.zig.zon",
+            "src/templates/bld/build.zig",
+            "src/templates/bld/build.zig.zon",
         },
         .check = true,
     });

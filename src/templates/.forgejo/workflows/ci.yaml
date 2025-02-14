@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  ?:
+  $s:
     runs-on: codeberg-tiny-lazy
 
     steps:
@@ -20,8 +20,8 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
 
-      - name: Run `?` step
-        run: zig build ?
+      - name: Run $s step
+        run: zig build $s
 
   test:
     runs-on: codeberg-tiny-lazy
@@ -33,7 +33,7 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
 
-      - name: Run `test` step
+      - name: Run test step
         run: zig build test --summary all
 
   fmt:
@@ -46,5 +46,5 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
 
-      - name: Run `fmt` step
+      - name: Run fmt step
         run: zig build fmt

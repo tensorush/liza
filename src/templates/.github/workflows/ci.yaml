@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  ?:
+  $s:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,8 +20,8 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
 
-      - name: Run `?` step
-        run: zig build ?
+      - name: Run $s step
+        run: zig build $s
 
   test:
     runs-on: ubuntu-22.04
@@ -33,13 +33,13 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
 
-      - name: Run `test` step
+      - name: Run test step
         run: zig build test --summary all
 
       - name: Set up kcov
         run: sudo apt install kcov
 
-      - name: Run `cov` step
+      - name: Run cov step
         run: zig build cov
 
       - name: Upload coverage to Codecov
@@ -60,5 +60,5 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
 
-      - name: Run `fmt` step
+      - name: Run fmt step
         run: zig build fmt

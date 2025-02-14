@@ -4,16 +4,16 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/root.zig");
-    const version = std.SemanticVersion{?v};
+    const version = std.SemanticVersion{$v};
 
     // Module
-    const lib_mod = b.addModule("?r", .{ .root_source_file = root_source_file });
+    const lib_mod = b.addModule("$p", .{ .root_source_file = root_source_file });
 
     // Library
     const lib_step = b.step("lib", "Install library");
 
     const lib = b.addLibrary(.{
-        .name = "?r",
+        .name = "$p",
         .version = version,
         .root_module = b.createModule(.{
             .target = target,
@@ -50,7 +50,7 @@ pub fn build(b: *std.Build) void {
                 .root_source_file = b.path(EXAMPLES_DIR ++ EXAMPLE_NAME ++ "/main.zig"),
             }),
         });
-        example.root_module.addImport("?r", lib_mod);
+        example.root_module.addImport("$p", lib_mod);
 
         const example_run = b.addRunArtifact(example);
         examples_step.dependOn(&example_run.step);

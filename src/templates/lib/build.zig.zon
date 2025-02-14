@@ -1,6 +1,6 @@
 .{
-    .name = "?r",
-    .version = "?v",
+    .name = "$p",
+    .version = "$v",
     .minimum_zig_version = "0.14.0",
     .paths = .{
         "src/",

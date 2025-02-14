@@ -20,11 +20,11 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
 
-      - name: Run `exe` step
+      - name: Run exe step
         run: |
           zig build exe -- -p forgejo && rm -rf liza/
           zig build exe -- -c lib && rm -rf liza/
-          zig build exe -- -c prt
+          zig build exe -- -c bld
 
   fmt:
     runs-on: codeberg-tiny-lazy
@@ -36,5 +36,5 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
 
-      - name: Run `fmt` step
+      - name: Run fmt step
         run: zig build fmt

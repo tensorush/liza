@@ -3,7 +3,7 @@ const clap = @import("clap");
 const liza = @import("liza.zig");
 
 const PARAMS = clap.parseParamsComptime(
-    \\-c, --cbs <CBS>   Codebase type: exe, lib, prt (default: exe)
+    \\-c, --cbs <CBS>   Codebase type: exe, lib, bld (default: exe)
     \\-p, --plt <PLT>   CI/CD Hosting Platform: github, forgejo (default: github)
     \\-v, --ver <STR>   Codebase semantic version (default: 0.1.0)
     \\-o, --out <STR>   Output directory path (default: ./)
@@ -37,8 +37,8 @@ pub fn main() !void {
     const version_str = cli.args.ver orelse "0.1.0";
     const version = try std.SemanticVersion.parse(version_str);
 
-    const repo_name = cli.positionals[0] orelse "liza";
-    const repo_desc = cli.positionals[1] orelse "Zig codebase initializer.";
+    const pckg_name = cli.positionals[0] orelse "liza";
+    const pckg_desc = cli.positionals[1] orelse "Zig codebase initializer.";
     const user_hndl = cli.positionals[2] orelse "tensorush";
     const user_name = cli.positionals[3] orelse "Jora Troosh";
 
@@ -47,13 +47,14 @@ pub fn main() !void {
     }
 
     try liza.initialize(
+        gpa,
         codebase,
         platform,
         out_dir_path,
         version,
         version_str,
-        repo_name,
-        repo_desc,
+        pckg_name,
+        pckg_desc,
         user_hndl,
         user_name,
     );

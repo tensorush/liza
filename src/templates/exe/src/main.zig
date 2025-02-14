@@ -3,6 +3,8 @@
 const std = @import("std");
 const clap = @import("clap");
 
+const $p = @import("$p.zig");
+
 const PARAMS = clap.parseParamsComptime(
     \\-h, --help   Display help
     \\
@@ -30,13 +32,9 @@ pub fn main() !void {
     var buf_writer = std.io.bufferedWriter(std_out.writer());
     const writer = buf_writer.writer();
 
-    // Write to standard output.
-    try writer.writeAll("All your codebase are belong to us.\n");
+    // Run core logic.
+    try $p.runCoreLogic(writer);
 
-    // Flush standard output.
+    // Flushing standard output.
     try buf_writer.flush();
-}
-
-comptime {
-    std.testing.refAllDecls(@This());
 }

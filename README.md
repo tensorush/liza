@@ -20,12 +20,12 @@ zig build exe -- -h
     - Zig static library compilation.
     - Example suite setup.
 
-- #### [Zig port template](src/templates/prt/):
+- #### [Zig build template](src/templates/bld/):
     - C/C++ library compilation.
     - Lazy dependency usage.
 
 - #### [GitHub](src/templates/.github/workflows/ci.yaml) or [Forgejo](src/templates/.forgejo/workflows/ci.yaml) CI workflow template:
-    - `exe`/`example`/`lib` (`?`): executable's run, library's example suite execution, or port's installation.
+    - `exe`/`example`/`lib` (`$s`): executable's run, library's example suite execution, or build's installation.
     - `test`: Test suite execution and code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration) (only GitHub for now).
     - `fmt`: Formatting checks execution.
 

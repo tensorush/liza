@@ -14,7 +14,7 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
 
-      - name: Run `doc` step
+      - name: Run doc step
         run: zig build doc
 
       - name: Upload artifact for Codeberg Pages
