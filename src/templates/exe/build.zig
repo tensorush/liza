@@ -36,15 +36,15 @@ pub fn build(b: *std.Build) void {
     b.default_step.dependOn(exe_step);
 
     // Documentation
-    const doc_step = b.step("doc", "Emit documentation");
+    const docs_step = b.step("doc", "Emit documentation");
 
-    const doc_install = b.addInstallDirectory(.{
+    const docs_install = b.addInstallDirectory(.{
         .install_dir = .prefix,
-        .install_subdir = "doc",
+        .install_subdir = "docs",
         .source_dir = exe.getEmittedDocs(),
     });
-    doc_step.dependOn(&doc_install.step);
-    b.default_step.dependOn(doc_step);
+    docs_step.dependOn(&docs_install.step);
+    b.default_step.dependOn(docs_step);
 
     // Test suite
     const tests_step = b.step("test", "Run test suite");

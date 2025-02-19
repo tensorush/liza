@@ -20,7 +20,7 @@ jobs:
       - name: Upload artifact for Codeberg Pages
         uses: forgejo/upload-artifact@v4
         with:
-          path: zig-out/doc/
+          path: zig-out/docs/
 
   deploy:
     needs: emit

@@ -8,7 +8,7 @@ const PARAMS = clap.parseParamsComptime(
     \\-u, --user <STR>   User handle (default: tensorush)
     \\-n, --name <STR>   User name (default: "Jora Troosh")
     \\-c, --cbs  <CBS>   Codebase type: exe, lib, bld (default: exe)
-    \\-r, --rnr  <RNR>   CI/CD Runner: github, forgejo (default: github)
+    \\-r, --rnr  <RNR>   CI/CD runner type: github, forgejo (default: github)
     \\-v, --ver  <STR>   Codebase semantic three-number version (default: 0.1.0)
     \\-o, --out  <STR>   Output directory path (default: ./)
     \\-h, --help         Display help
