@@ -1,32 +1,43 @@
 const std = @import("std");
 const zeit = @import("zeit");
 
-// Common paths.
+// Common paths
+const SRC = "src/";
 const LICENSE = "LICENSE";
+const README = "README.md";
+const TEMPLATES = "templates/";
+const BUILD_ZIG = "build.zig";
+const BUILD_ZON = "build.zig.zon";
+
+const EXAMPLES = "examples/";
+const EXAMPLE1 = EXAMPLES ++ "example1/";
+const EXAMPLE2 = EXAMPLES ++ "example2/";
+
 const CD_WORKFLOW = "cd.yaml";
 const CI_WORKFLOW = "ci.yaml";
-const TEMPLATES = "templates/";
 const GITIGNORE = ".gitignore";
 const GITATTRIBUTES = ".gitattributes";
 const GITHUB_WORKFLOWS = ".github/workflows/";
 const FORGEJO_WORKFLOWS = ".forgejo/workflows/";
 
-// Custom paths.
-const SRC = "src/";
+// Custom paths
 const EXE = "exe/";
 const LIB = "lib/";
 const BLD = "bld/";
-const README = "README.md";
+const APP = "app/";
+
+const EXE_CI_STEP = "exe";
+const LIB_CI_STEP = "example";
+const BLD_CI_STEP = "lib";
+const APP_CI_STEP = "exe";
+
 const EXE_CORE = "$p.zig";
 const EXE_ROOT = "main.zig";
 const LIB_ROOT = "root.zig";
-const EXAMPLES = "examples/";
-const BUILD_ZIG = "build.zig";
-const BUILD_ZON = "build.zig.zon";
-const EXAMPLE1 = EXAMPLES ++ "example1/";
-const EXAMPLE2 = EXAMPLES ++ "example2/";
+const APP_ROOT = "App.zig";
+const APP_SHADER = "shader.wgsl";
 
-// Common templates.
+// Common templates
 const ALL_LICENSE = @embedFile(TEMPLATES ++ LICENSE);
 const ALL_GITIGNORE = @embedFile(TEMPLATES ++ GITIGNORE);
 const ALL_GITATTRIBUTES = @embedFile(TEMPLATES ++ GITATTRIBUTES);
@@ -35,16 +46,14 @@ const ALL_GITHUB_CD_WORKFLOW = @embedFile(TEMPLATES ++ GITHUB_WORKFLOWS ++ CD_WO
 const ALL_FORGEJO_CI_WORKFLOW = @embedFile(TEMPLATES ++ FORGEJO_WORKFLOWS ++ CI_WORKFLOW);
 const ALL_FORGEJO_CD_WORKFLOW = @embedFile(TEMPLATES ++ FORGEJO_WORKFLOWS ++ CD_WORKFLOW);
 
-// Executable templates.
-const EXE_CI_STEP = "exe";
+// Executable templates
 const EXE_README = @embedFile(TEMPLATES ++ EXE ++ README);
 const EXE_BUILD_ZIG = @embedFile(TEMPLATES ++ EXE ++ BUILD_ZIG);
 const EXE_BUILD_ZON = @embedFile(TEMPLATES ++ EXE ++ BUILD_ZON);
 const EXE_CORE_TEXT = @embedFile(TEMPLATES ++ EXE ++ SRC ++ EXE_CORE);
 const EXE_ROOT_TEXT = @embedFile(TEMPLATES ++ EXE ++ SRC ++ EXE_ROOT);
 
-// Library templates.
-const LIB_CI_STEP = "example";
+// Library templates
 const LIB_README = @embedFile(TEMPLATES ++ LIB ++ README);
 const LIB_BUILD_ZIG = @embedFile(TEMPLATES ++ LIB ++ BUILD_ZIG);
 const LIB_BUILD_ZON = @embedFile(TEMPLATES ++ LIB ++ BUILD_ZON);
@@ -52,16 +61,23 @@ const LIB_ROOT_TEXT = @embedFile(TEMPLATES ++ LIB ++ SRC ++ LIB_ROOT);
 const LIB_EXAMPLE1 = @embedFile(TEMPLATES ++ LIB ++ EXAMPLE1 ++ EXE_ROOT);
 const LIB_EXAMPLE2 = @embedFile(TEMPLATES ++ LIB ++ EXAMPLE2 ++ EXE_ROOT);
 
-// Build templates.
-const BLD_CI_STEP = "lib";
+// Build templates
 const BLD_README = @embedFile(TEMPLATES ++ BLD ++ README);
 const BLD_BUILD_ZIG = @embedFile(TEMPLATES ++ BLD ++ BUILD_ZIG);
 const BLD_BUILD_ZON = @embedFile(TEMPLATES ++ BLD ++ BUILD_ZON);
+
+// App templates
+const APP_README = @embedFile(TEMPLATES ++ APP ++ README);
+const APP_BUILD_ZIG = @embedFile(TEMPLATES ++ APP ++ BUILD_ZIG);
+const APP_BUILD_ZON = @embedFile(TEMPLATES ++ APP ++ BUILD_ZON);
+const APP_ROOT_TEXT = @embedFile(TEMPLATES ++ APP ++ SRC ++ APP_ROOT);
+const APP_SHADER_TEXT = @embedFile(TEMPLATES ++ APP ++ SRC ++ APP_SHADER);
 
 pub const Codebase = enum {
     exe,
     lib,
     bld,
+    app,
 };
 
 pub const Runner = enum {
@@ -101,11 +117,11 @@ pub fn initialize(
             const exe_core = try std.mem.concat(gpa, u8, &.{ pckg_name, ".zig" });
             defer gpa.free(exe_core);
 
+            try createWorkflows(EXE_CI_STEP, codebase, runner, pckg_dir);
             try createSource(exe_core, EXE_CORE_TEXT, pckg_name, src_dir);
             try createSource(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
-            try createWorkflows(EXE_CI_STEP, codebase, runner, pckg_dir);
-            try createBuild(.zig, .exe, pckg_name, user_hndl, version, pckg_dir);
-            try createBuild(.zon, .exe, pckg_name, user_hndl, version_str, pckg_dir);
+            try createBuild(.zig, codebase, pckg_name, user_hndl, version, pckg_dir);
+            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, pckg_dir);
             try createReadme(EXE_README, runner, pckg_name, pckg_desc, user_hndl, pckg_dir);
         },
         .lib => {
@@ -115,19 +131,27 @@ pub fn initialize(
             var example2_dir = try pckg_dir.makeOpenPath(EXAMPLE2, .{});
             defer example2_dir.close();
 
-            try createSource(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
             try createWorkflows(LIB_CI_STEP, codebase, runner, pckg_dir);
+            try createSource(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
             try createSource(EXE_ROOT, LIB_EXAMPLE1, pckg_name, example1_dir);
             try createSource(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
-            try createBuild(.zig, .lib, pckg_name, user_hndl, version, pckg_dir);
-            try createBuild(.zon, .lib, pckg_name, user_hndl, version_str, pckg_dir);
+            try createBuild(.zig, codebase, pckg_name, user_hndl, version, pckg_dir);
+            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, pckg_dir);
             try createReadme(LIB_README, runner, pckg_name, pckg_desc, user_hndl, pckg_dir);
         },
         .bld => {
             try createWorkflows(BLD_CI_STEP, codebase, runner, pckg_dir);
-            try createBuild(.zig, .bld, pckg_name, user_hndl, version, pckg_dir);
-            try createBuild(.zon, .bld, pckg_name, user_hndl, version_str, pckg_dir);
+            try createBuild(.zig, codebase, pckg_name, user_hndl, version, pckg_dir);
+            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, pckg_dir);
             try createReadme(BLD_README, runner, pckg_name, pckg_desc, user_hndl, pckg_dir);
+        },
+        .app => {
+            try createWorkflows(APP_CI_STEP, codebase, runner, pckg_dir);
+            try createSource(APP_ROOT, APP_ROOT_TEXT, pckg_name, src_dir);
+            try createSource(APP_SHADER, APP_SHADER_TEXT, pckg_name, src_dir);
+            try createBuild(.zig, codebase, pckg_name, user_hndl, version, pckg_dir);
+            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, pckg_dir);
+            try createReadme(APP_README, runner, pckg_name, pckg_desc, user_hndl, pckg_dir);
         },
     }
 }
@@ -168,7 +192,7 @@ fn createReadme(
 
 fn createBuild(
     comptime mode: std.zig.Ast.Mode,
-    comptime codebase: Codebase,
+    codebase: Codebase,
     pckg_name: []const u8,
     user_hndl: []const u8,
     version: anytype,
@@ -178,6 +202,7 @@ fn createBuild(
         .exe => if (mode == .zig) EXE_BUILD_ZIG else EXE_BUILD_ZON,
         .lib => if (mode == .zig) LIB_BUILD_ZIG else LIB_BUILD_ZON,
         .bld => if (mode == .zig) BLD_BUILD_ZIG else BLD_BUILD_ZON,
+        .app => if (mode == .zig) APP_BUILD_ZIG else APP_BUILD_ZON,
     };
     var build_file = try pckg_dir.createFile(if (mode == .zig) BUILD_ZIG else BUILD_ZON, .{});
     const build_writer = build_file.writer();
@@ -236,7 +261,7 @@ fn createWorkflows(
 
 fn createSource(
     path: []const u8,
-    comptime text: []const u8,
+    text: []const u8,
     pckg_name: []const u8,
     src_dir: std.fs.Dir,
 ) !void {

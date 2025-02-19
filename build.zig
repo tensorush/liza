@@ -56,6 +56,7 @@ pub fn build(b: *std.Build) void {
             "src/templates/lib/build.zig",
             "src/templates/bld/build.zig",
             "src/templates/bld/build.zig.zon",
+            "src/templates/app/build.zig",
         },
         .check = true,
     });

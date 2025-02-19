@@ -41,7 +41,6 @@ pub fn build(b: *std.Build) void {
         .root_module = b.createModule(.{
             .target = target,
             .link_libc = true,
-            // .link_libcpp = true,
             .optimize = optimize,
         }),
     });
@@ -68,6 +67,7 @@ pub fn build(b: *std.Build) void {
         .version = version,
         .root_module = b.createModule(.{
             .target = target,
+            .link_libc = true,
         }),
     });
     tests.addCSourceFiles(.{ .root = $p_test_path, .files = &TEST_SOURCES, .flags = &TEST_FLAGS });

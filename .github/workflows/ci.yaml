@@ -27,7 +27,8 @@ jobs:
         run: |
           zig build exe -- -r forgejo && cd liza/ && zig build && cd ../ && rm -rf liza/
           zig build exe -- -c lib && cd liza/ && zig build && cd ../ && rm -rf liza/
-          zig build exe -- -c bld
+          zig build exe -- -c bld && rm -rf liza/
+          zig build exe -- -c app && rm -rf liza/
 
   fmt:
     runs-on: ubuntu-latest

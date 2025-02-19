@@ -24,7 +24,8 @@ jobs:
         run: |
           zig build exe -- -r forgejo && rm -rf liza/
           zig build exe -- -c lib && rm -rf liza/
-          zig build exe -- -c bld
+          zig build exe -- -c bld && rm -rf liza/
+          zig build exe -- -c app && rm -rf liza/
 
   fmt:
     runs-on: codeberg-tiny-lazy

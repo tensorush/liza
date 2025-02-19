@@ -24,6 +24,9 @@ zig build exe -- -h
     - C/C++ library compilation.
     - Lazy dependency usage.
 
+- #### [Mach application template](src/templates/app/):
+    - [Mach](https://machengine.org/) application compilation.
+
 - #### [GitHub](src/templates/.github/workflows/ci.yaml) or [Forgejo](src/templates/.forgejo/workflows/ci.yaml) CI workflow template:
     - `exe`/`example`/`lib` (`$s`): executable's run, library's example suite execution, or build's installation.
     - `test`: Test suite execution and code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration) (only GitHub for now).
