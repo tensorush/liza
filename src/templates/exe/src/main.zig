@@ -33,8 +33,12 @@ pub fn main() !void {
     const writer = buf_writer.writer();
 
     // Run core logic.
-    try $p.runCoreLogic(writer);
+    try $p.run(writer);
 
-    // Flushing standard output.
+    // Flush standard output.
     try buf_writer.flush();
+}
+
+comptime {
+    std.testing.refAllDecls($p);
 }
