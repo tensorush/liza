@@ -4,10 +4,6 @@ const clap = @import("clap");
 const liza = @import("liza.zig");
 
 const PARAMS = clap.parseParamsComptime(
-    \\-p, --pckg <STR>   Package name (default: liza)
-    \\-d, --desc <STR>   Package description (default: "Zig codebase initializer.")
-    \\-u, --user <STR>   User handle (default: tensorush)
-    \\-n, --name <STR>   User name (default: "Jora Troosh")
     \\-c, --cbs  <CBS>   Codebase type: exe, lib, bld, app (default: exe)
     \\-r, --rnr  <RNR>   CI/CD runner type: github, forgejo (default: github)
     \\-v, --ver  <STR>   Codebase semantic version triple (default: 0.1.0)
@@ -15,6 +11,10 @@ const PARAMS = clap.parseParamsComptime(
     \\--add-doc          Add documentation to exe or lib (add doc step, add CD workflow)
     \\--add-cov          Add code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore)
     \\-h, --help         Display help
+    \\<STR>              Package name
+    \\<STR>              Package description
+    \\<STR>              User handle
+    \\<STR>              User name
     \\
 );
 
@@ -38,10 +38,11 @@ pub fn main() !void {
         return clap.help(std.io.getStdErr().writer(), clap.Help, &PARAMS, .{});
     }
 
-    const pckg_name = cli.args.pckg orelse "liza";
-    const pckg_desc = cli.args.desc orelse "Zig codebase initializer.";
-    const user_hndl = cli.args.user orelse "tensorush";
-    const user_name = cli.args.name orelse "Jora Troosh";
+    const pckg_name = cli.positionals[0] orelse @panic("Provide a package name!");
+    const pckg_desc = cli.positionals[1] orelse @panic("Provide a package description!");
+    const user_hndl = cli.positionals[2] orelse @panic("Provide a user handle!");
+    const user_name = cli.positionals[3] orelse @panic("Provide a user name!");
+
     const codebase = cli.args.cbs orelse .exe;
     const runner = cli.args.rnr orelse .github;
     const version_str = cli.args.ver orelse "0.1.0";

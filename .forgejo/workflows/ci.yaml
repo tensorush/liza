@@ -24,10 +24,10 @@ jobs:
 
       - name: Run exe step
         run: |
-          zig build exe -- -r forgejo --add-doc --add-cov && rm -rf liza/
-          zig build exe -- -c lib -r forgejo --add-doc --add-cov && rm -rf liza/
-          zig build exe -- -c bld -r forgejo && rm -rf liza/
-          zig build exe -- -c app -r forgejo && rm -rf liza/
+          zig build exe -- -r forgejo --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+          zig build exe -- -c lib -r forgejo --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+          zig build exe -- -c bld -r forgejo liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+          zig build exe -- -c app -r forgejo liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
 
   fmt:
     runs-on: codeberg-tiny-lazy
