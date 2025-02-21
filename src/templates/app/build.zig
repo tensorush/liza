@@ -41,17 +41,6 @@ pub fn build(b: *std.Build) void {
     exe_step.dependOn(&exe_run.step);
     b.default_step.dependOn(exe_step);
 
-    // Documentation
-    const docs_step = b.step("doc", "Emit documentation");
-
-    const docs_install = b.addInstallDirectory(.{
-        .install_dir = .prefix,
-        .install_subdir = "docs",
-        .source_dir = exe.getEmittedDocs(),
-    });
-    docs_step.dependOn(&docs_install.step);
-    b.default_step.dependOn(docs_step);
-
     // Test suite
     const tests_step = b.step("test", "Run test suite");
 
@@ -67,14 +56,6 @@ pub fn build(b: *std.Build) void {
     const tests_run = b.addRunArtifact(tests);
     tests_step.dependOn(&tests_run.step);
     b.default_step.dependOn(tests_step);
-
-    // Code coverage
-    const cov_step = b.step("cov", "Generate code coverage");
-
-    const cov_run = b.addSystemCommand(&.{ "kcov", "--clean", "--include-pattern=src/", "kcov-output/" });
-    cov_run.addArtifactArg(tests);
-    cov_step.dependOn(&cov_run.step);
-    b.default_step.dependOn(cov_step);
 
     // Formatting checks
     const fmt_step = b.step("fmt", "Run formatting checks");

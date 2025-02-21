@@ -1,8 +1,5 @@
 # $p
 
-[![CI][ci-shd]][ci-url]
-[![LC][lc-shd]][lc-url]
-
 ## Zig build for $p.
 
 ### Usage
@@ -27,10 +24,3 @@ const $p_mod = $p_dep.module("$p");
 const $p_art = $p_dep.artifact("$p");
 <Step.Compile>.linkLibrary($p_art);
 ```
-
-<!-- MARKDOWN LINKS -->
-
-[ci-shd]: https://img.shields.io/github/actions/workflow/status/$u/$p/ci.yaml?branch=main&style=for-the-badge&logo=github&label=CI&labelColor=black
-[ci-url]: https://github.com/$u/$p/blob/main/.github/workflows/ci.yaml
-[lc-shd]: https://img.shields.io/github/license/$u/$p.svg?style=for-the-badge&labelColor=black
-[lc-url]: https://github.com/$u/$p/blob/main/LICENSE

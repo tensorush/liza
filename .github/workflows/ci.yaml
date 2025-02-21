@@ -10,20 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  $s:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Zig
-        uses: mlugg/setup-zig@v1
-
-      - name: Run $s step
-        run: zig build $s
-
-  test:
+  exe:
     runs-on: ubuntu-22.04
 
     steps:
@@ -33,9 +20,16 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
 
-      - name: Run test step
-        run: zig build test --summary all
-$c
+      - name: Set up kcov
+        run: sudo apt install kcov
+
+      - name: Run exe step
+        run: |
+          zig build exe -- --add-doc --add-cov && cd liza/ && zig build && cd ../ && rm -rf liza/
+          zig build exe -- -c lib --add-doc --add-cov && cd liza/ && zig build && cd ../ && rm -rf liza/
+          zig build exe -- -c bld && rm -rf liza/
+          zig build exe -- -c app && rm -rf liza/
+
   fmt:
     runs-on: ubuntu-latest
 

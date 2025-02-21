@@ -12,6 +12,8 @@ const PARAMS = clap.parseParamsComptime(
     \\-r, --rnr  <RNR>   CI/CD runner type: github, forgejo (default: github)
     \\-v, --ver  <STR>   Codebase semantic version triple (default: 0.1.0)
     \\-o, --out  <STR>   Output directory path (default: ./)
+    \\--add-doc          Add documentation to exe or lib (add doc step, add CD workflow)
+    \\--add-cov          Add code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore)
     \\-h, --help         Display help
     \\
 );
@@ -44,16 +46,27 @@ pub fn main() !void {
     const runner = cli.args.rnr orelse .github;
     const version_str = cli.args.ver orelse "0.1.0";
     const out_dir_path = cli.args.out orelse "./";
+    const add_doc = if (cli.args.@"add-doc" != 0) true else false;
+    const add_cov = if (cli.args.@"add-cov" != 0) true else false;
+
+    switch (codebase) {
+        .exe, .lib => {},
+        .bld, .app => if (add_doc or add_cov) {
+            @panic("Options add-doc and add-cov are unavailable for bld and app codebases!");
+        },
+    }
 
     try liza.initialize(
         gpa,
-        codebase,
-        runner,
-        out_dir_path,
-        version_str,
         pckg_name,
         pckg_desc,
         user_hndl,
         user_name,
+        codebase,
+        runner,
+        version_str,
+        out_dir_path,
+        add_doc,
+        add_cov,
     );
 }
