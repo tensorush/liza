@@ -5,7 +5,7 @@
 ### Usage
 
 ```sh
-git clone https://github.com/tensorush/liza.git
+git clone https://github.com/tensorush/liza
 cd liza/
 zig build exe -- -h
 ```

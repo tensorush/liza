@@ -19,13 +19,15 @@ jobs:
 
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
+        with:
+          version: master
 
       - name: Set up kcov
         run: sudo apt install kcov
 
       - name: Run exe step
         run: |
-          zig build exe -- --add-doc --add-cov && cd liza/ && zig build && cd ../ && rm -rf liza/
+          zig build exe -- --add-doc --add-cov && cd liza/ && zig fetch --save git+https://github.com/Hejsil/zig-clap && zig build && cd ../ && rm -rf liza/
           zig build exe -- -c lib --add-doc --add-cov && cd liza/ && zig build && cd ../ && rm -rf liza/
           zig build exe -- -c bld && rm -rf liza/
           zig build exe -- -c app && rm -rf liza/
@@ -39,6 +41,8 @@ jobs:
 
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
+        with:
+          version: master
 
       - name: Run fmt step
         run: zig build fmt

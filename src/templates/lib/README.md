@@ -7,7 +7,7 @@
 - Add `$p` dependency to `build.zig.zon`.
 
 ```sh
-zig fetch --save git+https://github.com/$u/$p#<git_tag_or_commit_hash>
+zig fetch --save git+https://github.com/$u/$p
 ```
 
 - Use `$p` dependency in `build.zig`.
