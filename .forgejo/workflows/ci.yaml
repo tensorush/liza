@@ -19,11 +19,13 @@ jobs:
 
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
+        with:
+            version: master
 
       - name: Run exe step
         run: |
-          zig build exe -- -r forgejo && rm -rf liza/
-          zig build exe -- -c lib && rm -rf liza/
+          zig build exe -- -r forgejo && cd liza/ && zig build && cd ../ && rm -rf liza/
+          zig build exe -- -c lib && cd liza/ && zig build && cd ../ && rm -rf liza/
           zig build exe -- -c bld && rm -rf liza/
           zig build exe -- -c app && rm -rf liza/
 
@@ -36,6 +38,8 @@ jobs:
 
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
+        with:
+            version: master
 
       - name: Run fmt step
         run: zig build fmt
