@@ -9,7 +9,8 @@ steps:
       curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz
       tar -xf zig.tar.xz
       mv zig*/ zig/
-      export "PATH=$(pwd)/zig:$PATH"
+      echo 'export "PATH=$(pwd)/zig:$PATH"' >> /etc/profile
+      echo $PATH
 
   exe:
     image: alpine:edge
@@ -17,6 +18,7 @@ steps:
       event: [push, pull_request, manual]
       branch: main
     commands: |
+      echo $PATH
       zig build exe -- -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
       zig build exe -- -c lib -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
       zig build exe -- -c bld -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
