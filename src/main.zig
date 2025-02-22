@@ -11,10 +11,10 @@ const PARAMS = clap.parseParamsComptime(
     \\--add-doc          Add documentation to exe or lib (add doc step, add CD workflow)
     \\--add-cov          Add code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore)
     \\-h, --help         Display help
-    \\<STR>              Package name
-    \\<STR>              Package description
-    \\<STR>              User handle
-    \\<STR>              User name
+    \\<STR>              Package name (e.g. liza)
+    \\<STR>              Package description (e.g. "Zig codebase initializer.")
+    \\<STR>              User handle (e.g. tensorush)
+    \\<STR>              User name (e.g. "Jora Troosh")
     \\
 );
 
