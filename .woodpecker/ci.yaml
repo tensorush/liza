@@ -1,0 +1,21 @@
+when:
+  - event: [push, pull_request, manual]
+    branch: main
+
+steps:
+  - name: exe
+    depends_on: []
+    image: ziglings/ziglang:latest
+    pull: true
+    commands:
+      - zig build exe -- -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+      - zig build exe -- -c lib -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+      - zig build exe -- -c bld -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+      - zig build exe -- -c app -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+
+  - name: fmt
+    depends_on: []
+    image: ziglings/ziglang:latest
+    pull: true
+    commands:
+      - zig build fmt

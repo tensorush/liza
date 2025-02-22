@@ -5,7 +5,7 @@ const liza = @import("liza.zig");
 
 const PARAMS = clap.parseParamsComptime(
     \\-c, --cbs  <CBS>   Codebase type: exe, lib, bld, app (default: exe)
-    \\-r, --rnr  <RNR>   CI/CD runner type: github, forgejo (default: github)
+    \\-r, --rnr  <RNR>   CI/CD runner type: github, forgejo, woodpecker (default: github)
     \\-v, --ver  <STR>   Codebase semantic version triple (default: 0.1.0)
     \\-o, --out  <STR>   Output directory path (default: ./)
     \\--add-doc          Add documentation to exe or lib (add doc step, add CD workflow)

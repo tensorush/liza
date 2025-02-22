@@ -1,0 +1,25 @@
+when:
+  - event: [push, pull_request, manual]
+    branch: main
+
+steps:
+  - name: $s
+    depends_on: []
+    image: ziglings/ziglang:latest
+    pull: true
+    commands:
+      - zig build $s
+
+  - name: test
+    depends_on: []
+    image: ziglings/ziglang:latest
+    pull: true
+    commands:
+      - zig build test --summary all
+
+  - name: fmt
+    depends_on: []
+    image: ziglings/ziglang:latest
+    pull: true
+    commands:
+      - zig build fmt

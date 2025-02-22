@@ -19,6 +19,7 @@ const GITIGNORE = ".gitignore";
 const GITATTRIBUTES = ".gitattributes";
 const GITHUB_WORKFLOWS = ".github/workflows/";
 const FORGEJO_WORKFLOWS = ".forgejo/workflows/";
+const WOODPECKER_WORKFLOWS = ".woodpecker/";
 
 // Custom paths
 const EXE = "exe/";
@@ -45,6 +46,7 @@ const ALL_GITHUB_CI_WORKFLOW = @embedFile(TEMPLATES ++ GITHUB_WORKFLOWS ++ CI_WO
 const ALL_GITHUB_CD_WORKFLOW = @embedFile(TEMPLATES ++ GITHUB_WORKFLOWS ++ CD_WORKFLOW);
 const ALL_FORGEJO_CI_WORKFLOW = @embedFile(TEMPLATES ++ FORGEJO_WORKFLOWS ++ CI_WORKFLOW);
 const ALL_FORGEJO_CD_WORKFLOW = @embedFile(TEMPLATES ++ FORGEJO_WORKFLOWS ++ CD_WORKFLOW);
+const ALL_WOODPECKER_CI_WORKFLOW = @embedFile(TEMPLATES ++ WOODPECKER_WORKFLOWS ++ CI_WORKFLOW);
 
 // Executable templates
 const EXE_README = @embedFile(TEMPLATES ++ EXE ++ README);
@@ -83,6 +85,7 @@ pub const Codebase = enum {
 pub const Runner = enum {
     github,
     forgejo,
+    woodpecker,
 };
 
 pub fn initialize(
@@ -259,18 +262,19 @@ fn createWorkflows(
     pckg_dir: std.fs.Dir,
 ) !void {
     const workflows, const all_ci_workflow, const all_cd_workflow = switch (runner) {
-        .forgejo => .{ FORGEJO_WORKFLOWS, ALL_FORGEJO_CI_WORKFLOW, ALL_FORGEJO_CD_WORKFLOW },
         .github => .{ GITHUB_WORKFLOWS, ALL_GITHUB_CI_WORKFLOW, ALL_GITHUB_CD_WORKFLOW },
+        .forgejo => .{ FORGEJO_WORKFLOWS, ALL_FORGEJO_CI_WORKFLOW, ALL_FORGEJO_CD_WORKFLOW },
+        .woodpecker => .{ WOODPECKER_WORKFLOWS, ALL_WOODPECKER_CI_WORKFLOW, null },
     };
 
     var workflows_dir = try pckg_dir.makeOpenPath(workflows, .{});
     defer workflows_dir.close();
 
-    if (add_doc) {
+    if (add_doc and runner != .woodpecker) {
         var cd_file = try workflows_dir.createFile(CD_WORKFLOW, .{});
         defer cd_file.close();
 
-        try cd_file.writeAll(all_cd_workflow);
+        try cd_file.writeAll(all_cd_workflow.?);
     }
 
     var ci_file = try workflows_dir.createFile(CI_WORKFLOW, .{});
@@ -281,7 +285,7 @@ fn createWorkflows(
         try ci_file.writeAll(all_ci_workflow[idx .. idx + i]);
         switch (all_ci_workflow[idx + i + 1]) {
             's' => try ci_file.writeAll(step),
-            'c' => if (add_cov) try ci_file.writeAll(
+            'c' => if (add_cov and runner == .github) try ci_file.writeAll(
                 \\
                 \\      - name: Set up kcov
                 \\        run: sudo apt install kcov
