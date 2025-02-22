@@ -5,21 +5,21 @@ when:
 steps:
   - name: $s
     depends_on: []
-    image: ziglings/ziglang:latest
+    image: alpine:latest
     pull: true
-    commands:
-      - zig build $s
+    commands: |
+      zig build $s
 
   - name: test
     depends_on: []
-    image: ziglings/ziglang:latest
+    image: alpine:latest
     pull: true
-    commands:
-      - zig build test --summary all
+    commands: |
+      zig build test --summary all
 
   - name: fmt
     depends_on: []
-    image: ziglings/ziglang:latest
+    image: alpine:latest
     pull: true
-    commands:
-      - zig build fmt
+    commands: |
+      zig build fmt
