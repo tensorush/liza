@@ -303,8 +303,7 @@ fn createWorkflows(
                 \\          verbose: true
                 \\
             ),
-            '(' => {},
-            else => unreachable,
+            else => {},
         }
     }
     try ci_file.writeAll(all_ci_workflow[idx..]);

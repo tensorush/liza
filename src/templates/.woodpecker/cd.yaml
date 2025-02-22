@@ -8,11 +8,9 @@ steps:
     when:
       event: [manual]
     commands: |
-      apk --no-cache add curl jq
-      curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz
-      tar -xf zig.tar.xz
-      mv zig*/ zig/
-      export "PATH=$(pwd)/zig:$PATH"
+      echo "Set up Zig"
+      apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
+      echo "Run doc step"
       zig build doc
 
   deploy:
@@ -25,6 +23,7 @@ steps:
       MAIL:
         from_secret: cbmail
     commands: |
+      echo "Deploy documentation to Codeberg Pages"
       git config --global user.email $MAIL
       git config --global user.name "Woodpecker CI"
       git clone --branch pages https://$TOKEN@codeberg.org/$CI_REPO.git $CI_REPO_NAME

@@ -1,5 +1,5 @@
 steps:
-  - name: CI
+  ci:
     image: alpine:edge
     when:
       event: [push, pull_request, manual]
