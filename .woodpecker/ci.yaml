@@ -1,5 +1,5 @@
 steps:
-  zig:
+  - name: Set up Zig
     image: alpine:edge
     when:
       event: [push, pull_request, manual]
@@ -9,22 +9,23 @@ steps:
       curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz
       tar -xf zig.tar.xz
       mv zig*/ zig/
-      echo 'export "PATH=$(pwd)/zig:$PATH"' >> /etc/profile
+      echo export "PATH=$(pwd)/zig:$PATH" >> /etc/profile
       echo $PATH
 
-  exe:
+  - name: Run exe step
     image: alpine:edge
     when:
       event: [push, pull_request, manual]
       branch: main
     commands: |
       echo $PATH
+      ls
       zig build exe -- -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
       zig build exe -- -c lib -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
       zig build exe -- -c bld -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
       zig build exe -- -c app -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
 
-  fmt:
+  - name: Run fmt step
     image: alpine:edge
     when:
       event: [push, pull_request, manual]
