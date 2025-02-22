@@ -10,6 +10,7 @@ steps:
       tar -xf zig.tar.xz
       mv zig*/ zig/
       echo export "PATH=$(pwd)/zig:$PATH" >> /etc/profile
+      source /etc/profile
       echo $PATH
 
   - name: Run exe step
@@ -18,8 +19,6 @@ steps:
       event: [push, pull_request, manual]
       branch: main
     commands: |
-      echo $PATH
-      ls
       zig build exe -- -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
       zig build exe -- -c lib -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
       zig build exe -- -c bld -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
