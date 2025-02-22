@@ -21,6 +21,7 @@ jobs:
         uses: https://github.com/mlugg/setup-zig@v1
         with:
           version: master
+          use-cache: false
 
       - name: Run exe step
         run: |
@@ -40,6 +41,7 @@ jobs:
         uses: https://github.com/mlugg/setup-zig@v1
         with:
           version: master
+          use-cache: false
 
       - name: Run fmt step
         run: zig build fmt

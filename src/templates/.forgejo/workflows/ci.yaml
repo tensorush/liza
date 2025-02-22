@@ -19,6 +19,8 @@ jobs:
 
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
+        with:
+          use-cache: false
 
       - name: Run $s step
         run: zig build $s
@@ -32,6 +34,8 @@ jobs:
 
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
+        with:
+          use-cache: false
 
       - name: Run test step
         run: zig build test --summary all
@@ -45,6 +49,8 @@ jobs:
 
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
+        with:
+          use-cache: false
 
       - name: Run fmt step
         run: zig build fmt
