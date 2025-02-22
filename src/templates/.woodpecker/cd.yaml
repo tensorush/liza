@@ -1,0 +1,35 @@
+when:
+  branch:
+    exclude: pages
+
+steps:
+  emit:
+    image: alpine:edge
+    when:
+      event: [manual]
+    commands: |
+      apk --no-cache add curl jq
+      curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz
+      tar -xf zig.tar.xz
+      mv zig*/ zig/
+      export "PATH=$(pwd)/zig:$PATH"
+      zig build doc
+
+  deploy:
+    image: alpine/git:edge
+    when:
+      event: [manual]
+    environment:
+      TOKEN:
+        from_secret: cbtoken
+      MAIL:
+        from_secret: cbmail
+    commands: |
+      git config --global user.email $MAIL
+      git config --global user.name "Woodpecker CI"
+      git clone --branch pages https://$TOKEN@codeberg.org/$CI_REPO.git $CI_REPO_NAME
+      cd $CI_REPO_NAME
+      cp -ar ../zig-out/docs/. ./
+      git add -A
+      git commit -m "Woodpecker CI ${CI_COMMIT_SHA}"
+      git push

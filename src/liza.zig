@@ -47,6 +47,7 @@ const ALL_GITHUB_CD_WORKFLOW = @embedFile(TEMPLATES ++ GITHUB_WORKFLOWS ++ CD_WO
 const ALL_FORGEJO_CI_WORKFLOW = @embedFile(TEMPLATES ++ FORGEJO_WORKFLOWS ++ CI_WORKFLOW);
 const ALL_FORGEJO_CD_WORKFLOW = @embedFile(TEMPLATES ++ FORGEJO_WORKFLOWS ++ CD_WORKFLOW);
 const ALL_WOODPECKER_CI_WORKFLOW = @embedFile(TEMPLATES ++ WOODPECKER_WORKFLOWS ++ CI_WORKFLOW);
+const ALL_WOODPECKER_CD_WORKFLOW = @embedFile(TEMPLATES ++ WOODPECKER_WORKFLOWS ++ CD_WORKFLOW);
 
 // Executable templates
 const EXE_README = @embedFile(TEMPLATES ++ EXE ++ README);
@@ -264,17 +265,17 @@ fn createWorkflows(
     const workflows, const all_ci_workflow, const all_cd_workflow = switch (runner) {
         .github => .{ GITHUB_WORKFLOWS, ALL_GITHUB_CI_WORKFLOW, ALL_GITHUB_CD_WORKFLOW },
         .forgejo => .{ FORGEJO_WORKFLOWS, ALL_FORGEJO_CI_WORKFLOW, ALL_FORGEJO_CD_WORKFLOW },
-        .woodpecker => .{ WOODPECKER_WORKFLOWS, ALL_WOODPECKER_CI_WORKFLOW, null },
+        .woodpecker => .{ WOODPECKER_WORKFLOWS, ALL_WOODPECKER_CI_WORKFLOW, ALL_WOODPECKER_CD_WORKFLOW },
     };
 
     var workflows_dir = try pckg_dir.makeOpenPath(workflows, .{});
     defer workflows_dir.close();
 
-    if (add_doc and runner != .woodpecker) {
+    if (add_doc) {
         var cd_file = try workflows_dir.createFile(CD_WORKFLOW, .{});
         defer cd_file.close();
 
-        try cd_file.writeAll(all_cd_workflow.?);
+        try cd_file.writeAll(all_cd_workflow);
     }
 
     var ci_file = try workflows_dir.createFile(CI_WORKFLOW, .{});
@@ -302,6 +303,7 @@ fn createWorkflows(
                 \\          verbose: true
                 \\
             ),
+            '(' => {},
             else => unreachable,
         }
     }
