@@ -7,27 +7,19 @@ steps:
       - event: [push, pull_request, manual]
         branch: main
     commands: |
-      apk --no-cache add curl jq
-      curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz
-      tar -xf zig.tar.xz
-      mv zig*/ zig/
-      export "PATH=$(pwd)/zig:$PATH"
-      ls
-      echo $PATH
-      zig version
-    #   echo "Set up Zig" && apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
-    #   zig build exe -- -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
-    #   zig build exe -- -c lib -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
-    #   zig build exe -- -c bld -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
-    #   zig build exe -- -c app -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+      echo "Set up Zig" && apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
+      zig build exe -- -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+      zig build exe -- -c lib -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+      zig build exe -- -c bld -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
+      zig build exe -- -c app -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
 
-#   - name: fmt
-#     depends_on: []
-#     image: alpine:latest
-#     pull: true
-#     when:
-#       - event: [push, pull_request, manual]
-#         branch: main
-#     commands: |
-#       echo "Set up Zig" && apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
-#       zig build fmt
+  - name: fmt
+    depends_on: []
+    image: alpine:latest
+    pull: true
+    when:
+      - event: [push, pull_request, manual]
+        branch: main
+    commands: |
+      echo "Set up Zig" && apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
+      zig build fmt
