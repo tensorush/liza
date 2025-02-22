@@ -29,10 +29,13 @@ pub fn main() !void {
     const writer = buf_writer.writer();
 
     // Write to standard output.
-    for (0..random.uintAtMost(u3, std.math.maxInt(u3))) |_| {
-        const bytes = try arena.alloc(u8, 3);
-        random.bytes(bytes);
-        try writer.print("{s}\n", .{bytes});
+    for (0..3) |_| {
+        const len = random.intRangeAtMost(u8, 2, 64);
+        const bytes = try arena.alloc(u8, len);
+        for (bytes) |*byte| {
+            byte.* = random.intRangeAtMost(u8, 'a', 'z');
+        }
+        try writer.print("Random string of random length {d}: {s}.\n", .{ len, bytes });
     }
 
     // Flush standard output.
