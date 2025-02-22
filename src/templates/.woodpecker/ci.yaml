@@ -1,10 +1,9 @@
 steps:
   - name: CI
-    image: alpine:latest
-    pull: true
+    image: alpine:edge
     when:
-      - event: [push, pull_request, manual]
-        branch: main
+      event: [push, pull_request, manual]
+      branch: main
     commands: |
       echo "Set up Zig"
       apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
