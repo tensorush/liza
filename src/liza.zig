@@ -90,7 +90,7 @@ pub const Runner = enum {
 };
 
 pub fn initialize(
-    gpa: std.mem.Allocator,
+    arena: std.mem.Allocator,
     pckg_name: []const u8,
     pckg_desc: []const u8,
     user_hndl: []const u8,
@@ -101,6 +101,7 @@ pub fn initialize(
     out_dir_path: []const u8,
     add_doc: bool,
     add_cov: bool,
+    zig_version_str: []const u8,
 ) !void {
     var pckg_dir = blk: {
         const out_dir = try std.fs.cwd().openDir(out_dir_path, .{});
@@ -114,21 +115,21 @@ pub fn initialize(
     try createGit(GITATTRIBUTES, ALL_GITATTRIBUTES, add_cov, pckg_dir);
 
     const version = try std.SemanticVersion.parse(version_str);
+    const zig_version = try std.SemanticVersion.parse(zig_version_str);
 
     switch (codebase) {
         .exe => {
             var src_dir = try pckg_dir.makeOpenPath(SRC, .{});
             defer src_dir.close();
 
-            const exe_core = try std.mem.concat(gpa, u8, &.{ pckg_name, ".zig" });
-            defer gpa.free(exe_core);
+            const exe_core = try std.mem.concat(arena, u8, &.{ pckg_name, ".zig" });
 
             try createSource(exe_core, EXE_CORE_TEXT, pckg_name, src_dir);
             try createSource(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
-            try createWorkflows(EXE_CI_STEP, runner, add_doc, add_cov, pckg_dir);
             try createReadme(EXE_README, pckg_name, pckg_desc, user_hndl, pckg_dir);
-            try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, pckg_dir);
-            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, pckg_dir);
+            try createWorkflows(EXE_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version_str, pckg_dir);
+            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, zig_version_str, pckg_dir);
         },
         .lib => {
             var src_dir = try pckg_dir.makeOpenPath(SRC, .{});
@@ -143,16 +144,16 @@ pub fn initialize(
             try createSource(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
             try createSource(EXE_ROOT, LIB_EXAMPLE1, pckg_name, example1_dir);
             try createSource(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
-            try createWorkflows(LIB_CI_STEP, runner, add_doc, add_cov, pckg_dir);
             try createReadme(LIB_README, pckg_name, pckg_desc, user_hndl, pckg_dir);
-            try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, pckg_dir);
-            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, pckg_dir);
+            try createWorkflows(LIB_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version_str, pckg_dir);
+            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, zig_version_str, pckg_dir);
         },
         .bld => {
-            try createWorkflows(BLD_CI_STEP, runner, add_doc, add_cov, pckg_dir);
             try createReadme(BLD_README, pckg_name, pckg_desc, user_hndl, pckg_dir);
-            try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, pckg_dir);
-            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, pckg_dir);
+            try createWorkflows(BLD_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version_str, pckg_dir);
+            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, zig_version_str, pckg_dir);
         },
         .app => {
             var src_dir = try pckg_dir.makeOpenPath(SRC, .{});
@@ -160,10 +161,10 @@ pub fn initialize(
 
             try createSource(APP_ROOT, APP_ROOT_TEXT, pckg_name, src_dir);
             try createSource(APP_SHADER, APP_SHADER_TEXT, pckg_name, src_dir);
-            try createWorkflows(APP_CI_STEP, runner, add_doc, add_cov, pckg_dir);
             try createReadme(APP_README, pckg_name, pckg_desc, user_hndl, pckg_dir);
-            try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, pckg_dir);
-            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, pckg_dir);
+            try createWorkflows(APP_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version_str, pckg_dir);
+            try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, zig_version_str, pckg_dir);
         },
     }
 }
@@ -176,19 +177,20 @@ fn createReadme(
     pckg_dir: std.fs.Dir,
 ) !void {
     var readme_file = try pckg_dir.createFile(README, .{});
+    const readme_writer = readme_file.writer();
     defer readme_file.close();
 
     var idx: usize = 0;
     while (std.mem.indexOfScalar(u8, text[idx..], '$')) |i| : (idx += i + 2) {
-        try readme_file.writeAll(text[idx .. idx + i]);
+        try readme_writer.writeAll(text[idx .. idx + i]);
         switch (text[idx + i + 1]) {
-            'p' => try readme_file.writeAll(pckg_name),
-            'd' => try readme_file.writeAll(pckg_desc),
-            'u' => try readme_file.writeAll(user_hndl),
+            'p' => try readme_writer.writeAll(pckg_name),
+            'd' => try readme_writer.writeAll(pckg_desc),
+            'u' => try readme_writer.writeAll(user_hndl),
             else => unreachable,
         }
     }
-    try readme_file.writeAll(text[idx..]);
+    try readme_writer.writeAll(text[idx..]);
 }
 
 fn createBuild(
@@ -199,6 +201,7 @@ fn createBuild(
     version: anytype,
     add_doc: bool,
     add_cov: bool,
+    zig_version_str: []const u8,
     pckg_dir: std.fs.Dir,
 ) !void {
     const text = switch (codebase) {
@@ -207,13 +210,14 @@ fn createBuild(
         .bld => if (mode == .zig) BLD_BUILD_ZIG else BLD_BUILD_ZON,
         .app => if (mode == .zig) APP_BUILD_ZIG else APP_BUILD_ZON,
     };
+
     var build_file = try pckg_dir.createFile(if (mode == .zig) BUILD_ZIG else BUILD_ZON, .{});
     const build_writer = build_file.writer();
     defer build_file.close();
 
     var idx: usize = 0;
     while (std.mem.indexOfScalar(u8, text[idx..], '$')) |i| : (idx += i + 2) {
-        try build_file.writeAll(text[idx .. idx + i]);
+        try build_writer.writeAll(text[idx .. idx + i]);
         switch (text[idx + i + 1]) {
             'p' => try build_writer.writeAll(pckg_name),
             'u' => try build_writer.writeAll(user_hndl),
@@ -224,6 +228,7 @@ fn createBuild(
                 ),
                 .zon => try build_writer.writeAll(version),
             },
+            'z' => try build_writer.writeAll(zig_version_str),
             'd' => if (add_doc) try build_writer.print(
                 \\
                 \\    // Documentation
@@ -252,61 +257,67 @@ fn createBuild(
             else => unreachable,
         }
     }
-    try build_file.writeAll(text[idx..]);
+    try build_writer.writeAll(text[idx..]);
 }
 
 fn createWorkflows(
-    comptime step: []const u8,
+    comptime ci_step: []const u8,
     runner: Runner,
     add_doc: bool,
     add_cov: bool,
+    zig_version: std.SemanticVersion,
     pckg_dir: std.fs.Dir,
 ) !void {
-    const workflows, const all_ci_workflow, const all_cd_workflow = switch (runner) {
+    const workflows_dir_path, const all_ci_workflow, const all_cd_workflow = switch (runner) {
         .github => .{ GITHUB_WORKFLOWS, ALL_GITHUB_CI_WORKFLOW, ALL_GITHUB_CD_WORKFLOW },
         .forgejo => .{ FORGEJO_WORKFLOWS, ALL_FORGEJO_CI_WORKFLOW, ALL_FORGEJO_CD_WORKFLOW },
         .woodpecker => .{ WOODPECKER_WORKFLOWS, ALL_WOODPECKER_CI_WORKFLOW, ALL_WOODPECKER_CD_WORKFLOW },
     };
 
-    var workflows_dir = try pckg_dir.makeOpenPath(workflows, .{});
+    var workflows_dir = try pckg_dir.makeOpenPath(workflows_dir_path, .{});
     defer workflows_dir.close();
 
-    if (add_doc) {
-        var cd_file = try workflows_dir.createFile(CD_WORKFLOW, .{});
-        defer cd_file.close();
+    const workflows: [2][]const u8 = .{ CI_WORKFLOW, CD_WORKFLOW };
+    const all_workflows: [2][]const u8 = .{ all_ci_workflow, all_cd_workflow };
+    for (workflows, all_workflows) |workflow, all_workflow| {
+        if (std.mem.startsWith(u8, workflow, "cd") and !add_doc) continue;
 
-        try cd_file.writeAll(all_cd_workflow);
-    }
+        var workflow_file = try workflows_dir.createFile(workflow, .{});
+        const workflow_writer = workflow_file.writer();
+        defer workflow_file.close();
 
-    var ci_file = try workflows_dir.createFile(CI_WORKFLOW, .{});
-    defer ci_file.close();
-
-    var idx: usize = 0;
-    while (std.mem.indexOfScalar(u8, all_ci_workflow[idx..], '$')) |i| : (idx += i + 2) {
-        try ci_file.writeAll(all_ci_workflow[idx .. idx + i]);
-        switch (all_ci_workflow[idx + i + 1]) {
-            's' => try ci_file.writeAll(step),
-            'c' => if (add_cov and runner == .github) try ci_file.writeAll(
-                \\
-                \\      - name: Set up kcov
-                \\        run: sudo apt install kcov
-                \\
-                \\      - name: Run cov step
-                \\        run: zig build cov
-                \\
-                \\      - name: Upload coverage to Codecov
-                \\        uses: codecov/codecov-action@v5
-                \\        with:
-                \\          token: ${{ secrets.CODECOV_TOKEN }}
-                \\          directory: kcov-output/
-                \\          fail_ci_if_error: true
-                \\          verbose: true
-                \\
-            ),
-            else => {},
+        var idx: usize = 0;
+        while (std.mem.indexOfScalar(u8, all_workflow[idx..], '$')) |i| : (idx += i + 2) {
+            try workflow_writer.writeAll(all_workflow[idx .. idx + i]);
+            switch (all_workflow[idx + i + 1]) {
+                's' => try workflow_writer.writeAll(ci_step),
+                'z' => if (zig_version.build == null) {
+                    try workflow_writer.print("{}", .{zig_version});
+                } else {
+                    try workflow_writer.writeAll("master");
+                },
+                'c' => if (add_cov and runner == .github) try workflow_writer.writeAll(
+                    \\
+                    \\      - name: Set up kcov
+                    \\        run: sudo apt install kcov
+                    \\
+                    \\      - name: Run cov step
+                    \\        run: zig build cov
+                    \\
+                    \\      - name: Upload coverage to Codecov
+                    \\        uses: codecov/codecov-action@v5
+                    \\        with:
+                    \\          token: ${{ secrets.CODECOV_TOKEN }}
+                    \\          directory: kcov-output/
+                    \\          fail_ci_if_error: true
+                    \\          verbose: true
+                    \\
+                ),
+                else => try workflow_writer.writeAll(all_workflow[idx + i .. idx + i + 2]),
+            }
         }
+        try workflow_writer.writeAll(all_workflow[idx..]);
     }
-    try ci_file.writeAll(all_ci_workflow[idx..]);
 }
 
 fn createSource(
@@ -316,17 +327,18 @@ fn createSource(
     src_dir: std.fs.Dir,
 ) !void {
     var src_file = try src_dir.createFile(path, .{});
+    const src_writer = src_file.writer();
     defer src_file.close();
 
     var idx: usize = 0;
     while (std.mem.indexOfScalar(u8, text[idx..], '$')) |i| : (idx += i + 2) {
-        try src_file.writeAll(text[idx .. idx + i]);
+        try src_writer.writeAll(text[idx .. idx + i]);
         switch (text[idx + i + 1]) {
-            'p' => try src_file.writeAll(pckg_name),
+            'p' => try src_writer.writeAll(pckg_name),
             else => unreachable,
         }
     }
-    try src_file.writeAll(text[idx..]);
+    try src_writer.writeAll(text[idx..]);
 }
 
 fn createLicense(
@@ -334,18 +346,19 @@ fn createLicense(
     pckg_dir: std.fs.Dir,
 ) !void {
     var license_file = try pckg_dir.createFile(LICENSE, .{});
+    const license_writer = license_file.writer();
     defer license_file.close();
 
     var idx: usize = 0;
     while (std.mem.indexOfScalar(u8, ALL_LICENSE[idx..], '$')) |i| : (idx += i + 2) {
-        try license_file.writeAll(ALL_LICENSE[idx .. idx + i]);
+        try license_writer.writeAll(ALL_LICENSE[idx .. idx + i]);
         switch (ALL_LICENSE[idx + i + 1]) {
-            'y' => try license_file.writer().print("{d}", .{(try zeit.instant(.{})).time().year}),
-            'n' => try license_file.writeAll(user_name),
+            'y' => try license_writer.print("{d}", .{(try zeit.instant(.{})).time().year}),
+            'n' => try license_writer.writeAll(user_name),
             else => unreachable,
         }
     }
-    try license_file.writeAll(ALL_LICENSE[idx..]);
+    try license_writer.writeAll(ALL_LICENSE[idx..]);
 }
 
 fn createGit(
@@ -355,13 +368,14 @@ fn createGit(
     dir: std.fs.Dir,
 ) !void {
     var git_file = try dir.createFile(path, .{});
+    const git_writer = git_file.writer();
     defer git_file.close();
 
     var idx: usize = 0;
     while (std.mem.indexOfScalar(u8, text[idx..], '$')) |i| : (idx += i + 2) {
-        try git_file.writeAll(text[idx .. idx + i]);
+        try git_writer.writeAll(text[idx .. idx + i]);
         switch (text[idx + i + 1]) {
-            'c' => if (add_cov) try git_file.writeAll(
+            'c' => if (add_cov) try git_writer.writeAll(
                 \\
                 \\
                 \\# Kcov artifacts
@@ -370,5 +384,5 @@ fn createGit(
             else => unreachable,
         }
     }
-    try git_file.writeAll(text[idx..]);
+    try git_writer.writeAll(text[idx..]);
 }

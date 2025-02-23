@@ -11,7 +11,7 @@ steps:
     image: alpine:edge
     commands: |
       echo "Set up Zig"
-      apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
+      apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '."$z"."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
       echo "Run doc step"
       zig build doc
 
@@ -30,5 +30,5 @@ steps:
       cd $CI_REPO_NAME
       cp -ar ../zig-out/docs/. ./
       git add -A
-      git commit -m "Woodpecker CI ${CI_COMMIT_SHA}"
+      git commit -m "Deploy documentation"
       git push

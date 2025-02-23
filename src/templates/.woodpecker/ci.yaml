@@ -6,7 +6,7 @@ steps:
       branch: main
     commands: |
       echo "Set up Zig"
-      apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
+      apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '."$z"."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
       echo "Run $s step"
       zig build $s
       echo "Run test step"

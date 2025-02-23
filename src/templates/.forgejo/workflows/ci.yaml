@@ -20,6 +20,7 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
         with:
+          version: $z
           use-cache: false
 
       - name: Run $s step
@@ -35,6 +36,7 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
         with:
+          version: $z
           use-cache: false
 
       - name: Run test step
@@ -50,6 +52,7 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
         with:
+          version: $z
           use-cache: false
 
       - name: Run fmt step

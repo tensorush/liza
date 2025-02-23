@@ -31,6 +31,10 @@ pub fn main() !void {
         @panic("Memory leak has occurred!");
     };
 
+    var arena_state = std.heap.ArenaAllocator.init(gpa);
+    const arena = arena_state.allocator();
+    defer arena_state.deinit();
+
     var cli = try clap.parse(clap.Help, &PARAMS, PARSERS, .{ .allocator = gpa });
     defer cli.deinit();
 
@@ -57,8 +61,11 @@ pub fn main() !void {
         },
     }
 
+    const zig_version_run = try std.process.Child.run(.{ .allocator = arena, .argv = &.{ "zig", "version" } });
+    const zig_version_str = std.mem.trimRight(u8, zig_version_run.stdout, "\n");
+
     try liza.initialize(
-        gpa,
+        arena,
         pckg_name,
         pckg_desc,
         user_hndl,
@@ -69,5 +76,6 @@ pub fn main() !void {
         out_dir_path,
         add_doc,
         add_cov,
+        zig_version_str,
     );
 }
