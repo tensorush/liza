@@ -13,6 +13,8 @@ const EXAMPLES = "examples/";
 const EXAMPLE1 = EXAMPLES ++ "example1/";
 const EXAMPLE2 = EXAMPLES ++ "example2/";
 
+const GITHUB = "github.com";
+const CODEBERG = "codeberg.org";
 const CD_WORKFLOW = "cd.yaml";
 const CI_WORKFLOW = "ci.yaml";
 const GITIGNORE = ".gitignore";
@@ -126,7 +128,7 @@ pub fn initialize(
 
             try createSource(exe_core, EXE_CORE_TEXT, pckg_name, src_dir);
             try createSource(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
-            try createReadme(EXE_README, pckg_name, pckg_desc, user_hndl, pckg_dir);
+            try createReadme(EXE_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createWorkflows(EXE_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version_str, pckg_dir);
             try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, zig_version_str, pckg_dir);
@@ -144,13 +146,13 @@ pub fn initialize(
             try createSource(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
             try createSource(EXE_ROOT, LIB_EXAMPLE1, pckg_name, example1_dir);
             try createSource(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
-            try createReadme(LIB_README, pckg_name, pckg_desc, user_hndl, pckg_dir);
+            try createReadme(LIB_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createWorkflows(LIB_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version_str, pckg_dir);
             try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, zig_version_str, pckg_dir);
         },
         .bld => {
-            try createReadme(BLD_README, pckg_name, pckg_desc, user_hndl, pckg_dir);
+            try createReadme(BLD_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createWorkflows(BLD_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version_str, pckg_dir);
             try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, zig_version_str, pckg_dir);
@@ -161,7 +163,7 @@ pub fn initialize(
 
             try createSource(APP_ROOT, APP_ROOT_TEXT, pckg_name, src_dir);
             try createSource(APP_SHADER, APP_SHADER_TEXT, pckg_name, src_dir);
-            try createReadme(APP_README, pckg_name, pckg_desc, user_hndl, pckg_dir);
+            try createReadme(APP_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createWorkflows(APP_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createBuild(.zig, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version_str, pckg_dir);
             try createBuild(.zon, codebase, pckg_name, user_hndl, version_str, add_doc, add_cov, zig_version_str, pckg_dir);
@@ -174,6 +176,7 @@ fn createReadme(
     pckg_name: []const u8,
     pckg_desc: []const u8,
     user_hndl: []const u8,
+    runner: Runner,
     pckg_dir: std.fs.Dir,
 ) !void {
     var readme_file = try pckg_dir.createFile(README, .{});
@@ -187,6 +190,10 @@ fn createReadme(
             'p' => try readme_writer.writeAll(pckg_name),
             'd' => try readme_writer.writeAll(pckg_desc),
             'u' => try readme_writer.writeAll(user_hndl),
+            'g' => try readme_writer.writeAll(switch (runner) {
+                .github => GITHUB,
+                .forgejo, .woodpecker => CODEBERG,
+            }),
             else => unreachable,
         }
     }
