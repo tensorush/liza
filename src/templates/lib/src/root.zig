@@ -2,6 +2,6 @@
 
 const std = @import("std");
 
-comptime {
+test {
     std.testing.refAllDecls(@This());
 }

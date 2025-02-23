@@ -47,6 +47,6 @@ pub fn main() !void {
     try buf_writer.flush();
 }
 
-comptime {
+test {
     std.testing.refAllDecls($p);
 }

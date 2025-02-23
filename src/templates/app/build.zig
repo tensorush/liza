@@ -32,7 +32,10 @@ pub fn build(b: *std.Build) void {
             .imports = &.{.{ .name = "mach", .module = mach_mod }},
         }),
     });
-    b.installArtifact(exe);
+
+    const exe_install = b.addInstallArtifact(exe, .{});
+    exe_step.dependOn(&exe_install.step);
+    b.default_step.dependOn(exe_step);
 
     const exe_run = b.addRunArtifact(exe);
     if (b.args) |args| {

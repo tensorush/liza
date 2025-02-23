@@ -26,7 +26,10 @@ pub fn build(b: *std.Build) void {
         }),
     });
     exe.root_module.addImport("clap", clap_mod);
-    b.installArtifact(exe);
+
+    const exe_install = b.addInstallArtifact(exe, .{});
+    exe_step.dependOn(&exe_install.step);
+    b.default_step.dependOn(exe_step);
 
     const exe_run = b.addRunArtifact(exe);
     if (b.args) |args| {
