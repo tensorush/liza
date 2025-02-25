@@ -112,6 +112,8 @@ pub fn initialize(
     };
     defer pckg_dir.close();
 
+    _ = try std.process.Child.run(.{ .allocator = arena, .argv = &.{ "git", "init" }, .cwd_dir = pckg_dir });
+
     try createLicense(user_name, pckg_dir);
     try createGit(GITIGNORE, ALL_GITIGNORE, add_cov, pckg_dir);
     try createGit(GITATTRIBUTES, ALL_GITATTRIBUTES, add_cov, pckg_dir);

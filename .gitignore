@@ -1,6 +1,3 @@
 # Zig artifacts
 .zig-cache/
 zig-out/
-
-# Project artifacts
-liza/
