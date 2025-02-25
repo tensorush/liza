@@ -27,7 +27,7 @@ jobs:
 
       - name: Run exe step
         run: |
-          zig build exe -- --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && cd liza/ && zig fetch --save git+https://github.com/Hejsil/zig-clap && zig build -- "All your codebase are belong to us." && cd ../ && rm -rf liza/
+          zig build exe -- --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && cd liza/ && zig fetch --save git+https://github.com/Hejsil/zig-clap && zig build && zig build exe -- "All your codebase are belong to us." && cd ../ && rm -rf liza/
           zig build exe -- -c lib --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && cd liza/ && zig build && cd ../ && rm -rf liza/
           zig build exe -- -c bld liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
           zig build exe -- -c app liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
