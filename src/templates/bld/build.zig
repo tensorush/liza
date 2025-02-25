@@ -1,6 +1,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
+    const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const version = std.SemanticVersion{$v};
@@ -57,7 +58,7 @@ pub fn build(b: *std.Build) void {
 
     const lib_install = b.addInstallArtifact(lib, .{});
     lib_step.dependOn(&lib_install.step);
-    b.default_step.dependOn(lib_step);
+    install_step.dependOn(lib_step);
 
     // Test suite
     const tests_step = b.step("test", "Run test suite");
@@ -74,7 +75,7 @@ pub fn build(b: *std.Build) void {
 
     const tests_run = b.addRunArtifact(tests);
     tests_step.dependOn(&tests_run.step);
-    b.default_step.dependOn(tests_step);
+    install_step.dependOn(tests_step);
 
     // Formatting checks
     const fmt_step = b.step("fmt", "Run formatting checks");
@@ -86,7 +87,7 @@ pub fn build(b: *std.Build) void {
         .check = true,
     });
     fmt_step.dependOn(&fmt.step);
-    b.default_step.dependOn(fmt_step);
+    install_step.dependOn(fmt_step);
 }
 
 const SOURCES = .{

@@ -1,6 +1,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
+    const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/App.zig");
@@ -32,17 +33,13 @@ pub fn build(b: *std.Build) void {
             .imports = &.{.{ .name = "mach", .module = mach_mod }},
         }),
     });
-
-    const exe_install = b.addInstallArtifact(exe, .{});
-    exe_step.dependOn(&exe_install.step);
-    b.default_step.dependOn(exe_step);
+    b.installArtifact(exe);
 
     const exe_run = b.addRunArtifact(exe);
     if (b.args) |args| {
         exe_run.addArgs(args);
     }
     exe_step.dependOn(&exe_run.step);
-    b.default_step.dependOn(exe_step);
 
     // Test suite
     const tests_step = b.step("test", "Run test suite");
@@ -58,7 +55,7 @@ pub fn build(b: *std.Build) void {
 
     const tests_run = b.addRunArtifact(tests);
     tests_step.dependOn(&tests_run.step);
-    b.default_step.dependOn(tests_step);
+    install_step.dependOn(tests_step);
 
     // Formatting checks
     const fmt_step = b.step("fmt", "Run formatting checks");
@@ -71,5 +68,5 @@ pub fn build(b: *std.Build) void {
         .check = true,
     });
     fmt_step.dependOn(&fmt.step);
-    b.default_step.dependOn(fmt_step);
+    install_step.dependOn(fmt_step);
 }

@@ -249,7 +249,7 @@ fn createBuild(
                 \\        .source_dir = {s}.getEmittedDocs(),
                 \\    {c});
                 \\    docs_step.dependOn(&docs_install.step);
-                \\    b.default_step.dependOn(docs_step);
+                \\    install_step.dependOn(docs_step);
                 \\
             , .{ '{', @tagName(codebase), '}' }),
             'c' => if (add_cov) try build_writer.writeAll(
@@ -260,7 +260,7 @@ fn createBuild(
                 \\    const cov_run = b.addSystemCommand(&.{ "kcov", "--clean", "--include-pattern=src/", "kcov-output/" });
                 \\    cov_run.addArtifactArg(tests);
                 \\    cov_step.dependOn(&cov_run.step);
-                \\    b.default_step.dependOn(cov_step);
+                \\    install_step.dependOn(cov_step);
                 \\
             ),
             else => unreachable,

@@ -1,6 +1,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
+    const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/main.zig");
@@ -33,17 +34,13 @@ pub fn build(b: *std.Build) void {
     });
     exe.root_module.addImport("clap", clap_mod);
     exe.root_module.addImport("zeit", zeit_mod);
-
-    const exe_install = b.addInstallArtifact(exe, .{});
-    exe_step.dependOn(&exe_install.step);
-    b.default_step.dependOn(exe_step);
+    b.installArtifact(exe);
 
     const exe_run = b.addRunArtifact(exe);
     if (b.args) |args| {
         exe_run.addArgs(args);
     }
     exe_step.dependOn(&exe_run.step);
-    b.default_step.dependOn(exe_step);
 
     // Formatting checks
     const fmt_step = b.step("fmt", "Run formatting checks");
@@ -64,5 +61,5 @@ pub fn build(b: *std.Build) void {
         .check = true,
     });
     fmt_step.dependOn(&fmt.step);
-    b.default_step.dependOn(fmt_step);
+    install_step.dependOn(fmt_step);
 }

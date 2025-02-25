@@ -1,6 +1,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
+    const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/root.zig");
@@ -24,7 +25,7 @@ pub fn build(b: *std.Build) void {
 
     const lib_install = b.addInstallArtifact(lib, .{});
     lib_step.dependOn(&lib_install.step);
-    b.default_step.dependOn(lib_step);
+    install_step.dependOn(lib_step);
 $d
     // Example suite
     const examples_step = b.step("example", "Run example suite");
@@ -40,12 +41,11 @@ $d
             }),
         });
         example.root_module.addImport("$p", mod);
+        b.installArtifact(example);
 
         const example_run = b.addRunArtifact(example);
         examples_step.dependOn(&example_run.step);
     }
-
-    b.default_step.dependOn(examples_step);
 
     // Test suite
     const tests_step = b.step("test", "Run test suite");
@@ -60,7 +60,7 @@ $d
 
     const tests_run = b.addRunArtifact(tests);
     tests_step.dependOn(&tests_run.step);
-    b.default_step.dependOn(tests_step);
+    install_step.dependOn(tests_step);
 $c
     // Formatting checks
     const fmt_step = b.step("fmt", "Run formatting checks");
@@ -74,7 +74,7 @@ $c
         .check = true,
     });
     fmt_step.dependOn(&fmt.step);
-    b.default_step.dependOn(fmt_step);
+    install_step.dependOn(fmt_step);
 }
 
 const EXAMPLES_DIR = "examples/";
