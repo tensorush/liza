@@ -83,6 +83,7 @@ pub fn build(b: *std.Build) void {
     const fmt = b.addFmt(.{
         .paths = &.{
             "build.zig",
+            "build.zig.zon",
         },
         .check = true,
     });

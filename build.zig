@@ -49,6 +49,7 @@ pub fn build(b: *std.Build) void {
         .paths = &.{
             "src/",
             "build.zig",
+            "build.zig.zon",
         },
         .exclude_paths = &.{
             "src/templates/exe/src/main.zig",

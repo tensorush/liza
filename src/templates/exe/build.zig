@@ -58,6 +58,7 @@ $c
         .paths = &.{
             "src/",
             "build.zig",
+            "build.zig.zon",
         },
         .check = true,
     });

@@ -69,6 +69,7 @@ $c
         .paths = &.{
             "src/",
             "build.zig",
+            "build.zig.zon",
             EXAMPLES_DIR,
         },
         .check = true,

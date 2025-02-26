@@ -64,6 +64,7 @@ pub fn build(b: *std.Build) void {
         .paths = &.{
             "src/",
             "build.zig",
+            "build.zig.zon",
         },
         .check = true,
     });
