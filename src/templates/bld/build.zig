@@ -77,8 +77,8 @@ pub fn build(b: *std.Build) void {
     tests_step.dependOn(&tests_run.step);
     install_step.dependOn(tests_step);
 
-    // Formatting checks
-    const fmt_step = b.step("fmt", "Run formatting checks");
+    // Formatting check
+    const fmt_step = b.step("fmt", "Check formatting");
 
     const fmt = b.addFmt(.{
         .paths = &.{

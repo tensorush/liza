@@ -62,8 +62,8 @@ $d
     tests_step.dependOn(&tests_run.step);
     install_step.dependOn(tests_step);
 $c
-    // Formatting checks
-    const fmt_step = b.step("fmt", "Run formatting checks");
+    // Formatting check
+    const fmt_step = b.step("fmt", "Check formatting");
 
     const fmt = b.addFmt(.{
         .paths = &.{
@@ -79,7 +79,7 @@ $c
 
 const EXAMPLES_DIR = "examples/";
 
-const EXAMPLE_NAMES = &.{
+const EXAMPLE_NAMES = .{
     "example1",
     "example2",
 };

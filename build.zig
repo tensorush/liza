@@ -42,8 +42,8 @@ pub fn build(b: *std.Build) void {
     }
     exe_step.dependOn(&exe_run.step);
 
-    // Formatting checks
-    const fmt_step = b.step("fmt", "Run formatting checks");
+    // Formatting check
+    const fmt_step = b.step("fmt", "Check formatting");
 
     const fmt = b.addFmt(.{
         .paths = &.{
