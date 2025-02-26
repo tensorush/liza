@@ -49,7 +49,7 @@ pub fn main() !void {
 
     const codebase = cli.args.cbs orelse .exe;
     const runner = cli.args.rnr orelse .github;
-    const version_str = cli.args.ver orelse "0.1.0";
+    const version = try std.SemanticVersion.parse(cli.args.ver orelse "0.1.0");
     const out_dir_path = cli.args.out orelse "./";
     const add_doc = if (cli.args.@"add-doc" != 0) true else false;
     const add_cov = if (cli.args.@"add-cov" != 0) true else false;
@@ -62,7 +62,7 @@ pub fn main() !void {
     }
 
     const zig_version_run = try std.process.Child.run(.{ .allocator = arena, .argv = &.{ "zig", "version" } });
-    const zig_version_str = std.mem.trimRight(u8, zig_version_run.stdout, "\n");
+    const zig_version = try std.SemanticVersion.parse(std.mem.trimRight(u8, zig_version_run.stdout, "\n"));
 
     try liza.initialize(
         arena,
@@ -72,10 +72,10 @@ pub fn main() !void {
         user_name,
         codebase,
         runner,
-        version_str,
+        version,
         out_dir_path,
         add_doc,
         add_cov,
-        zig_version_str,
+        zig_version,
     );
 }
