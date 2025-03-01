@@ -82,6 +82,10 @@ const APP_BUILD_ZON = @embedFile(TEMPLATES ++ APP ++ BUILD_ZON);
 const APP_ROOT_TEXT = @embedFile(TEMPLATES ++ APP ++ SRC ++ APP_ROOT);
 const APP_SHADER_TEXT = @embedFile(TEMPLATES ++ APP ++ SRC ++ APP_SHADER);
 
+const Error = error{
+    Fingerprint,
+};
+
 pub const Codebase = enum {
     exe,
     lib,
@@ -271,12 +275,16 @@ fn createBuildFiles(
         if (mode == .zon) {
             const build_zon = try pckg_dir.readFileAllocOptions(arena, BUILD_ZON, 1 << 12, null, @alignOf(u8), 0);
 
-            const zig_build = try std.process.Child.run(.{
-                .allocator = arena,
-                .argv = &.{ "zig", "build" },
-                .cwd_dir = pckg_dir,
-            });
-            const fingerprint_idx = std.mem.lastIndexOfScalar(u8, zig_build.stderr, 'x').?;
+            const fingerprint = blk: {
+                const zig_build = try std.process.Child.run(.{
+                    .allocator = arena,
+                    .argv = &.{ "zig", "build" },
+                    .cwd_dir = pckg_dir,
+                });
+                const fp_idx = std.mem.lastIndexOfScalar(u8, zig_build.stderr, 'x') orelse return error.Fingerprint;
+                const fp = zig_build.stderr[fp_idx - 1 .. fp_idx + 17];
+                break :blk fp;
+            };
 
             var new_build_file = try pckg_dir.createFile(BUILD_ZON, .{});
             const new_build_writer = new_build_file.writer();
@@ -287,7 +295,7 @@ fn createBuildFiles(
                 build_zon,
                 ".fingerprint",
                 new_build_writer,
-                .{ .set_value_opt = zig_build.stderr[fingerprint_idx - 1 .. fingerprint_idx + 17] },
+                .{ .set_value_opt = fingerprint },
             );
         }
     }
