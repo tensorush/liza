@@ -25,6 +25,7 @@ jobs:
 
       - name: Run exe step
         run: |
+          rm -rf liza/
           zig build exe -- -r forgejo --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
           zig build exe -- -c lib -r forgejo --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
           zig build exe -- -c bld -r forgejo liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/

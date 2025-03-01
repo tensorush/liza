@@ -8,6 +8,7 @@ steps:
       echo "Set up Zig"
       apk --no-cache add git curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '.master."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
       echo "Run exe step"
+      rm -rf liza/
       zig build exe -- -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
       zig build exe -- -c lib -r woodpecker --add-doc --add-cov liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
       zig build exe -- -c bld -r woodpecker liza "Zig codebase initializer." tensorush "Jora Troosh" && rm -rf liza/
