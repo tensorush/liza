@@ -1,15 +1,20 @@
 .{
-    .name = "liza",
+    .name = .liza,
+    .fingerprint = 0xf8d7a7ba1acabddb,
     .version = "0.6.1",
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
+        .zq = .{
+            .url = "git+https://codeberg.org/tensorush/zq#4deae9a77e7feed81e7c9e85d98a7eb9d3810c61",
+            .hash = "zq-0.1.0-7XsKhRZTAABZ6ViZcmMnSWO6eZmbPiCr6U_zqE9j8gsL",
+        },
         .clap = .{
-            .url = "git+https://github.com/Hejsil/zig-clap#e730233775300c0a8fe3137af880c7c58340930f",
-            .hash = "12205ef27929fba18101750677ff579c0b6aff670755cacbbe6f2bc5f073622e1783",
+            .url = "git+https://github.com/Hejsil/zig-clap#a39ab2595d685526a6fb13f9caba7317a2686a7d",
+            .hash = "clap-0.7.0-AAAAAFb-AQAGUiJXOnEI73ETqsCgdseF9wrtzIZn9ViG",
         },
         .zeit = .{
             .url = "git+https://github.com/rockorager/zeit#8fd203f85f597f16e0a525c1f1ca1e0bffded809",
-            .hash = "122022233835adc719535a8e7cefdd2902a67bbfb7ef198441ca9ce89c0593f488c2",
+            .hash = "zeit-0.0.0-AAAAACVbAgAiIzg1rccZU1qOfO_dKQKme7-37xmEQcqc",
         },
     },
     .paths = .{

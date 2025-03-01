@@ -8,6 +8,12 @@ pub fn build(b: *std.Build) void {
     const version = std.SemanticVersion{ .major = 0, .minor = 6, .patch = 1 };
 
     // Dependencies
+    // const zq_dep = b.dependency("zq", .{
+    //     .target = target,
+    //     .optimize = optimize,
+    // });
+    // const zq_art = zq_dep.artifact("zq");
+
     const clap_dep = b.dependency("clap", .{
         .target = target,
         .optimize = optimize,
@@ -54,9 +60,11 @@ pub fn build(b: *std.Build) void {
         .exclude_paths = &.{
             "src/templates/exe/build.zig",
             "src/templates/exe/src/main.zig",
+            "src/templates/exe/build.zig.zon",
 
             "src/templates/lib/build.zig",
             "src/templates/lib/src/root.zig",
+            "src/templates/lib/build.zig.zon",
             "src/templates/lib/examples/example1/main.zig",
             "src/templates/lib/examples/example2/main.zig",
 
@@ -64,9 +72,27 @@ pub fn build(b: *std.Build) void {
             "src/templates/bld/build.zig.zon",
 
             "src/templates/app/build.zig",
+            "src/templates/app/build.zig.zon",
         },
         .check = true,
     });
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
+
+    // Fingerprint
+    // const fingerprint_step = b.step("fingerprint", "Initialize fingerprint");
+
+    // const zig_bin_path = try zq_art.getEmittedBin().getPath3(b, fingerprint_step).toString(b.allocator);
+
+    // const fingerprint_run = b.addSystemCommand(&.{});
+    // fingerprint_run.addArgs(&.{
+    //     "-i",
+    //     "build.zig.zon",
+    //     "-o",
+    //     "build.zig.zon",
+    //     "-s",
+    //     "$(zig build 2>&1 >/dev/null | grep -o '0xf[^ ]*' | tail -n 1)",
+    //     ".fingerprint",
+    // });
+    // fingerprint_step.dependOn(&fingerprint_run.step);
 }

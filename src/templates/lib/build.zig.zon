@@ -1,5 +1,6 @@
 .{
-    .name = "$p",
+    .name = .$p,
+    .fingerprint = 0xffffffff,
     .version = "$v",
     .minimum_zig_version = "$z",
     .paths = .{
