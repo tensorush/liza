@@ -8,11 +8,11 @@ pub fn build(b: *std.Build) void {
     const version = std.SemanticVersion{ .major = 0, .minor = 6, .patch = 1 };
 
     // Dependencies
-    // const zq_dep = b.dependency("zq", .{
-    //     .target = target,
-    //     .optimize = optimize,
-    // });
-    // const zq_art = zq_dep.artifact("zq");
+    const zq_dep = b.dependency("zq", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const zq_mod = zq_dep.module("zq");
 
     const clap_dep = b.dependency("clap", .{
         .target = target,
@@ -38,6 +38,7 @@ pub fn build(b: *std.Build) void {
             .root_source_file = root_source_file,
         }),
     });
+    exe.root_module.addImport("zq", zq_mod);
     exe.root_module.addImport("clap", clap_mod);
     exe.root_module.addImport("zeit", zeit_mod);
     b.installArtifact(exe);
@@ -78,21 +79,4 @@ pub fn build(b: *std.Build) void {
     });
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
-
-    // Fingerprint
-    // const fingerprint_step = b.step("fingerprint", "Initialize fingerprint");
-
-    // const zig_bin_path = try zq_art.getEmittedBin().getPath3(b, fingerprint_step).toString(b.allocator);
-
-    // const fingerprint_run = b.addSystemCommand(&.{});
-    // fingerprint_run.addArgs(&.{
-    //     "-i",
-    //     "build.zig.zon",
-    //     "-o",
-    //     "build.zig.zon",
-    //     "-s",
-    //     "$(zig build 2>&1 >/dev/null | grep -o '0xf[^ ]*' | tail -n 1)",
-    //     ".fingerprint",
-    // });
-    // fingerprint_step.dependOn(&fingerprint_run.step);
 }

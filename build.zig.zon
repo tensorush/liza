@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .zq = .{
-            .url = "git+https://codeberg.org/tensorush/zq#4deae9a77e7feed81e7c9e85d98a7eb9d3810c61",
-            .hash = "zq-0.1.0-7XsKhRZTAABZ6ViZcmMnSWO6eZmbPiCr6U_zqE9j8gsL",
+            .url = "git+https://codeberg.org/tensorush/zq#cefd75ce408a649266e27cbd3f50b4811cf52b5d",
+            .hash = "zq-0.1.0-7XsKhfhTAACHHx4zSItPS7HCN3NcT2nM5-Sr90x_b4H_",
         },
         .clap = .{
             .url = "git+https://github.com/Hejsil/zig-clap#a39ab2595d685526a6fb13f9caba7317a2686a7d",

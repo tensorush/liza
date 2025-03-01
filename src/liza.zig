@@ -1,4 +1,6 @@
 const std = @import("std");
+
+const zq = @import("zq");
 const zeit = @import("zeit");
 
 // Common paths
@@ -130,7 +132,7 @@ pub fn initialize(
             try createSourceFile(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
             try createWorkflows(EXE_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(EXE_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
         },
         .lib => {
             var src_dir = try pckg_dir.makeOpenPath(SRC, .{});
@@ -150,12 +152,12 @@ pub fn initialize(
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
             try createWorkflows(LIB_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(LIB_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
         },
         .bld => {
             try createWorkflows(BLD_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(BLD_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
         },
         .app => {
             var src_dir = try pckg_dir.makeOpenPath(SRC, .{});
@@ -165,7 +167,7 @@ pub fn initialize(
             try createSourceFile(APP_SHADER, APP_SHADER_TEXT, pckg_name, src_dir);
             try createWorkflows(APP_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(APP_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
         },
     }
 }
@@ -200,6 +202,7 @@ fn createReadmeFile(
 }
 
 fn createBuildFiles(
+    arena: std.mem.Allocator,
     codebase: Codebase,
     pckg_name: []const u8,
     user_hndl: []const u8,
@@ -264,6 +267,29 @@ fn createBuildFiles(
             }
         }
         try build_writer.writeAll(text[idx..]);
+
+        if (mode == .zon) {
+            const build_zon = try pckg_dir.readFileAllocOptions(arena, BUILD_ZON, 512, null, @alignOf(u8), 0);
+
+            const zig_build = try std.process.Child.run(.{
+                .allocator = arena,
+                .argv = &.{ "zig", "build" },
+                .cwd_dir = pckg_dir,
+            });
+            const fingerprint_idx = std.mem.lastIndexOfScalar(u8, zig_build.stderr, 'x').?;
+
+            var new_build_file = try pckg_dir.createFile(BUILD_ZON, .{});
+            const new_build_writer = new_build_file.writer();
+            defer new_build_file.close();
+
+            try zq.process(
+                arena,
+                build_zon,
+                ".fingerprint",
+                new_build_writer,
+                .{ .set_value_opt = zig_build.stderr[fingerprint_idx - 1 .. fingerprint_idx + 17] },
+            );
+        }
     }
 }
 
