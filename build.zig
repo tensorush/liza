@@ -52,11 +52,17 @@ pub fn build(b: *std.Build) void {
             "build.zig.zon",
         },
         .exclude_paths = &.{
-            "src/templates/exe/src/main.zig",
             "src/templates/exe/build.zig",
+            "src/templates/exe/src/main.zig",
+
             "src/templates/lib/build.zig",
+            "src/templates/lib/src/root.zig",
+            "src/templates/lib/examples/example1/main.zig",
+            "src/templates/lib/examples/example2/main.zig",
+
             "src/templates/bld/build.zig",
             "src/templates/bld/build.zig.zon",
+
             "src/templates/app/build.zig",
         },
         .check = true,
