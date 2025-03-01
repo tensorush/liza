@@ -36,6 +36,7 @@ const APP_CI_STEP = "exe";
 
 const EXE_CORE = "$p.zig";
 const EXE_ROOT = "main.zig";
+const LIB_CORE = "$p.zig";
 const LIB_ROOT = "root.zig";
 const APP_ROOT = "App.zig";
 const APP_SHADER = "shader.wgsl";
@@ -62,6 +63,7 @@ const EXE_ROOT_TEXT = @embedFile(TEMPLATES ++ EXE ++ SRC ++ EXE_ROOT);
 const LIB_README = @embedFile(TEMPLATES ++ LIB ++ README);
 const LIB_BUILD_ZIG = @embedFile(TEMPLATES ++ LIB ++ BUILD_ZIG);
 const LIB_BUILD_ZON = @embedFile(TEMPLATES ++ LIB ++ BUILD_ZON);
+const LIB_CORE_TEXT = @embedFile(TEMPLATES ++ LIB ++ SRC ++ LIB_CORE);
 const LIB_ROOT_TEXT = @embedFile(TEMPLATES ++ LIB ++ SRC ++ LIB_ROOT);
 const LIB_EXAMPLE1 = @embedFile(TEMPLATES ++ LIB ++ EXAMPLE1 ++ EXE_ROOT);
 const LIB_EXAMPLE2 = @embedFile(TEMPLATES ++ LIB ++ EXAMPLE2 ++ EXE_ROOT);
@@ -140,6 +142,9 @@ pub fn initialize(
             var example2_dir = try pckg_dir.makeOpenPath(EXAMPLE2, .{});
             defer example2_dir.close();
 
+            const lib_core = try std.mem.concat(arena, u8, &.{ pckg_name, ".zig" });
+
+            try createSourceFile(lib_core, LIB_CORE_TEXT, pckg_name, src_dir);
             try createSourceFile(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE1, pckg_name, example1_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);

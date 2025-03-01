@@ -47,6 +47,8 @@ $d
         examples_step.dependOn(&example_run.step);
     }
 
+    install_step.dependOn(examples_step);
+
     // Test suite
     const tests_step = b.step("test", "Run test suite");
 
