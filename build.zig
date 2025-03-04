@@ -5,7 +5,7 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/main.zig");
-    const version = std.SemanticVersion{ .major = 0, .minor = 6, .patch = 1 };
+    const version = std.SemanticVersion{ .major = 0, .minor = 7, .patch = 0 };
 
     // Dependencies
     const zq_dep = b.dependency("zq", .{

@@ -13,11 +13,12 @@ zig build exe -- -h
 ### Features
 
 - #### [Zig executable template](src/templates/exe/):
-    - Zig executable compilation.
+    - Executable compilation.
     - Dependency usage.
 
 - #### [Zig library template](src/templates/lib/):
-    - Zig static library compilation.
+    - Static library compilation.
+    - Public module exposure.
     - Example suite setup.
 
 - #### [Zig build template](src/templates/bld/):

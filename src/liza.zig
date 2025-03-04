@@ -247,15 +247,15 @@ fn createBuildFiles(
                     \\    // Documentation
                     \\    const docs_step = b.step("doc", "Emit documentation");
                     \\
-                    \\    const docs_install = b.addInstallDirectory(.{c}
+                    \\    const docs_install = b.addInstallDirectory(.{{
                     \\        .install_dir = .prefix,
                     \\        .install_subdir = "docs",
                     \\        .source_dir = {s}.getEmittedDocs(),
-                    \\    {c});
+                    \\    }});
                     \\    docs_step.dependOn(&docs_install.step);
                     \\    install_step.dependOn(docs_step);
                     \\
-                , .{ '{', @tagName(codebase), '}' }),
+                , .{@tagName(codebase)}),
                 'c' => if (add_cov) try build_writer.writeAll(
                     \\
                     \\    // Code coverage

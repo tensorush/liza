@@ -13,7 +13,7 @@ const PARAMS = clap.parseParamsComptime(
 );
 
 pub fn main() !void {
-    // Set up general-purpose allocator
+    // Set up debug allocator
     var gpa_state: std.heap.DebugAllocator(.{}) = .init;
     const gpa = gpa_state.allocator();
     defer if (gpa_state.deinit() == .leak) {
