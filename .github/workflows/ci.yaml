@@ -44,6 +44,7 @@ jobs:
           version: 2024.11.0-mach
 
       - name: Run exe step
+        run: |
           zig build exe -- -c app application "Application description." user-handle "User Name" && cd application/ && zig fetch --save git+https://github.com/hexops/mach.git && zig build && cd ../ && rm -rf application/
 
   fmt:
