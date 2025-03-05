@@ -30,21 +30,7 @@ jobs:
           zig build exe -- --add-doc --add-cov executable "Executable description." user-handle "User Name" && cd executable/ && zig fetch --save git+https://codeberg.org/tensorush/argzon.git && zig build && zig build exe && cd ../ && rm -rf executable/
           zig build exe -- -c lib --add-doc --add-cov library "Library description." user-handle "User Name" && cd library/ && zig build && cd ../ && rm -rf library/
           zig build exe -- -c bld build "Build description." user-handle "User Name" && rm -rf build/
-
-  app:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Zig
-        uses: mlugg/setup-zig@v1
-        with:
-          version: 2024.11.0-mach
-
-      - name: Run exe step
-        run: zig build exe -- -c app application "Application description." user-handle "User Name" && cd application/ && zig fetch --save git+https://github.com/hexops/mach.git && zig build && cd ../ && rm -rf application/
+          zig build exe -- -c app application "Application description." user-handle "User Name" && rm -rf application/
 
   fmt:
     runs-on: ubuntu-latest
