@@ -19,17 +19,10 @@ pub fn build(b: *std.Build) void {
 
     const exe = @import("mach").addExecutable(mach_dep.builder, .{
         .name = "$p",
-        // Remove target in favor of app's target when Mach does
         .target = target,
-        // Add version when Mach does
-        // .version = version,
-        // Remove optimize in favor of app's optimize when Mach does
         .optimize = optimize,
         .app = b.createModule(.{
-            .target = target,
-            .optimize = optimize,
             .root_source_file = root_source_file,
-            // Remove imports in favor of exe.addImport() when Mach supports it
             .imports = &.{.{ .name = "mach", .module = mach_mod }},
         }),
     });

@@ -272,7 +272,7 @@ fn createBuildFiles(
         }
         try build_writer.writeAll(text[idx..]);
 
-        if (mode == .zon) {
+        if (mode == .zon and codebase != .app) {
             const build_zon = try pckg_dir.readFileAllocOptions(arena, BUILD_ZON, 1 << 12, null, @alignOf(u8), 0);
 
             const fingerprint = blk: {

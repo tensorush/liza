@@ -1,5 +1,5 @@
 .{
-    .name = .$p,
+    .name = "$p",
     .fingerprint = 0xffffffff,
     .version = "$v",
     .minimum_zig_version = "0.14.0-dev.2577+271452d22",
