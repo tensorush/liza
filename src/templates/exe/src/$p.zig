@@ -3,8 +3,8 @@
 const std = @import("std");
 
 /// Run core logic.
-pub fn run(pos_arg: []const u8, opt_arg: u8, writer: anytype) !void {
-    for (0..opt_arg) |_| {
-        try writer.print("{s}\n", .{pos_arg});
+pub fn run(string: [:0]const u8, number: u8, writer: anytype) !void {
+    for (0..number) |_| {
+        try writer.print("{s}\n", .{string});
     }
 }

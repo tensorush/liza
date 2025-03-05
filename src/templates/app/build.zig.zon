@@ -5,7 +5,7 @@
     .minimum_zig_version = "0.14.0-dev.2577+271452d22",
     .dependencies = .{
         // Depend on mach by running:
-        // zig fetch --save git+https://github.com/hexops/mach
+        // zig fetch --save git+https://github.com/hexops/mach.git
     },
     .paths = .{
         "src/",

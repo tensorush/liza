@@ -8,11 +8,11 @@ pub fn build(b: *std.Build) void {
     const version = std.SemanticVersion{$v};
 
     // Dependencies
-    const clap_dep = b.dependency("clap", .{
+    const argzon_dep = b.dependency("argzon", .{
         .target = target,
         .optimize = optimize,
     });
-    const clap_mod = clap_dep.module("clap");
+    const argzon_mod = argzon_dep.module("argzon");
 
     // Executable
     const exe_step = b.step("exe", "Run executable");
@@ -26,7 +26,7 @@ pub fn build(b: *std.Build) void {
             .root_source_file = root_source_file,
         }),
     });
-    exe.root_module.addImport("clap", clap_mod);
+    exe.root_module.addImport("argzon", argzon_mod);
     b.installArtifact(exe);
 
     const exe_run = b.addRunArtifact(exe);
@@ -45,7 +45,7 @@ $d
             .root_source_file = root_source_file,
         }),
     });
-    tests.root_module.addImport("clap", clap_mod);
+    tests.root_module.addImport("argzon", argzon_mod);
 
     const tests_run = b.addRunArtifact(tests);
     tests_step.dependOn(&tests_run.step);

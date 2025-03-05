@@ -8,23 +8,23 @@ pub fn build(b: *std.Build) void {
     const version = std.SemanticVersion{ .major = 0, .minor = 7, .patch = 0 };
 
     // Dependencies
-    const zq_dep = b.dependency("zq", .{
+    const argzon_dep = b.dependency("argzon", .{
         .target = target,
         .optimize = optimize,
     });
-    const zq_mod = zq_dep.module("zq");
-
-    const clap_dep = b.dependency("clap", .{
-        .target = target,
-        .optimize = optimize,
-    });
-    const clap_mod = clap_dep.module("clap");
+    const argzon_mod = argzon_dep.module("argzon");
 
     const zeit_dep = b.dependency("zeit", .{
         .target = target,
         .optimize = optimize,
     });
     const zeit_mod = zeit_dep.module("zeit");
+
+    const zq_dep = b.dependency("zq", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const zq_mod = zq_dep.module("zq");
 
     // Executable
     const exe_step = b.step("exe", "Run executable");
@@ -38,9 +38,9 @@ pub fn build(b: *std.Build) void {
             .root_source_file = root_source_file,
         }),
     });
-    exe.root_module.addImport("zq", zq_mod);
-    exe.root_module.addImport("clap", clap_mod);
+    exe.root_module.addImport("argzon", argzon_mod);
     exe.root_module.addImport("zeit", zeit_mod);
+    exe.root_module.addImport("zq", zq_mod);
     b.installArtifact(exe);
 
     const exe_run = b.addRunArtifact(exe);

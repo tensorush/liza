@@ -4,8 +4,8 @@
     .version = "$v",
     .minimum_zig_version = "$z",
     .dependencies = .{
-        // Depend on clap by running:
-        // zig fetch --save git+https://github.com/Hejsil/zig-clap
+        // Depend on argzon by running:
+        // zig fetch --save git+https://codeberg.org/tensorush/argzon.git
     },
     .paths = .{
         "src/",

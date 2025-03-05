@@ -27,7 +27,7 @@ jobs:
 
       - name: Run exe step
         run: |
-          zig build exe -- --add-doc --add-cov executable "Executable description." user-handle "User Name" && cd executable/ && zig fetch --save git+https://github.com/Hejsil/zig-clap && zig build && zig build exe -- "All your codebase are belong to us." && cd ../ && rm -rf executable/
+          zig build exe -- --add-doc --add-cov executable "Executable description." user-handle "User Name" && cd executable/ && zig fetch --save git+https://codeberg.org/tensorush/argzon.git && zig build && zig build exe && cd ../ && rm -rf executable/
           zig build exe -- -c lib --add-doc --add-cov library "Library description." user-handle "User Name" && cd library/ && zig build && cd ../ && rm -rf library/
           zig build exe -- -c bld build "Build description." user-handle "User Name" && rm -rf build/
           zig build exe -- -c app application "Application description." user-handle "User Name" && rm -rf application/
