@@ -1,8 +1,8 @@
 .{
     .name = .$p,
-    .fingerprint = 0xffffffff,
     .version = "$v",
     .minimum_zig_version = "$z",
+    .fingerprint = 0xffffffff, // Changing this has security and trust implications.
     .dependencies = .{
         // Depend on upstream repository by running:
         // zig fetch --save=$p git+https://github.com/$p/$p.git#v$v
