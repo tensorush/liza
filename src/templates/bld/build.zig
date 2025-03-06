@@ -69,6 +69,7 @@ pub fn build(b: *std.Build) void {
         .root_module = b.createModule(.{
             .target = target,
             .link_libc = true,
+            .root_source_file = minizip_test_path.path("main.c"),
         }),
     });
     tests.addCSourceFiles(.{ .root = $p_test_path, .files = &TEST_SOURCES, .flags = &TEST_FLAGS });

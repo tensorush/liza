@@ -101,6 +101,10 @@ pub fn main() !void {
     const user_hndl = args.positionals.USER_HNDL;
     const user_name = args.positionals.USER_NAME;
 
+    if (!std.zig.isValidId(pckg_name)) {
+        @panic("Package name must be a valid Zig identifier!");
+    }
+
     switch (codebase) {
         .exe, .lib => {},
         .bld, .app => if (add_doc or add_cov) {

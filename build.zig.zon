@@ -5,16 +5,16 @@
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .argzon = .{
-            .url = "git+https://codeberg.org/tensorush/argzon.git#b1fd35c6a983940e7beec3f90a74d45b4781c0e8",
-            .hash = "argzon-0.2.0-Cl574iSFAQD3qnD-MLj_R1m3ohrr_uqKrn49ajOX-tJ8",
+            .url = "git+https://codeberg.org/tensorush/argzon.git#31e50cfaf087b701e4e3759cf23f899f6bf93020",
+            .hash = "argzon-0.2.0-Cl574hmYAQC1GhtMyAVD58Rj9r30aALY65ZqU-SGQCZH",
         },
         .zeit = .{
             .url = "git+https://github.com/rockorager/zeit.git#8fd203f85f597f16e0a525c1f1ca1e0bffded809",
             .hash = "zeit-0.0.0-AAAAACVbAgAiIzg1rccZU1qOfO_dKQKme7-37xmEQcqc",
         },
         .zq = .{
-            .url = "git+https://codeberg.org/tensorush/zq.git#04b10a9e96362cc3cc96cb21a39ea65862294131",
-            .hash = "zq-0.1.0-7XsKhUhZAACCMczTZrPLD5WjjiHsJyH1Uu5shbwvZs72",
+            .url = "git+https://codeberg.org/tensorush/zq.git#d7ed9cfbaa746398fdf06ad37ccc274c22a53152",
+            .hash = "zq-0.1.0-7XsKheJYAAD09NQQiZn9a3YhIi3AfsZw7UD20um1kEp5",
         },
     },
     .paths = .{

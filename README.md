@@ -22,7 +22,7 @@ zig build exe -- -h
     - Example suite setup.
 
 - #### [Zig build template](src/templates/bld/):
-    - C/C++ static library compilation.
+    - C static library compilation.
     - Configuration option usage.
     - Lazy dependency usage.
 
