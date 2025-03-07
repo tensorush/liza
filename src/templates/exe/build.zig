@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -51,6 +51,25 @@ $d
     tests_step.dependOn(&tests_run.step);
     install_step.dependOn(tests_step);
 $c
+    // Binary release
+    const release = b.step("release", "Install release binaries");
+
+    inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
+        const release_exe = b.addExecutable(.{
+            .name = "$p-" ++ RELEASE_TRIPLE,
+            .version = version,
+            .root_module = b.createModule(.{
+                .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = RELEASE_TRIPLE })),
+                .optimize = .ReleaseSafe,
+                .root_source_file = root_source_file,
+            }),
+        });
+        release_exe.root_module.addImport("argzon", argzon_mod);
+
+        const release_exe_install = b.addInstallArtifact(release_exe, .{});
+        release.dependOn(&release_exe_install.step);
+    }
+
     // Formatting check
     const fmt_step = b.step("fmt", "Check formatting");
 
@@ -65,3 +84,11 @@ $c
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
 }
+
+const RELEASE_TRIPLES = .{
+    "aarch64-linux",
+    "aarch64-macos",
+    "x86_64-linux",
+    "x86_64-macos",
+    "x86_64-windows",
+};
