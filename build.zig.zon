@@ -1,16 +1,12 @@
 .{
     .name = .liza,
     .version = "0.7.0",
-    .minimum_zig_version = "0.14.0",
     .fingerprint = 0xf8d7a7ba1acabddb, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .argzon = .{
-            .url = "git+https://codeberg.org/tensorush/argzon.git#31e50cfaf087b701e4e3759cf23f899f6bf93020",
-            .hash = "argzon-0.2.0-Cl574hmYAQC1GhtMyAVD58Rj9r30aALY65ZqU-SGQCZH",
-        },
-        .zeit = .{
-            .url = "git+https://github.com/rockorager/zeit.git#8fd203f85f597f16e0a525c1f1ca1e0bffded809",
-            .hash = "zeit-0.0.0-AAAAACVbAgAiIzg1rccZU1qOfO_dKQKme7-37xmEQcqc",
+            .url = "git+https://codeberg.org/tensorush/argzon.git#99a6f9014633a63baf43162c738e8d80c172c916",
+            .hash = "argzon-0.2.0-Cl574pqYAQCgw0ITAfNU8xy5TaX_S3s4L9q3wHSl8oXQ",
         },
         .zq = .{
             .url = "git+https://codeberg.org/tensorush/zq.git#d7ed9cfbaa746398fdf06ad37ccc274c22a53152",

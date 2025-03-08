@@ -1,7 +1,6 @@
 const std = @import("std");
 
 const zq = @import("zq");
-const zeit = @import("zeit");
 
 // Common paths
 const SRC = "src/";
@@ -392,7 +391,10 @@ fn createLicenseFile(
     while (std.mem.indexOfScalar(u8, ALL_LICENSE[idx..], '$')) |i| : (idx += i + 2) {
         try license_writer.writeAll(ALL_LICENSE[idx .. idx + i]);
         switch (ALL_LICENSE[idx + i + 1]) {
-            'y' => try license_writer.print("{d}", .{(try zeit.instant(.{})).time().year}),
+            'y' => try license_writer.print("{d}", .{ blk: {
+                const now = std.time.epoch.EpochSeconds{ .secs = @intCast(std.time.timestamp()) };
+                break :blk now.getEpochDay().calculateYearDay().year;
+            }}),
             'n' => try license_writer.writeAll(user_name),
             else => unreachable,
         }

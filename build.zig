@@ -14,12 +14,6 @@ pub fn build(b: *std.Build) !void {
     });
     const argzon_mod = argzon_dep.module("argzon");
 
-    const zeit_dep = b.dependency("zeit", .{
-        .target = target,
-        .optimize = optimize,
-    });
-    const zeit_mod = zeit_dep.module("zeit");
-
     const zq_dep = b.dependency("zq", .{
         .target = target,
         .optimize = optimize,
@@ -39,7 +33,6 @@ pub fn build(b: *std.Build) !void {
         }),
     });
     exe.root_module.addImport("argzon", argzon_mod);
-    exe.root_module.addImport("zeit", zeit_mod);
     exe.root_module.addImport("zq", zq_mod);
     b.installArtifact(exe);
 

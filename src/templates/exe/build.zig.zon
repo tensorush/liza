@@ -1,8 +1,8 @@
 .{
     .name = .$p,
     .version = "$v",
-    .minimum_zig_version = "$z",
     .fingerprint = 0xffffffff, // Changing this has security and trust implications.
+    .minimum_zig_version = "$z",
     .dependencies = .{
         // Depend on argzon by running:
         // zig fetch --save git+https://codeberg.org/tensorush/argzon.git
