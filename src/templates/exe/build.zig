@@ -66,7 +66,7 @@ $c
         });
         release_exe.root_module.addImport("argzon", argzon_mod);
 
-        const release_exe_install = b.addInstallArtifact(release_exe, .{});
+        const release_exe_install = b.addInstallArtifact(release_exe, .{ .dest_dir = .{ .override = .{ .custom = "release/" } } });
         release.dependOn(&release_exe_install.step);
     }
 

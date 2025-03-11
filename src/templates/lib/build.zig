@@ -41,7 +41,9 @@ $d
             }),
         });
         example.root_module.addImport("$p", mod);
-        b.installArtifact(example);
+
+        const example_install = b.addInstallArtifact(example, .{ .dest_dir = .{ .override = .{ .custom = EXAMPLES_DIR } } });
+        examples_step.dependOn(&example_install.step);
 
         const example_run = b.addRunArtifact(example);
         examples_step.dependOn(&example_run.step);

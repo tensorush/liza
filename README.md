@@ -15,6 +15,7 @@ zig build exe -- -h
 - #### [Zig executable template](src/templates/exe/):
     - Zig executable compilation.
     - Dependency usage.
+    - Binary release.
 
 - #### [Zig library template](src/templates/lib/):
     - Zig static library compilation.
