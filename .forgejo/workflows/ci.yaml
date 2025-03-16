@@ -20,7 +20,7 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
         with:
-          version: master
+          version: 0.14.0
           use-cache: false
 
       - name: Run exe step
@@ -40,7 +40,7 @@ jobs:
       - name: Set up Zig
         uses: https://github.com/mlugg/setup-zig@v1
         with:
-          version: master
+          version: 0.14.0
           use-cache: false
 
       - name: Run fmt step
