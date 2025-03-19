@@ -1,4 +1,4 @@
-//! Source file that exposes the executable's core logic and test suite to the root source file and Autodoc.
+//! Source file that exposes the executable's API and test suite to the root source file.
 
 const std = @import("std");
 

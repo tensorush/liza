@@ -1,7 +1,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
-    const version_str = "0.9.0";
+    const version_str = "0.9.1";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -21,20 +21,23 @@ pub fn build(b: *std.Build) !void {
     });
     const zq_mod = zq_dep.module("zq");
 
+    // Module
+    const mod = b.addModule("liza", .{
+        .target = target,
+        .optimize = optimize,
+        .root_source_file = root_source_file,
+    });
+    mod.addImport("argzon", argzon_mod);
+    mod.addImport("zq", zq_mod);
+
     // Executable
     const exe_step = b.step("exe", "Run executable");
 
     const exe = b.addExecutable(.{
         .name = "liza",
         .version = version,
-        .root_module = b.createModule(.{
-            .target = target,
-            .optimize = optimize,
-            .root_source_file = root_source_file,
-        }),
+        .root_module = mod,
     });
-    exe.root_module.addImport("argzon", argzon_mod);
-    exe.root_module.addImport("zq", zq_mod);
     b.installArtifact(exe);
 
     const exe_run = b.addRunArtifact(exe);
@@ -111,7 +114,7 @@ pub fn build(b: *std.Build) !void {
 
         const release_exe_archive_install = b.addInstallFileWithDir(
             release_exe_archive_path,
-            std.Build.InstallDir{ .custom = "release" },
+            .{ .custom = "release" },
             RELEASE_EXE_ARCHIVE_BASENAME,
         );
         release_exe_archive_install.step.dependOn(&release_exe_archive.step);

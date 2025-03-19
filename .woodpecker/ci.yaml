@@ -2,7 +2,7 @@ steps:
   ci:
     image: alpine:edge
     when:
-      event: [push, pull_request, manual]
+      event: [push, pull_request]
       branch: main
     commands: |
       echo "Set up Zig"

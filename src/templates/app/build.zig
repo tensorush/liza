@@ -15,6 +15,14 @@ pub fn build(b: *std.Build) !void {
     });
     const mach_mod = mach_dep.module("mach");
 
+    // Module
+    const mod = b.createModule(.{
+        .target = target,
+        .optimize = optimize,
+        .root_source_file = root_source_file,
+    });
+    mod.addImport("mach", mach_mod);
+
     // Executable
     const exe_step = b.step("exe", "Run executable");
 
@@ -22,10 +30,7 @@ pub fn build(b: *std.Build) !void {
         .name = "$p",
         .target = target,
         .optimize = optimize,
-        .app = b.createModule(.{
-            .root_source_file = root_source_file,
-            .imports = &.{.{ .name = "mach", .module = mach_mod }},
-        }),
+        .app = mod,
     });
     b.installArtifact(exe);
 
@@ -40,12 +45,8 @@ pub fn build(b: *std.Build) !void {
 
     const tests = b.addTest(.{
         .version = version,
-        .root_module = b.createModule(.{
-            .target = target,
-            .root_source_file = root_source_file,
-        }),
+        .root_module = mod,
     });
-    tests.root_module.addImport("mach", mach_mod);
 
     const tests_run = b.addRunArtifact(tests);
     tests_step.dependOn(&tests_run.step);

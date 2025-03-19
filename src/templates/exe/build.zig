@@ -15,19 +15,22 @@ pub fn build(b: *std.Build) !void {
     });
     const argzon_mod = argzon_dep.module("argzon");
 
+    // Module
+    const mod = b.addModule("$p", .{
+        .target = target,
+        .optimize = optimize,
+        .root_source_file = root_source_file,
+    });
+    mod.addImport("argzon", argzon_mod);
+
     // Executable
     const exe_step = b.step("exe", "Run executable");
 
     const exe = b.addExecutable(.{
         .name = "$p",
         .version = version,
-        .root_module = b.createModule(.{
-            .target = target,
-            .optimize = optimize,
-            .root_source_file = root_source_file,
-        }),
+        .root_module = mod,
     });
-    exe.root_module.addImport("argzon", argzon_mod);
     b.installArtifact(exe);
 
     const exe_run = b.addRunArtifact(exe);
@@ -41,12 +44,8 @@ $d
 
     const tests = b.addTest(.{
         .version = version,
-        .root_module = b.createModule(.{
-            .target = target,
-            .root_source_file = root_source_file,
-        }),
+        .root_module = mod,
     });
-    tests.root_module.addImport("argzon", argzon_mod);
 
     const tests_run = b.addRunArtifact(tests);
     tests_step.dependOn(&tests_run.step);
@@ -67,7 +66,7 @@ $c
     install_step.dependOn(fmt_step);
 
     // Binary release
-    const release = b.step("release", "Install, archive, and sign release binaries");
+    const release = b.step("release", "Install and archive release binaries");
 
     inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
         const RELEASE_NAME = "$p-" ++ version_str ++ "-" ++ RELEASE_TRIPLE;
@@ -102,7 +101,7 @@ $c
 
         const release_exe_archive_install = b.addInstallFileWithDir(
             release_exe_archive_path,
-            std.Build.InstallDir{ .custom = "release" },
+            .{ .custom = "release" },
             RELEASE_EXE_ARCHIVE_BASENAME,
         );
         release_exe_archive_install.step.dependOn(&release_exe_archive.step);

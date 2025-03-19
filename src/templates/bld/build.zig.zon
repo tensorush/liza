@@ -6,7 +6,7 @@
     .dependencies = .{
         // Depend on upstream repository by running:
         // zig fetch --save=$p git+https://github.com/$p/$p.git#v$v
-        // Depend on zlib repository by running:
+        // Depend on zlib by running:
         // zig fetch --save git+https://github.com/allyourcodebase/zlib.git
     },
     .paths = .{

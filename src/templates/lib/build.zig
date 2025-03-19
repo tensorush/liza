@@ -57,10 +57,7 @@ $d
 
     const tests = b.addTest(.{
         .version = version,
-        .root_module = b.createModule(.{
-            .target = target,
-            .root_source_file = root_source_file,
-        }),
+        .root_module = mod,
     });
 
     const tests_run = b.addRunArtifact(tests);
