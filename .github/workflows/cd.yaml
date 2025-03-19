@@ -38,7 +38,7 @@ jobs:
           MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
         run: |
           echo "${MINISIGN_SECRET_KEY}" > minisign.key
-          minisign -Sm zig-out/release/* -s minisign.key
+          minisign -S -s minisign.key -m zig-out/release/*
           rm minisign.key
 
       - name: Release
