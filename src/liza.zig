@@ -9,6 +9,8 @@ const README = "README.md";
 const TEMPLATES = "templates/";
 const BUILD_ZIG = "build.zig";
 const BUILD_ZON = "build.zig.zon";
+const GITIGNORE = ".gitignore";
+const GITATTRIBUTES = ".gitattributes";
 
 const EXAMPLES = "examples/";
 const EXAMPLE1 = EXAMPLES ++ "example1/";
@@ -16,10 +18,11 @@ const EXAMPLE2 = EXAMPLES ++ "example2/";
 
 const GITHUB = "github.com";
 const CODEBERG = "codeberg.org";
+
 const CD_WORKFLOW = "cd.yaml";
 const CI_WORKFLOW = "ci.yaml";
-const GITIGNORE = ".gitignore";
-const GITATTRIBUTES = ".gitattributes";
+const RELEASE_WORKFLOW = "release.yaml";
+
 const GITHUB_WORKFLOWS = ".github/workflows/";
 const FORGEJO_WORKFLOWS = ".forgejo/workflows/";
 const WOODPECKER_WORKFLOWS = ".woodpecker/";
@@ -59,6 +62,7 @@ const EXE_BUILD_ZIG = @embedFile(TEMPLATES ++ EXE ++ BUILD_ZIG);
 const EXE_BUILD_ZON = @embedFile(TEMPLATES ++ EXE ++ BUILD_ZON);
 const EXE_CORE_TEXT = @embedFile(TEMPLATES ++ EXE ++ SRC ++ EXE_CORE);
 const EXE_ROOT_TEXT = @embedFile(TEMPLATES ++ EXE ++ SRC ++ EXE_ROOT);
+const EXE_GITHUB_RELEASE_WORKFLOW = @embedFile(TEMPLATES ++ GITHUB_WORKFLOWS ++ RELEASE_WORKFLOW);
 
 // Library templates
 const LIB_README = @embedFile(TEMPLATES ++ LIB ++ README);
@@ -133,7 +137,7 @@ pub fn initialize(
 
             try createSourceFile(exe_core, EXE_CORE_TEXT, pckg_name, src_dir);
             try createSourceFile(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
-            try createWorkflows(EXE_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createWorkflows(EXE_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(EXE_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
         },
@@ -153,12 +157,12 @@ pub fn initialize(
             try createSourceFile(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE1, pckg_name, example1_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
-            try createWorkflows(LIB_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createWorkflows(LIB_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(LIB_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
         },
         .bld => {
-            try createWorkflows(BLD_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createWorkflows(BLD_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(BLD_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
         },
@@ -168,7 +172,7 @@ pub fn initialize(
 
             try createSourceFile(APP_ROOT, APP_ROOT_TEXT, pckg_name, src_dir);
             try createSourceFile(APP_SHADER, APP_SHADER_TEXT, pckg_name, src_dir);
-            try createWorkflows(APP_CI_STEP, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createWorkflows(APP_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(APP_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
         },
@@ -296,6 +300,7 @@ fn createBuildFiles(
 
 fn createWorkflows(
     comptime ci_step: []const u8,
+    codebase: Codebase,
     runner: Runner,
     add_doc: bool,
     add_cov: bool,
@@ -310,6 +315,14 @@ fn createWorkflows(
 
     var workflows_dir = try pckg_dir.makeOpenPath(workflows_dir_path, .{});
     defer workflows_dir.close();
+
+    if (codebase == .exe and runner == .github) {
+        var workflow_file = try workflows_dir.createFile(RELEASE_WORKFLOW, .{});
+        const workflow_writer = workflow_file.writer();
+        defer workflow_file.close();
+
+        try workflow_writer.writeAll(EXE_GITHUB_RELEASE_WORKFLOW);
+    }
 
     inline for (.{ CI_WORKFLOW, CD_WORKFLOW }, .{ all_ci_workflow, all_cd_workflow }) |path, text| {
         if (std.mem.startsWith(u8, path, "cd") and !add_doc) break;

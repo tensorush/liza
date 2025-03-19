@@ -1,4 +1,4 @@
-name: CD
+name: Release
 
 on:
   push:
@@ -44,6 +44,8 @@ jobs:
         with:
           body: |
             Archived binary files can be verified as follows:
-            minisign -Vm <file> -P minisign.pub
+            ```sh
+            minisign -Vm <file> -p minisign.pub
+            ```
           files: zig-out/release/*
           generate_release_notes: true
