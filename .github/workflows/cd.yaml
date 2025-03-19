@@ -7,8 +7,7 @@ on:
 
 jobs:
   release:
-    if: ${{ github.event.workflow_run.conclusion == 'success' &&
-      startsWith(github.event.workflow_run.referenced_workflows[0].ref, 'refs/tags/') }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     runs-on: ubuntu-latest
 
@@ -25,7 +24,12 @@ jobs:
           version: 0.14.0
 
       - name: Set up minisign
+        env:
+          REF: ${{ github.ref }}
+          EVENT_REF: ${{ github.event.workflow_run.referenced_workflows[0].ref }}
         run: |
+          echo $REF
+          echo $EVENT_REF
           wget https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz
           tar -xf minisign-0.12-linux.tar.gz --directory ${HOME}
           echo "${HOME}/minisign-linux/x86_64/" >> $GITHUB_PATH
@@ -36,6 +40,7 @@ jobs:
       - name: Sign release binaries
         env:
           MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
+          MINISIGN_PUBLIC_KEY: ${{ secrets.MINISIGN_PUBLIC_KEY }}
         run: |
           echo "${MINISIGN_SECRET_KEY}" > minisign.key
           minisign -S -s minisign.key -m zig-out/release/*
