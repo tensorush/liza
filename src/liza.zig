@@ -233,13 +233,7 @@ fn createBuildFiles(
             switch (text[idx + i + 1]) {
                 'p' => try build_writer.writeAll(pckg_name),
                 'u' => try build_writer.writeAll(user_hndl),
-                'v' => switch (mode) {
-                    .zig => try build_writer.print(
-                        " .major = {d}, .minor = {d}, .patch = {d} ",
-                        .{ version.major, version.minor, version.patch },
-                    ),
-                    .zon => try build_writer.print("{}", .{version}),
-                },
+                'v' => try build_writer.print("{}", .{version}),
                 'z' => try build_writer.print("{}", .{zig_version}),
                 'd' => if (add_doc) try build_writer.print(
                     \\

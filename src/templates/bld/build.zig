@@ -1,10 +1,11 @@
 const std = @import("std");
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
+    const version_str = "$v";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const version = std.SemanticVersion{$v};
+    const version = try std.SemanticVersion.parse(version_str);
 
     // Custom options
     const use_zlib = b.option(bool, "use_zlib", "Use zlib built with Zig") orelse false;

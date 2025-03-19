@@ -1,0 +1,52 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+  workflow_dispatch:
+
+jobs:
+  release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && startsWith(github.ref, 'refs/tags/') }}
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Zig
+        uses: mlugg/setup-zig@v1
+        with:
+          version: 0.14.0
+
+      - name: Set up minisign
+        run: |
+          curl https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz -o minisign.tar.gz
+          tar -xf minisign.tar.gz --directory ${HOME}
+          echo "${HOME}/minisign-linux/x86_64/" >> $GITHUB_PATH
+
+      - name: Run release step
+        run: zig build release
+
+      - name: Sign release binaries
+        env:
+          MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
+        run: |
+          echo "${MINISIGN_SECRET_KEY}" > minisign.key
+          minisign -Sm zig-out/release/* -s minisign.key
+          rm minisign.key
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: |
+            Archived binary files can be verified as follows:
+            minisign -Vm <file> -P ${{ secrets.MINISIGN_PUBLIC_KEY }}
+          files: zig-out/release/*
+          generate_release_notes: true

@@ -1,11 +1,12 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
+    const version_str = "$v";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/main.zig");
-    const version = std.SemanticVersion{$v};
+    const version = try std.SemanticVersion.parse(version_str);
 
     // Dependencies
     const argzon_dep = b.dependency("argzon", .{
@@ -51,25 +52,6 @@ $d
     tests_step.dependOn(&tests_run.step);
     install_step.dependOn(tests_step);
 $c
-    // Binary release
-    const release = b.step("release", "Install release binaries");
-
-    inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
-        const release_exe = b.addExecutable(.{
-            .name = "$p-" ++ RELEASE_TRIPLE,
-            .version = version,
-            .root_module = b.createModule(.{
-                .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = RELEASE_TRIPLE })),
-                .optimize = .ReleaseSafe,
-                .root_source_file = root_source_file,
-            }),
-        });
-        release_exe.root_module.addImport("argzon", argzon_mod);
-
-        const release_exe_install = b.addInstallArtifact(release_exe, .{ .dest_dir = .{ .override = .{ .custom = "release/" } } });
-        release.dependOn(&release_exe_install.step);
-    }
-
     // Formatting check
     const fmt_step = b.step("fmt", "Check formatting");
 
@@ -83,12 +65,54 @@ $c
     });
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
+
+    // Binary release
+    const release = b.step("release", "Install, archive, and sign release binaries");
+
+    inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
+        const RELEASE_NAME = "$p-" ++ version_str ++ "-" ++ RELEASE_TRIPLE;
+        const IS_WINDOWS_RELEASE = comptime std.mem.endsWith(u8, RELEASE_TRIPLE, "windows");
+        const RELEASE_EXE_ARCHIVE_BASENAME = RELEASE_NAME ++ if (IS_WINDOWS_RELEASE) ".zip" else ".tar.xz";
+
+        const release_exe = b.addExecutable(.{
+            .name = RELEASE_NAME,
+            .version = version,
+            .root_module = b.createModule(.{
+                .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = RELEASE_TRIPLE })),
+                .optimize = .ReleaseSafe,
+                .root_source_file = root_source_file,
+            }),
+        });
+        release_exe.root_module.addImport("argzon", argzon_mod);
+
+        const release_exe_install = b.addInstallArtifact(release_exe, .{});
+
+        const release_exe_archive = b.addSystemCommand(if (IS_WINDOWS_RELEASE) &.{
+            "zip",
+            "-9",
+        } else &.{
+            "tar",
+            "-cJf",
+        });
+        release_exe_archive.setCwd(release_exe.getEmittedBinDirectory());
+        if (!IS_WINDOWS_RELEASE) release_exe_archive.setEnvironmentVariable("XZ_OPT", "-9");
+        const release_exe_archive_path = release_exe_archive.addOutputFileArg(RELEASE_EXE_ARCHIVE_BASENAME);
+        release_exe_archive.addArg(release_exe.out_filename);
+        release_exe_archive.step.dependOn(&release_exe_install.step);
+
+        const release_exe_archive_install = b.addInstallFileWithDir(
+            release_exe_archive_path,
+            std.Build.InstallDir{ .custom = "release" },
+            RELEASE_EXE_ARCHIVE_BASENAME,
+        );
+        release_exe_archive_install.step.dependOn(&release_exe_archive.step);
+
+        release.dependOn(&release_exe_archive_install.step);
+    }
 }
 
 const RELEASE_TRIPLES = .{
-    "aarch64-linux",
     "aarch64-macos",
     "x86_64-linux",
-    "x86_64-macos",
     "x86_64-windows",
 };

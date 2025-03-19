@@ -1,11 +1,12 @@
 const std = @import("std");
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
+    const version_str = "$v";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/App.zig");
-    const version = std.SemanticVersion{$v};
+    const version = try std.SemanticVersion.parse(version_str);
 
     // Dependencies
     const mach_dep = b.dependency("mach", .{
