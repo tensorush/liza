@@ -40,8 +40,8 @@ zig build exe -- -h
     - `emit`->`deploy`: documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) or [Codeberg Pages](https://codeberg.page).
     - `release`: executable's binary release publication (only GitHub for now):
       - Generate key pair without password: `minisign -GW`.
-      - Add private key as `MINISIGN_SECRET_KEY` secret.
-      - Add public key as `MINISIGN_PUBLIC_KEY` secret.
+      - Add `./minisign.pub` as `MINISIGN_PUBLIC_KEY` repository secret.
+      - Add `~/.minisign/minisign.key` as `MINISIGN_SECRET_KEY` repository secret.
 
 - #### [MIT license template](src/templates/LICENSE).
 
