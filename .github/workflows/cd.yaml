@@ -5,6 +5,8 @@ on:
     workflows: [CI]
     types: [completed]
 
+  workflow_dispatch:
+
 jobs:
   release:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -26,7 +28,6 @@ jobs:
       - name: Set up minisign
         env:
           REF: ${{ github.ref }}
-          EVENT_REF: ${{ github.event.workflow_run.referenced_workflows[0].ref }}
         run: |
           wget https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz
           tar -xf minisign-0.12-linux.tar.gz --directory ${HOME}
