@@ -1,10 +1,13 @@
 name: CD
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
 
 jobs:
   emit:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: codeberg-tiny-lazy
 
     steps:
