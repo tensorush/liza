@@ -1,23 +1,22 @@
-# when:
-#   event: tag
-#   branch: main
-#   ref: refs/tags/v*
+when:
+  event: tag
+  branch: main
+  ref: refs/tags/v*
 
-# steps:
-#   release:
-#     image: kassany/alpine-ziglang:0.14.0
+steps:
+  release:
+    image: kassany/alpine-ziglang:0.14.0
+    #     environment:
+    #       MINISIGN_SECRET_KEY:
+    #         from_secret: MINISIGN_SECRET_KEY
+    #       MINISIGN_PUBLIC_KEY:
+    #         from_secret: MINISIGN_PUBLIC_KEY
 
-#     environment:
-#       MINISIGN_SECRET_KEY:
-#         from_secret: MINISIGN_SECRET_KEY
-#       MINISIGN_PUBLIC_KEY:
-#         from_secret: MINISIGN_PUBLIC_KEY
-
-#     commands: |
-#       echo "Set up minisign"
-#       curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz -o minisign.tar.gz
-#       tar -xf minisign.tar.gz
-#       export "PATH=${CI_WORKSPACE}/minisign-linux/x86_64/:${PATH}"
+    commands: |
+      echo "Set up minisign"
+      curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz -o minisign.tar.gz
+      tar -xf minisign.tar.gz
+      export "PATH=${CI_WORKSPACE}/minisign-linux/x86_64/:${PATH}"
 
 #       echo "Run release step"
 #       zig build release
