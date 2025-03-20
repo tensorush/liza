@@ -5,7 +5,7 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const version_str = "0.9.2";
+    const version_str = "0.9.3";
     const version = try std.SemanticVersion.parse(version_str);
 
     const api_source_file = b.path("src/liza.zig");
