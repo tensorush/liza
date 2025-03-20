@@ -41,6 +41,8 @@ jobs:
 
       - name: Download artifact for Codeberg Pages
         uses: forgejo/download-artifact@v4
+        with:
+          name: artifact
 
       - name: Deploy documentation to Codeberg Pages
         run: |
