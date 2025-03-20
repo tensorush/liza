@@ -1,10 +1,9 @@
-when:
-  event: [push, pull_request]
-  branch: main
-
 steps:
   exe:
     image: kassany/alpine-ziglang:0.14.0
+    when:
+      event: [push, pull_request]
+      branch: main
     commands: |
       zig build exe -- -r woodpecker --add-doc --add-cov executable "Executable description." user-handle "User Name" && rm -rf executable/
       zig build exe -- -c lib -r woodpecker --add-doc --add-cov library "Library description." user-handle "User Name" && rm -rf library/
@@ -13,5 +12,8 @@ steps:
 
   fmt:
     image: kassany/alpine-ziglang:0.14.0
+    when:
+      event: [push, pull_request]
+      branch: main
     commands: |
       zig build fmt

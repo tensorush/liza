@@ -1,7 +1,7 @@
 when:
   event: tag
-  branch: main
-  ref: refs/tags/v*
+  # branch: main
+  # ref: refs/tags/v*
 
 steps:
   release:
