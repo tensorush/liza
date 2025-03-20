@@ -24,7 +24,7 @@ jobs:
         run: |
           curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz -o minisign.tar.gz
           tar -xf minisign.tar.gz
-          echo "${GITHUB_WORKSPACE}/minisign-linux/x86_64/" >> $GITHUB_PATH
+          echo "$GITHUB_WORKSPACE/minisign-linux/x86_64/" >> $GITHUB_PATH
 
       - name: Run release step
         run: zig build release
@@ -34,9 +34,9 @@ jobs:
           MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
           MINISIGN_PUBLIC_KEY: ${{ secrets.MINISIGN_PUBLIC_KEY }}
         run: |
-          echo "${MINISIGN_SECRET_KEY}" > minisign.key
+          echo "$MINISIGN_SECRET_KEY" > minisign.key
           minisign -S -s minisign.key -m zig-out/release/*
-          echo "${MINISIGN_PUBLIC_KEY}" > zig-out/release/minisign.pub
+          echo "$MINISIGN_PUBLIC_KEY" > zig-out/release/minisign.pub
           rm minisign.key
 
       - name: Publish binary release

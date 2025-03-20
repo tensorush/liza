@@ -3,15 +3,22 @@ when:
   branch: main
 
 steps:
-  exe:
-    image: kassany/alpine-ziglang:0.14.0
+  ci:
+    image: alpine:edge
+
     commands: |
+      echo "Set up Zig"
+      apk --no-cache add curl jq
+      curl $(curl https://ziglang.org/download/index.json | jq -r '."0.14.0"."x86_64-linux".tarball') -o zig.tar.xz
+      tar -xf zig.tar.xz
+      mv zig*/ zig/
+      export "PATH=$CI_WORKSPACE/zig:$PATH"
+
+      echo "Run exe step"
       zig build exe -- -r woodpecker --add-doc --add-cov executable "Executable description." user-handle "User Name" && rm -rf executable/
       zig build exe -- -c lib -r woodpecker --add-doc --add-cov library "Library description." user-handle "User Name" && rm -rf library/
       zig build exe -- -c bld -r woodpecker build "Build description." user-handle "User Name" && rm -rf build/
       zig build exe -- -c app -r woodpecker application "Application description." user-handle "User Name" && rm -rf application/
 
-  fmt:
-    image: kassany/alpine-ziglang:0.14.0
-    commands: |
+      echo "Run fmt step"
       zig build fmt

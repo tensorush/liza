@@ -3,18 +3,22 @@ when:
   branch: main
 
 steps:
-  $s:
-    image: kassany/alpine-ziglang:$z
-    depends_on: []
+  ci:
+    image: alpine:edge
+
     commands: |
+      echo "Set up Zig"
+      apk --no-cache add curl jq
+      curl $(curl https://ziglang.org/download/index.json | jq -r '."$z"."x86_64-linux".tarball') -o zig.tar.xz
+      tar -xf zig.tar.xz
+      mv zig*/ zig/
+      export "PATH=$CI_WORKSPACE/zig:$PATH"
+
+      echo "Run $s step"
       zig build $s
 
-  test:
-    image: kassany/alpine-ziglang:$z
-    commands: |
+      echo "Run test step"
       zig build test --summary all
 
-  fmt:
-    image: kassany/alpine-ziglang:$z
-    commands: |
+      echo "Run fmt step"
       zig build fmt

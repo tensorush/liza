@@ -5,7 +5,7 @@ when:
 
 steps:
   release:
-    image: kassany/alpine-ziglang:0.14.0
+    image: alpine:edge
 
     environment:
       MINISIGN_SECRET_KEY:
@@ -14,22 +14,32 @@ steps:
         from_secret: MINISIGN_PUBLIC_KEY
 
     commands: |
+      echo "Set up Zig"
+      apk --no-cache add curl jq
+      curl $(curl https://ziglang.org/download/index.json | jq -r '."0.14.0"."x86_64-linux".tarball') -o zig.tar.xz
+      tar -xf zig.tar.xz
+      mv zig*/ zig/
+      export "PATH=$CI_WORKSPACE/zig:$PATH"
+
       echo "Set up minisign"
       curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz -o minisign.tar.gz
       tar -xf minisign.tar.gz
-      export "PATH=${CI_WORKSPACE}/minisign-linux/x86_64/:${PATH}"
+      export "PATH=$CI_WORKSPACE/minisign-linux/x86_64/:$PATH"
 
       echo "Run release step"
       zig build release
 
       echo "Sign release binaries"
-      echo "${MINISIGN_SECRET_KEY}" > minisign.key
+      echo "$MINISIGN_SECRET_KEY" > minisign.key
       minisign -S -s minisign.key -m zig-out/release/*
-      echo "${MINISIGN_PUBLIC_KEY}" > zig-out/release/minisign.pub
+      echo "$MINISIGN_PUBLIC_KEY" > zig-out/release/minisign.pub
       rm minisign.key
 
   publish:
+    depends_on: [release]
+
     image: woodpeckerci/plugin-release
+
     settings:
       files: |
         zig-out/release/*

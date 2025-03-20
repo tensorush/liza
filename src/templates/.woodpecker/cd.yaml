@@ -1,28 +1,34 @@
-when:
-  event: [manual]
-  branch:
-    exclude: pages
-
 depends_on: [ci]
 
 steps:
   emit:
-    image: kassany/alpine-ziglang:$z
+    image: alpine:edge
+
     commands: |
+      echo "Set up Zig"
+      apk --no-cache add curl jq
+      curl $(curl https://ziglang.org/download/index.json | jq -r '."$z"."x86_64-linux".tarball') -o zig.tar.xz
+      tar -xf zig.tar.xz
+      mv zig*/ zig/
+      export "PATH=$CI_WORKSPACE/zig:$PATH"
+
+      echo "Run doc step"
       zig build doc
 
   deploy:
     image: alpine/git:edge
+
     environment:
       TOKEN:
         from_secret: cbtoken
       EMAIL:
         from_secret: cbmail
+
     commands: |
-      git config --global user.email ${EMAIL}
+      git config --global user.email $EMAIL
       git config --global user.name "Woodpecker CI"
-      git clone --branch pages https://${TOKEN}@codeberg.org/${CI_REPO}.git ${CI_REPO_NAME}
-      cd ${CI_REPO_NAME}
+      git clone --branch pages https://$TOKEN@codeberg.org/$CI_REPO.git $CI_REPO_NAME
+      cd $CI_REPO_NAME
       cp -ar ../zig-out/docs/. ./
       git add -A
       git commit -m "Deploy documentation"
