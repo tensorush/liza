@@ -40,7 +40,7 @@ zig build exe -- -h
 - #### [GitHub](src/templates/.github/workflows/cd.yaml) / [Forgejo](src/templates/.forgejo/workflows/cd.yaml) / [Woodpecker](src/templates/.woodpecker/cd.yaml) CD workflow template (optional):
     - `emit`->`deploy`: executable's or library's documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) or [Codeberg Pages](https://codeberg.page).
 
-- #### [GitHub](src/templates/.github/workflows/release.yaml) / [Forgejo](src/templates/.forgejo/workflows/release.yaml) / [Woodpecker](src/templates/.woodpecker/release.yaml) Release workflow:
+- #### [GitHub](src/templates/.github/workflows/release.yaml) / [Woodpecker](src/templates/.woodpecker/release.yaml) Release workflow:
     - `release`: executable's binary release publication using [`minisign`](https://jedisct1.github.io/minisign/):
       - Generate key pair without password: `minisign -GW`.
       - Add `./minisign.pub` as `MINISIGN_PUBLIC_KEY` secret.

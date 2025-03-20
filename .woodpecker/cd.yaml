@@ -7,7 +7,7 @@ depends_on: [ci]
 
 steps:
   emit:
-    image: kassany/alpine-ziglang:$z
+    image: kassany/alpine-ziglang:0.14.0
     commands: |
       zig build doc
 

@@ -34,4 +34,4 @@ steps:
       files: |
         zig-out/release/*
       api_key:
-        from_secret: ACCESS_TOKEN
+        from_secret: TOKEN
