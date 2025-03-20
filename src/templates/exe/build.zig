@@ -1,12 +1,15 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
-    const version_str = "$v";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const root_source_file = b.path("src/main.zig");
+
+    const version_str = "$v";
     const version = try std.SemanticVersion.parse(version_str);
+
+    const api_source_file = b.path("src/$p.zig");
+    const root_source_file = b.path("src/main.zig");
 
     // Dependencies
     const argzon_dep = b.dependency("argzon", .{
@@ -15,13 +18,20 @@ pub fn build(b: *std.Build) !void {
     });
     const argzon_mod = argzon_dep.module("argzon");
 
-    // Module
-    const mod = b.addModule("$p", .{
+    // Public API module
+    const api_mod = b.addModule("$p", .{
+        .target = target,
+        .optimize = optimize,
+        .root_source_file = api_source_file,
+    });
+
+    // Root module
+    const root_mod = b.createModule(.{
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
     });
-    mod.addImport("argzon", argzon_mod);
+    root_mod.addImport("argzon", argzon_mod);
 
     // Executable
     const exe_step = b.step("exe", "Run executable");
@@ -29,7 +39,7 @@ pub fn build(b: *std.Build) !void {
     const exe = b.addExecutable(.{
         .name = "$p",
         .version = version,
-        .root_module = mod,
+        .root_module = root_mod,
     });
     b.installArtifact(exe);
 
@@ -44,7 +54,7 @@ $d
 
     const tests = b.addTest(.{
         .version = version,
-        .root_module = mod,
+        .root_module = api_mod,
     });
 
     const tests_run = b.addRunArtifact(tests);

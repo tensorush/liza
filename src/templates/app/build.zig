@@ -1,12 +1,14 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
-    const version_str = "$v";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const root_source_file = b.path("src/App.zig");
+
+    const version_str = "$v";
     const version = try std.SemanticVersion.parse(version_str);
+
+    const root_source_file = b.path("src/App.zig");
 
     // Dependencies
     const mach_dep = b.dependency("mach", .{
@@ -15,13 +17,13 @@ pub fn build(b: *std.Build) !void {
     });
     const mach_mod = mach_dep.module("mach");
 
-    // Module
-    const mod = b.createModule(.{
+    // Root module
+    const root_mod = b.createModule(.{
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
     });
-    mod.addImport("mach", mach_mod);
+    root_mod.addImport("mach", mach_mod);
 
     // Executable
     const exe_step = b.step("exe", "Run executable");
@@ -30,7 +32,7 @@ pub fn build(b: *std.Build) !void {
         .name = "$p",
         .target = target,
         .optimize = optimize,
-        .app = mod,
+        .app = root_mod,
     });
     b.installArtifact(exe);
 
@@ -45,7 +47,7 @@ pub fn build(b: *std.Build) !void {
 
     const tests = b.addTest(.{
         .version = version,
-        .root_module = mod,
+        .root_module = root_mod,
     });
 
     const tests_run = b.addRunArtifact(tests);

@@ -1,11 +1,9 @@
-//! Root source file that exposes the executable's main function and API to users and Autodoc.
+//! Root source file that exposes the executable's main function to the build system.
 
 const std = @import("std");
 const argzon = @import("argzon");
 
 const $p = @import("$p.zig");
-
-pub const run = $p.run;
 
 // Command-line interface definition.
 const CLI = .{
@@ -54,12 +52,8 @@ pub fn main() !void {
     const writer = buf_writer.writer();
 
     // Run core logic
-    try run(string, number, writer);
+    try $p.run(string, number, writer);
 
     // Flush standard output
     try buf_writer.flush();
-}
-
-test {
-    std.testing.refAllDecls(@This());
 }

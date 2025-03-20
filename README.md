@@ -14,11 +14,13 @@ zig build exe -- -h
 
 - #### [Zig executable template](src/templates/exe/):
     - Zig executable compilation.
+    - Public API module creation.
     - Dependency usage.
     - Binary release.
 
 - #### [Zig library template](src/templates/lib/):
     - Zig static library compilation.
+    - Public root module creation.
     - Example suite setup.
 
 - #### [Zig build template](src/templates/bld/):

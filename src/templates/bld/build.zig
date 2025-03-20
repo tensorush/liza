@@ -1,10 +1,11 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
-    const version_str = "$v";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
+
+    const version_str = "$v";
     const version = try std.SemanticVersion.parse(version_str);
 
     // Custom options
@@ -26,7 +27,7 @@ pub fn build(b: *std.Build) !void {
     }) else null;
     const zlib_art = if (use_zlib) zlib_dep.?.artifact("z") else undefined;
 
-    // Module
+    // Translate C module
     const c = b.addTranslateC(.{
         .target = target,
         .optimize = optimize,

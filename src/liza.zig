@@ -241,20 +241,35 @@ fn createBuildFiles(
                 'u' => try build_writer.writeAll(user_hndl),
                 'v' => try build_writer.print("{}", .{version}),
                 'z' => try build_writer.print("{}", .{zig_version}),
-                'd' => if (add_doc) try build_writer.print(
-                    \\
-                    \\    // Documentation
-                    \\    const docs_step = b.step("doc", "Emit documentation");
-                    \\
-                    \\    const docs_install = b.addInstallDirectory(.{{
-                    \\        .install_dir = .prefix,
-                    \\        .install_subdir = "docs",
-                    \\        .source_dir = {s}.getEmittedDocs(),
-                    \\    }});
-                    \\    docs_step.dependOn(&docs_install.step);
-                    \\    install_step.dependOn(docs_step);
-                    \\
-                , .{@tagName(codebase)}),
+                'd' => if (add_doc) {
+                    try build_writer.writeAll(
+                        \\
+                        \\    // Documentation
+                        \\    const docs_step = b.step("doc", "Emit documentation");
+                        \\
+                    );
+                    if (codebase == .exe) {
+                        try build_writer.print(
+                            \\
+                            \\    const lib = b.addLibrary(.{{
+                            \\        .name = "{s}",
+                            \\        .version = version,
+                            \\        .root_module = api_mod,
+                            \\    }});
+                        , .{pckg_name});
+                    }
+                    try build_writer.writeAll(
+                        \\
+                        \\    const docs_install = b.addInstallDirectory(.{
+                        \\        .install_dir = .prefix,
+                        \\        .install_subdir = "docs",
+                        \\        .source_dir = lib.getEmittedDocs(),
+                        \\    });
+                        \\    docs_step.dependOn(&docs_install.step);
+                        \\    install_step.dependOn(docs_step);
+                        \\
+                    );
+                },
                 'c' => if (add_cov) try build_writer.writeAll(
                     \\
                     \\    // Code coverage

@@ -1,12 +1,15 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
-    const version_str = "0.9.2";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const root_source_file = b.path("src/main.zig");
+
+    const version_str = "0.9.2";
     const version = try std.SemanticVersion.parse(version_str);
+
+    const api_source_file = b.path("src/liza.zig");
+    const root_source_file = b.path("src/main.zig");
 
     // Dependencies
     const argzon_dep = b.dependency("argzon", .{
@@ -21,14 +24,21 @@ pub fn build(b: *std.Build) !void {
     });
     const zq_mod = zq_dep.module("zq");
 
-    // Module
-    const mod = b.addModule("liza", .{
+    // Public API module
+    const api_mod = b.addModule("liza", .{
+        .target = target,
+        .optimize = optimize,
+        .root_source_file = api_source_file,
+    });
+
+    // Root module
+    const root_mod = b.createModule(.{
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
     });
-    mod.addImport("argzon", argzon_mod);
-    mod.addImport("zq", zq_mod);
+    root_mod.addImport("argzon", argzon_mod);
+    root_mod.addImport("zq", zq_mod);
 
     // Executable
     const exe_step = b.step("exe", "Run executable");
@@ -36,7 +46,7 @@ pub fn build(b: *std.Build) !void {
     const exe = b.addExecutable(.{
         .name = "liza",
         .version = version,
-        .root_module = mod,
+        .root_module = root_mod,
     });
     b.installArtifact(exe);
 
@@ -49,10 +59,15 @@ pub fn build(b: *std.Build) !void {
     // Documentation
     const docs_step = b.step("doc", "Emit documentation");
 
+    const lib = b.addLibrary(.{
+        .name = "liza",
+        .version = version,
+        .root_module = api_mod,
+    });
     const docs_install = b.addInstallDirectory(.{
         .install_dir = .prefix,
         .install_subdir = "docs",
-        .source_dir = exe.getEmittedDocs(),
+        .source_dir = lib.getEmittedDocs(),
     });
     docs_step.dependOn(&docs_install.step);
     install_step.dependOn(docs_step);

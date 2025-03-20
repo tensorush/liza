@@ -1,15 +1,17 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
-    const version_str = "$v";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const root_source_file = b.path("src/root.zig");
+
+    const version_str = "$v";
     const version = try std.SemanticVersion.parse(version_str);
 
-    // Module
-    const mod = b.addModule("$p", .{
+    const root_source_file = b.path("src/root.zig");
+
+    // Public root module
+    const root_mod = b.addModule("$p", .{
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
@@ -21,7 +23,7 @@ pub fn build(b: *std.Build) !void {
     const lib = b.addLibrary(.{
         .name = "$p",
         .version = version,
-        .root_module = mod,
+        .root_module = root_mod,
     });
 
     const lib_install = b.addInstallArtifact(lib, .{});
@@ -41,7 +43,7 @@ $d
                 .root_source_file = b.path(EXAMPLES_DIR ++ EXAMPLE_NAME ++ "/main.zig"),
             }),
         });
-        example.root_module.addImport("$p", mod);
+        example.root_module.addImport("$p", root_mod);
 
         const example_install = b.addInstallArtifact(example, .{});
         examples_step.dependOn(&example_install.step);
@@ -57,7 +59,7 @@ $d
 
     const tests = b.addTest(.{
         .version = version,
-        .root_module = mod,
+        .root_module = root_mod,
     });
 
     const tests_run = b.addRunArtifact(tests);
