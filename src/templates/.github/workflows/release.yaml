@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    tags: ["*"]
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
 
 jobs:
   release:
@@ -18,11 +18,11 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
         with:
-          version: 0.14.0
+          version: $z
 
       - name: Set up minisign
         run: |
-          wget https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz
+          curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz
           tar -xf minisign-0.12-linux.tar.gz --directory ${HOME}
           echo "${HOME}/minisign-linux/x86_64/" >> $GITHUB_PATH
 

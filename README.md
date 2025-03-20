@@ -19,7 +19,6 @@ zig build exe -- -h
 
 - #### [Zig library template](src/templates/lib/):
     - Zig static library compilation.
-    - Public module creation.
     - Example suite setup.
 
 - #### [Zig build template](src/templates/bld/):
@@ -40,7 +39,7 @@ zig build exe -- -h
     - `emit`->`deploy`: executable's or library's documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) or [Codeberg Pages](https://codeberg.page).
 
 - #### [GitHub](src/templates/.github/workflows/release.yaml) Release workflow:
-    - `release`: executable's binary release publication:
+    - `release`: executable's binary release publication using [`minisign`](https://jedisct1.github.io/minisign/):
       - Generate key pair without password: `minisign -GW`.
       - Add `./minisign.pub` as `MINISIGN_PUBLIC_KEY` repository secret.
       - Add `~/.minisign/minisign.key` as `MINISIGN_SECRET_KEY` repository secret.

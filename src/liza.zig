@@ -358,7 +358,8 @@ fn createWorkflows(
                     \\          verbose: true
                     \\
                 ),
-                else => try workflow_writer.writeAll(text[idx + i .. idx + i + 2]),
+                '{' => try workflow_writer.writeAll(text[idx + i .. idx + i + 2]),
+                else => unreachable,
             }
         }
         try workflow_writer.writeAll(text[idx..]);

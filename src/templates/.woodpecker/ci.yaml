@@ -1,15 +1,20 @@
+when:
+  event: [push, pull_request]
+  branch: main
+
 steps:
-  ci:
-    image: alpine:edge
-    when:
-      event: [push, pull_request]
-      branch: main
+  $s:
+    image: kassany/alpine-ziglang:$z
+    depends_on: []
     commands: |
-      echo "Set up Zig"
-      apk --no-cache add curl jq && curl $(curl https://ziglang.org/download/index.json | jq -r '."$z"."x86_64-linux".tarball') -o zig.tar.xz && tar -xf zig.tar.xz && mv zig*/ zig/ && export "PATH=$(pwd)/zig:$PATH"
-      echo "Run $s step"
       zig build $s
-      echo "Run test step"
+
+  test:
+    image: kassany/alpine-ziglang:$z
+    commands: |
       zig build test --summary all
-      echo "Run fmt step"
+
+  fmt:
+    image: kassany/alpine-ziglang:$z
+    commands: |
       zig build fmt
