@@ -4,10 +4,31 @@
 
 ### Usage
 
+#### Executable
+
 ```sh
 git clone https://codeberg.org/tensorush/liza.git
 cd liza/
 zig build exe -- -h
+```
+
+#### Module
+
+- Add `liza` dependency to `build.zig.zon`.
+
+```sh
+zig fetch --save git+https://codeberg.org/tensorush/liza.git
+```
+
+- Use `liza` dependency in `build.zig`.
+
+```zig
+const liza_dep = b.dependency("liza", .{
+    .target = target,
+    .optimize = optimize,
+});
+const liza_mod = liza_dep.module("liza");
+<Step.Compile>.root_module.addImport("liza", liza_mod);
 ```
 
 ### Features
