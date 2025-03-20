@@ -4,6 +4,8 @@ const argzon = @import("argzon");
 
 const liza = @import("liza.zig");
 
+pub const initialize = liza.initialize;
+
 // Command-line interface definition.
 // TODO: extract into `cli.zon` after:
 // https://github.com/ziglang/zig/pull/22907
@@ -115,7 +117,7 @@ pub fn main() !void {
     const zig_version_run = try std.process.Child.run(.{ .allocator = arena, .argv = &.{ "zig", "version" } });
     const zig_version = try std.SemanticVersion.parse(std.mem.trimRight(u8, zig_version_run.stdout, "\n"));
 
-    try liza.initialize(
+    try initialize(
         arena,
         pckg_name,
         pckg_desc,

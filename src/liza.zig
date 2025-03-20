@@ -63,6 +63,8 @@ const EXE_BUILD_ZON = @embedFile(TEMPLATES ++ EXE ++ BUILD_ZON);
 const EXE_CORE_TEXT = @embedFile(TEMPLATES ++ EXE ++ SRC ++ EXE_CORE);
 const EXE_ROOT_TEXT = @embedFile(TEMPLATES ++ EXE ++ SRC ++ EXE_ROOT);
 const EXE_GITHUB_RELEASE_WORKFLOW = @embedFile(TEMPLATES ++ GITHUB_WORKFLOWS ++ RELEASE_WORKFLOW);
+const EXE_FORGEJO_RELEASE_WORKFLOW = @embedFile(TEMPLATES ++ FORGEJO_WORKFLOWS ++ RELEASE_WORKFLOW);
+const EXE_WOODPECKER_RELEASE_WORKFLOW = @embedFile(TEMPLATES ++ WOODPECKER_WORKFLOWS ++ RELEASE_WORKFLOW);
 
 // Library templates
 const LIB_README = @embedFile(TEMPLATES ++ LIB ++ README);
@@ -316,12 +318,18 @@ fn createWorkflows(
     var workflows_dir = try pckg_dir.makeOpenPath(workflows_dir_path, .{});
     defer workflows_dir.close();
 
-    if (codebase == .exe and runner == .github) {
+    if (codebase == .exe) {
+        const exe_release_workflow = switch (runner) {
+            .github => EXE_GITHUB_RELEASE_WORKFLOW,
+            .forgejo => EXE_FORGEJO_RELEASE_WORKFLOW,
+            .woodpecker => EXE_WOODPECKER_RELEASE_WORKFLOW,
+        };
+
         var workflow_file = try workflows_dir.createFile(RELEASE_WORKFLOW, .{});
         const workflow_writer = workflow_file.writer();
         defer workflow_file.close();
 
-        try workflow_writer.writeAll(EXE_GITHUB_RELEASE_WORKFLOW);
+        try workflow_writer.writeAll(exe_release_workflow);
     }
 
     inline for (.{ CI_WORKFLOW, CD_WORKFLOW }, .{ all_ci_workflow, all_cd_workflow }) |path, text| {

@@ -1,7 +1,7 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
-    const version_str = "0.9.1";
+    const version_str = "0.9.2";
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -45,6 +45,17 @@ pub fn build(b: *std.Build) !void {
         exe_run.addArgs(args);
     }
     exe_step.dependOn(&exe_run.step);
+
+    // Documentation
+    const docs_step = b.step("doc", "Emit documentation");
+
+    const docs_install = b.addInstallDirectory(.{
+        .install_dir = .prefix,
+        .install_subdir = "docs",
+        .source_dir = exe.getEmittedDocs(),
+    });
+    docs_step.dependOn(&docs_install.step);
+    install_step.dependOn(docs_step);
 
     // Formatting check
     const fmt_step = b.step("fmt", "Check formatting");
