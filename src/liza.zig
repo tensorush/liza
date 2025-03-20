@@ -339,7 +339,7 @@ fn createWorkflows(
                 'z' => if (zig_version.build == null) {
                     try workflow_writer.print("{}", .{zig_version});
                 } else {
-                    try workflow_writer.writeAll("master");
+                    try workflow_writer.writeAll(if (runner == .woodpecker) "latest" else "master");
                 },
                 'c' => if (add_cov and runner == .github) try workflow_writer.writeAll(
                     \\

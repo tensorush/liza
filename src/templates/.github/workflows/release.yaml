@@ -22,9 +22,9 @@ jobs:
 
       - name: Set up minisign
         run: |
-          curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz
-          tar -xf minisign-0.12-linux.tar.gz --directory ${HOME}
-          echo "${HOME}/minisign-linux/x86_64/" >> $GITHUB_PATH
+          curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz -o minisign.tar.gz
+          tar -xf minisign.tar.gz
+          echo "${GITHUB_WORKSPACE}/minisign-linux/x86_64/" >> $GITHUB_PATH
 
       - name: Run release step
         run: zig build release

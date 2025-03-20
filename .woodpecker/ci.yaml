@@ -5,7 +5,6 @@ when:
 steps:
   exe:
     image: kassany/alpine-ziglang:0.14.0
-    depends_on: []
     commands: |
       zig build exe -- -r woodpecker --add-doc --add-cov executable "Executable description." user-handle "User Name" && rm -rf executable/
       zig build exe -- -c lib -r woodpecker --add-doc --add-cov library "Library description." user-handle "User Name" && rm -rf library/

@@ -15,8 +15,8 @@ steps:
 
     commands: |
       echo "Set up minisign"
-      curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz
-      tar -xf minisign-0.12-linux.tar.gz
+      curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz -o minisign.tar.gz
+      tar -xf minisign.tar.gz
       export "PATH=${CI_WORKSPACE}/minisign-linux/x86_64/:${PATH}"
 
       echo "Run release step"
