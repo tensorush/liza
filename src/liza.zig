@@ -336,6 +336,7 @@ fn createWorkflows(
         const exe_release_workflow = switch (runner) {
             .github => EXE_GITHUB_RELEASE_WORKFLOW,
             .woodpecker => EXE_WOODPECKER_RELEASE_WORKFLOW,
+            .forgejo => unreachable,
         };
 
         var workflow_file = try workflows_dir.createFile(RELEASE_WORKFLOW, .{});
