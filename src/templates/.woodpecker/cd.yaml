@@ -1,5 +1,9 @@
 depends_on: [ci]
 
+when:
+  event: [push]
+  branch: main
+
 steps:
   emit:
     image: alpine:edge
@@ -20,16 +24,16 @@ steps:
 
     environment:
       TOKEN:
-        from_secret: cbtoken
+        from_secret: TOKEN
       EMAIL:
-        from_secret: cbmail
+        from_secret: EMAIL
 
     commands: |
-      git config --global user.email $EMAIL
       git config --global user.name "Woodpecker CI"
-      git clone --branch pages https://$TOKEN@codeberg.org/$CI_REPO.git $CI_REPO_NAME
+      git config --global user.email $EMAIL
+      git clone -b pages https://$TOKEN@codeberg.org/$CI_REPO.git $CI_REPO_NAME
       cd $CI_REPO_NAME
-      cp -ar ../zig-out/docs/. ./
+      cp -r ../zig-out/docs/. ./
       git add -A
-      git commit -m "Deploy documentation"
+      git commit -m "Deploy documentation" --allow-empty
       git push

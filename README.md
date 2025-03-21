@@ -55,17 +55,20 @@ const liza_mod = liza_dep.module("liza");
 
 - #### [GitHub](src/templates/.github/workflows/ci.yaml) / [Forgejo](src/templates/.forgejo/workflows/ci.yaml) / [Woodpecker](src/templates/.woodpecker/ci.yaml) CI workflow template:
     - `exe`/`example`/`lib` (`$s`): executable's run, library's example suite execution, or build's installation.
-    - `test`: Test suite execution and optional GitHub-only code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration).
+    - `test`: Test suite execution and optional (GitHub-only for now) code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration).
     - `fmt`: Formatting check execution.
 
 - #### [GitHub](src/templates/.github/workflows/cd.yaml) / [Forgejo](src/templates/.forgejo/workflows/cd.yaml) / [Woodpecker](src/templates/.woodpecker/cd.yaml) CD workflow template (optional):
     - `emit`->`deploy`: executable's or library's documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) or [Codeberg Pages](https://codeberg.page).
+    - (Woodpecker-only) [Generate Codeberg access token](https://docs.codeberg.org/advanced/access-token/) and add it as `TOKEN` secret.
+    - (Woodpecker-only) Add email as `EMAIL` secret.
 
 - #### [GitHub](src/templates/.github/workflows/release.yaml) / [Woodpecker](src/templates/.woodpecker/release.yaml) Release workflow:
     - `release`: executable's binary release publication using [`minisign`](https://jedisct1.github.io/minisign/):
       - Generate key pair without password: `minisign -GW`.
       - Add `./minisign.pub` as `MINISIGN_PUBLIC_KEY` secret.
       - Add `~/.minisign/minisign.key` as `MINISIGN_SECRET_KEY` secret.
+      - (Woodpecker-only) [Generate Codeberg access token](https://docs.codeberg.org/advanced/access-token/) and add it as `TOKEN` secret.
 
 - #### [MIT license template](src/templates/LICENSE).
 
