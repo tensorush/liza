@@ -42,10 +42,10 @@ jobs:
       - name: Publish binary release
         uses: softprops/action-gh-release@v2
         with:
+          files: zig-out/release/*
           body: |
             Archived binary files can be verified as follows:
             ```sh
             minisign -Vm <file> -p minisign.pub
             ```
-          files: zig-out/release/*
           generate_release_notes: true

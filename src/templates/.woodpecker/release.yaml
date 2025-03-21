@@ -1,6 +1,6 @@
 when:
   event: tag
-  ref: refs/tags/v[0-9]+.[0-9]+.[0-9]+
+  ref: refs/tags/v*
 
 steps:
   release:
@@ -26,6 +26,7 @@ steps:
       export "PATH=$CI_WORKSPACE/minisign-linux/x86_64/:$PATH"
 
       echo "Run release step"
+      apk --no-cache add xz zip
       zig build release
 
       echo "Sign release binaries"
@@ -35,12 +36,14 @@ steps:
       rm minisign.key
 
   publish:
-    depends_on: [release]
-
     image: woodpeckerci/plugin-release
 
     settings:
-      files: |
-        zig-out/release/*
       api_key:
         from_secret: TOKEN
+      files: zig-out/release/*
+      note: |
+        Archived binary files can be verified as follows:
+        ```sh
+        minisign -Vm <file> -p minisign.pub
+        ```
