@@ -36,6 +36,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
+        .strip = b.option(bool, "strip", "strip the binary"),
     });
     root_mod.addImport("argzon", argzon_mod);
     root_mod.addImport("zq", zq_mod);
@@ -118,6 +119,7 @@ pub fn build(b: *std.Build) !void {
                 .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = RELEASE_TRIPLE })),
                 .optimize = .ReleaseSafe,
                 .root_source_file = root_source_file,
+                .strip = true,
             }),
         });
         release_exe.root_module.addImport("argzon", argzon_mod);

@@ -21,11 +21,11 @@ pub fn build(b: *std.Build) !void {
     const $p_test_path = $p_dep.path("test/");
     const $p_include_path = $p_dep.path("include/");
 
-    const zlib_dep = if (use_zlib) b.lazyDependency("zlib", .{
+    const zlib_dep_lazy = if (use_zlib) b.lazyDependency("zlib", .{
         .target = target,
         .optimize = optimize,
     }) else null;
-    const zlib_art = if (use_zlib) zlib_dep.?.artifact("z") else undefined;
+    const zlib_art = if (zlib_dep_lazy) |zlib_dep| zlib_dep.artifact("z") else undefined;
 
     // Translate C module
     const c = b.addTranslateC(.{
