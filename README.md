@@ -1,6 +1,6 @@
 # liza
 
-## Zig codebase initializer.
+## Command-line Zig codebase initializer.
 
 ### Usage
 

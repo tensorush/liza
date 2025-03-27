@@ -1,6 +1,6 @@
 # $p
 
-## Zig build for $p.
+## Zig build of [$p]($d).
 
 ### Usage
 

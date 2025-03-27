@@ -16,28 +16,28 @@ const @"import(cli.zon)" = .{
             .long = "cbs",
             .type = "Codebase",
             .default = .exe,
-            .description = "Codebase type: exe, lib, bld, app (default: exe).",
+            .description = "Codebase type.",
         },
         .{
             .short = 'r',
             .long = "rnr",
             .type = "Runner",
             .default = .github,
-            .description = "CI/CD runner type: github, forgejo, woodpecker (default: github).",
+            .description = "CI/CD runner type.",
         },
         .{
             .short = 'v',
             .long = "ver",
             .type = "string",
             .default = "0.1.0",
-            .description = "Codebase semantic version triple (default: 0.1.0).",
+            .description = "Codebase semantic version triple.",
         },
         .{
             .short = 'o',
             .long = "out",
             .type = "string",
             .default = "./",
-            .description = "Output directory path (default: ./).",
+            .description = "Output directory path.",
         },
     },
     .flags = .{
@@ -59,7 +59,7 @@ const @"import(cli.zon)" = .{
         .{
             .meta = .PCKG_DESC,
             .type = "string",
-            .description = "Package description (e.g. \"Zig codebase initializer.\").",
+            .description = "Package description (e.g. \"Zig codebase initializer.\") or build's upstream repository link.",
         },
         .{
             .meta = .USER_HNDL,
