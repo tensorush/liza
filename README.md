@@ -6,21 +6,32 @@
 
 #### Executable
 
+- Build from source
+
 ```sh
 git clone https://codeberg.org/tensorush/liza.git
 cd liza/
 zig build exe -- -h
 ```
 
+- Download latest release
+
+```sh
+wget https://github.com/tensorush/liza/releases/latest/download/<archive>
+tar -xf <archive> # Linux/macOS
+unzip <archive> # Windows
+./<binary> -h
+```
+
 #### Module
 
-- Add `liza` dependency to `build.zig.zon`.
+1. Add `liza` dependency to `build.zig.zon`.
 
 ```sh
 zig fetch --save git+https://codeberg.org/tensorush/liza.git
 ```
 
-- Use `liza` dependency in `build.zig`.
+2. Use `liza` dependency in `build.zig`.
 
 ```zig
 const liza_dep = b.dependency("liza", .{

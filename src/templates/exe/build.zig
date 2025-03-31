@@ -80,7 +80,7 @@ $c
     const release = b.step("release", "Install and archive release binaries");
 
     inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
-        const RELEASE_NAME = "$p-" ++ version_str ++ "-" ++ RELEASE_TRIPLE;
+        const RELEASE_NAME = "$p-v" ++ version_str ++ "-" ++ RELEASE_TRIPLE;
         const IS_WINDOWS_RELEASE = comptime std.mem.endsWith(u8, RELEASE_TRIPLE, "windows");
         const RELEASE_EXE_ARCHIVE_BASENAME = RELEASE_NAME ++ if (IS_WINDOWS_RELEASE) ".zip" else ".tar.xz";
 

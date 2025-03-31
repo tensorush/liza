@@ -17,7 +17,10 @@ const EXAMPLE1 = EXAMPLES ++ "example1/";
 const EXAMPLE2 = EXAMPLES ++ "example2/";
 
 const GITHUB = "github.com";
+const GITHUB_LATEST_RELEASE = "latest/download";
+
 const CODEBERG = "codeberg.org";
+const CODEBERG_LATEST_RELEASE = "download/latest";
 
 const CD_WORKFLOW = "cd.yaml";
 const CI_WORKFLOW = "ci.yaml";
@@ -202,6 +205,10 @@ fn createReadmeFile(
             'g' => try readme_writer.writeAll(switch (runner) {
                 .github => GITHUB,
                 .forgejo, .woodpecker => CODEBERG,
+            }),
+            'l' => try readme_writer.writeAll(switch (runner) {
+                .github => GITHUB_LATEST_RELEASE,
+                .forgejo, .woodpecker => CODEBERG_LATEST_RELEASE,
             }),
             else => unreachable,
         }

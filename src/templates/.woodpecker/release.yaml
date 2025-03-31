@@ -21,7 +21,7 @@ steps:
       export "PATH=$CI_WORKSPACE/zig:$PATH"
 
       echo "Set up minisign"
-      curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz -o minisign.tar.gz
+      curl -L https://github.com/jedisct1/minisign/releases/latest/download/minisign-0.12-linux.tar.gz -o minisign.tar.gz
       tar -xf minisign.tar.gz
       export "PATH=$CI_WORKSPACE/minisign-linux/x86_64/:$PATH"
 
@@ -45,5 +45,5 @@ steps:
       note: |
         Archived binary files can be verified as follows:
         ```sh
-        minisign -Vm <file> -p minisign.pub
+        minisign -Vm <archive> -p minisign.pub
         ```

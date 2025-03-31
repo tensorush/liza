@@ -22,7 +22,7 @@ jobs:
 
       - name: Set up minisign
         run: |
-          curl -L https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz -o minisign.tar.gz
+          curl -L https://github.com/jedisct1/minisign/releases/latest/download/minisign-0.12-linux.tar.gz -o minisign.tar.gz
           tar -xf minisign.tar.gz
           echo "$GITHUB_WORKSPACE/minisign-linux/x86_64/" >> $GITHUB_PATH
 
@@ -46,6 +46,6 @@ jobs:
           body: |
             Archived binary files can be verified as follows:
             ```sh
-            minisign -Vm <file> -p minisign.pub
+            minisign -Vm <archive> -p minisign.pub
             ```
           generate_release_notes: true

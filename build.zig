@@ -5,7 +5,7 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const version_str = "0.10.0";
+    const version_str = "0.11.0";
     const version = try std.SemanticVersion.parse(version_str);
 
     const api_source_file = b.path("src/liza.zig");
@@ -108,7 +108,7 @@ pub fn build(b: *std.Build) !void {
     const release = b.step("release", "Install and archive release binaries");
 
     inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
-        const RELEASE_NAME = "liza-" ++ version_str ++ "-" ++ RELEASE_TRIPLE;
+        const RELEASE_NAME = "liza-v" ++ version_str ++ "-" ++ RELEASE_TRIPLE;
         const IS_WINDOWS_RELEASE = comptime std.mem.endsWith(u8, RELEASE_TRIPLE, "windows");
         const RELEASE_EXE_ARCHIVE_BASENAME = RELEASE_NAME ++ if (IS_WINDOWS_RELEASE) ".zip" else ".tar.xz";
 

@@ -4,13 +4,13 @@
 
 ### Usage
 
-- Add `$p` dependency to `build.zig.zon`.
+1. Add `$p` dependency to `build.zig.zon`.
 
 ```sh
 zig fetch --save git+https://$g/$u/$p.git
 ```
 
-- Use `$p` dependency in `build.zig`.
+2. Use `$p` dependency in `build.zig`.
 
 ```zig
 const $p_dep = b.dependency("$p", .{
