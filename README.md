@@ -6,7 +6,7 @@
 
 #### Executable
 
-- Build from source
+- Build from source:
 
 ```sh
 git clone https://codeberg.org/tensorush/liza.git
@@ -14,24 +14,24 @@ cd liza/
 zig build exe -- -h
 ```
 
-- Download latest release
+- Download latest release:
 
 ```sh
 wget https://github.com/tensorush/liza/releases/latest/download/<archive>
-tar -xf <archive> # Linux/macOS
+tar -xf <archive> # Unix
 unzip <archive> # Windows
 ./<binary> -h
 ```
 
 #### Module
 
-1. Add `liza` dependency to `build.zig.zon`.
+1. Add `liza` dependency to `build.zig.zon`:
 
 ```sh
 zig fetch --save git+https://codeberg.org/tensorush/liza.git
 ```
 
-2. Use `liza` dependency in `build.zig`.
+2. Use `liza` dependency in `build.zig`:
 
 ```zig
 const liza_dep = b.dependency("liza", .{
@@ -39,7 +39,7 @@ const liza_dep = b.dependency("liza", .{
     .optimize = optimize,
 });
 const liza_mod = liza_dep.module("liza");
-<Step.Compile>.root_module.addImport("liza", liza_mod);
+<std.Build.Step.Compile>.root_module.addImport("liza", liza_mod);
 ```
 
 ### Features

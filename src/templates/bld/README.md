@@ -4,13 +4,13 @@
 
 ### Usage
 
-1. Add `$p` dependency to `build.zig.zon`.
+1. Add `$p` dependency to `build.zig.zon`:
 
 ```sh
 zig fetch --save git+https://$g/$u/$p.git
 ```
 
-2. Use `$p` dependency in `build.zig`.
+2. Use `$p` dependency in `build.zig`:
 
 ```zig
 const $p_dep = b.dependency("$p", .{
@@ -19,8 +19,8 @@ const $p_dep = b.dependency("$p", .{
 });
 // Either import module
 const $p_mod = $p_dep.module("$p");
-<Step.Compile>.root_module.addImport("$p", $p_mod);
+<std.Build.Step.Compile>.root_module.addImport("$p", $p_mod);
 // Or link artifact
 const $p_art = $p_dep.artifact("$p");
-<Step.Compile>.linkLibrary($p_art);
+<std.Build.Step.Compile>.linkLibrary($p_art);
 ```
