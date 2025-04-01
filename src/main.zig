@@ -40,16 +40,20 @@ const @"import(cli.zon)" = .{
             .description = "Output directory path.",
         },
     },
-    .flags = .{ .{
-        .long = "add-doc",
-        .description = "Add documentation to exe or lib (add doc step, add CD workflow).",
-    }, .{
-        .long = "add-cov",
-        .description = "Add code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore).",
-    }, .{
-        .long = "add-check",
-        .description = "Add compiler Check step to exe or lib",
-    } },
+    .flags = .{
+        .{
+            .long = "add-doc",
+            .description = "Add documentation to exe or lib (add doc step, add CD workflow).",
+        },
+        .{
+            .long = "add-cov",
+            .description = "Add code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore).",
+        },
+        .{
+            .long = "add-check",
+            .description = "Add compilation check for ZLS Build-On-Save to exe or lib (add check step)",
+        },
+    },
     .positionals = .{
         .{
             .meta = .PCKG_NAME,
@@ -109,7 +113,7 @@ pub fn main() !void {
     switch (codebase) {
         .exe, .lib => {},
         .bld, .app => if (add_doc or add_cov or add_check) {
-            @panic("Options add-doc, add-cov and add_check, are unavailable for bld and app codebases!");
+            @panic("Flags add-doc, add-cov, and add-check, are unavailable for bld and app codebases!");
         },
     }
 

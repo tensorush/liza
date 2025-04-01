@@ -48,19 +48,20 @@ const liza_mod = liza_dep.module("liza");
     - Public API module creation.
     - Dependency package usage.
     - [Build steps](src/templates/exe/build.zig):
-        - `install` (default): All-step execution, except for `run` and `release`.
+        - `install` (default): All-step execution, except for `run`, `check`, and `release`.
         - `exe`: Zig executable installation.
         - `run`: Zig executable run.
         - `doc` (`$d`): Documentation emission (`--add-doc`).
         - `test`: Test suite execution.
         - `cov` (`$c`): Code coverage generation (`--add-cov`).
         - `fmt`: Formatting check execution.
-        - `release`: Binary release.
+        - `check` (`$s`): Compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`--add-check`).
+        - `release`: Release binaries' installation and archiving.
 
 - #### [Zig Library Template (`lib`)](src/templates/lib/):
     - Public root module creation.
     - [Build steps](src/templates/lib/build.zig):
-        - `install` (default): All-step execution, except for `example-run`.
+        - `install` (default): All-step execution, except for `example-run` and `check`.
         - `lib`: Zig static library installation.
         - `doc` (`$d`): Documentation emission (`--add-doc`).
         - `example`: Example suite installation.
@@ -68,6 +69,7 @@ const liza_mod = liza_dep.module("liza");
         - `test`: Test suite execution.
         - `cov` (`$c`): Code coverage generation (`--add-cov`).
         - `fmt`: Formatting check execution.
+        - `check` (`$s`): Compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`--add-check`).
 
 - #### [Zig Build Template (`bld`)](src/templates/bld/):
     - Public Translate-C module creation.

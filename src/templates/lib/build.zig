@@ -54,7 +54,7 @@ $d
     }
 
     install_step.dependOn(examples_step);
-$s
+
     // Test suite
     const tests_step = b.step("test", "Run test suite");
 
@@ -81,7 +81,7 @@ $c
     });
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
-}
+$s}
 
 const EXAMPLES_DIR = "examples/";
 

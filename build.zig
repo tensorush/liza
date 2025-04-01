@@ -5,7 +5,7 @@ pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const version_str = "0.12.0";
+    const version_str = "0.13.0";
     const version = try std.SemanticVersion.parse(version_str);
 
     const api_source_file = b.path("src/liza.zig");
@@ -109,7 +109,17 @@ pub fn build(b: *std.Build) !void {
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
 
-    // Binary release
+    // Compilation check for ZLS Build-On-Save
+    // See: https://zigtools.org/zls/guides/build-on-save/
+    const check_step = b.step("check", "Check compilation");
+    const check_exe = b.addExecutable(.{
+        .name = "liza",
+        .version = version,
+        .root_module = root_mod,
+    });
+    check_step.dependOn(&check_exe.step);
+
+    // Release
     const release = b.step("release", "Install and archive release binaries");
 
     inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {

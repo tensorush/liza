@@ -39,7 +39,7 @@ jobs:
           echo "$MINISIGN_PUBLIC_KEY" > zig-out/release/minisign.pub
           rm minisign.key
 
-      - name: Publish binary release
+      - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           files: zig-out/release/*

@@ -81,7 +81,7 @@ $c
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
 $s
-    // Binary release
+    // Release
     const release = b.step("release", "Install and archive release binaries");
 
     inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {

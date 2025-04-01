@@ -289,39 +289,19 @@ fn createBuildFiles(
                     \\    install_step.dependOn(cov_step);
                     \\
                 ),
-                's' => if (add_check) {
-                    if (codebase == .exe) {
-                        try build_writer.print(
-                            \\
-                            \\    // Static compile-time checks
-                            \\    // This is useful for running the compile-time checks against your code.
-                            \\    // See: https://zigtools.org/zls/guides/build-on-save/
-                            \\    const check_step = b.step("check", "Run static compile-time checks");
-                            \\    const check_exe = b.addExecutable(.{{
-                            \\        .name = "{s}",
-                            \\        .version = version,
-                            \\        .root_module = root_mod,
-                            \\    }});
-                            \\    check_step.dependOn(&check_exe.step);
-                            \\
-                        , .{pckg_name});
-                    } else if (codebase == .lib) {
-                        try build_writer.print(
-                            \\
-                            \\    // Static compile-time checks
-                            \\    // This is useful for running the compile-time checks against your code.
-                            \\    // See: https://zigtools.org/zls/guides/build-on-save/
-                            \\    const check_step = b.step("check", "Run static compile-time checks");
-                            \\    const check_lib = b.addLibrary(.{{
-                            \\        .name = "{s}",
-                            \\        .version = version,
-                            \\        .root_module = root_mod,
-                            \\    }});
-                            \\    check_step.dependOn(&check_lib.step);
-                            \\
-                        , .{pckg_name});
-                    }
-                },
+                's' => if (add_check) try build_writer.print(
+                    \\
+                    \\    // Compilation check for ZLS Build-On-Save
+                    \\    // See: https://zigtools.org/zls/guides/build-on-save/
+                    \\    const check_step = b.step("check", "Check compilation");
+                    \\    const check_{s} = b.add{s}(.{{
+                    \\        .name = "{s}",
+                    \\        .version = version,
+                    \\        .root_module = root_mod,
+                    \\    }});
+                    \\    check_step.dependOn(&check_{s}.step);
+                    \\
+                , .{ @tagName(codebase), if (codebase == .exe) "Executable" else "Library", pckg_name, @tagName(codebase) }),
                 else => unreachable,
             }
         }
@@ -403,7 +383,7 @@ fn createWorkflows(
                 'z' => if (zig_version.build == null) {
                     try workflow_writer.print("{}", .{zig_version});
                 } else {
-                    try workflow_writer.writeAll(if (runner == .woodpecker) "latest" else "master");
+                    try workflow_writer.writeAll("master");
                 },
                 'c' => if (add_cov and runner == .github) try workflow_writer.writeAll(
                     \\
