@@ -25,7 +25,7 @@ steps:
       tar -xf minisign.tar.gz
       export "PATH=$CI_WORKSPACE/minisign-linux/x86_64/:$PATH"
 
-      echo "Run release step"
+      echo "Run `release` step"
       apk --no-cache add xz zip
       zig build release
 

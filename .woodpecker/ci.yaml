@@ -14,11 +14,11 @@ steps:
       mv zig*/ zig/
       export "PATH=$CI_WORKSPACE/zig:$PATH"
 
-      echo "Run exe step"
-      zig build exe -- -r woodpecker --add-doc --add-cov executable "Executable description." user-handle "User Name" && rm -rf executable/
-      zig build exe -- -c lib -r woodpecker --add-doc --add-cov library "Library description." user-handle "User Name" && rm -rf library/
-      zig build exe -- -c bld -r woodpecker build "Build description." user-handle "User Name" && rm -rf build/
-      zig build exe -- -c app -r woodpecker application "Application description." user-handle "User Name" && rm -rf application/
+      echo "Run `run` step"
+      zig build run -- -r woodpecker --add-doc --add-cov executable "Executable description." user-handle "User Name" && rm -rf executable/
+      zig build run -- -c lib -r woodpecker --add-doc --add-cov library "Library description." user-handle "User Name" && rm -rf library/
+      zig build run -- -c bld -r woodpecker build "Build description." user-handle "User Name" && rm -rf build/
+      zig build run -- -c app -r woodpecker application "Application description." user-handle "User Name" && cd application/ && zig build && cd ../ && rm -rf application/
 
-      echo "Run fmt step"
+      echo "Run `fmt` step"
       zig build fmt

@@ -31,7 +31,8 @@ pub fn build(b: *std.Build) !void {
     install_step.dependOn(lib_step);
 $d
     // Example suite
-    const examples_step = b.step("example", "Run example suite");
+    const examples_step = b.step("example", "Install example suite");
+    const examples_run_step = b.step("example-run", "Run example suite");
 
     inline for (EXAMPLE_NAMES) |EXAMPLE_NAME| {
         const example = b.addExecutable(.{
@@ -49,7 +50,7 @@ $d
         examples_step.dependOn(&example_install.step);
 
         const example_run = b.addRunArtifact(example);
-        examples_step.dependOn(&example_run.step);
+        examples_run_step.dependOn(&example_run.step);
     }
 
     install_step.dependOn(examples_step);

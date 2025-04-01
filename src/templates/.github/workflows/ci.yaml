@@ -20,7 +20,7 @@ jobs:
         with:
           version: $z
 
-      - name: Run $s step
+      - name: Run `$s` step
         run: zig build $s
 
   test:
@@ -35,7 +35,7 @@ jobs:
         with:
           version: $z
 
-      - name: Run test step
+      - name: Run `test` step
         run: zig build test --summary all
 $c
   fmt:
@@ -50,5 +50,5 @@ $c
         with:
           version: $z
 
-      - name: Run fmt step
+      - name: Run `fmt` step
         run: zig build fmt

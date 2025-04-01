@@ -8,7 +8,7 @@ pub fn build(b: *std.Build) !void {
     const version_str = "$v";
     const version = try std.SemanticVersion.parse(version_str);
 
-    // Custom options
+    // Configuration options
     const use_zlib = b.option(bool, "use_zlib", "Use zlib built with Zig") orelse false;
 
     // Dependencies
@@ -27,7 +27,7 @@ pub fn build(b: *std.Build) !void {
     }) else null;
     const zlib_art = if (zlib_dep_lazy) |zlib_dep| zlib_dep.artifact("z") else undefined;
 
-    // Translate C module
+    // Translate-C module
     const c = b.addTranslateC(.{
         .target = target,
         .optimize = optimize,

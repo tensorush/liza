@@ -18,7 +18,7 @@ jobs:
           version: 0.14.0
           use-cache: false
 
-      - name: Run doc step
+      - name: Run `doc` step
         run: zig build doc
 
       - name: Upload artifact for Codeberg Pages

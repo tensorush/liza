@@ -21,7 +21,7 @@ jobs:
           version: $z
           use-cache: false
 
-      - name: Run $s step
+      - name: Run `$s` step
         run: zig build $s
 
   test:
@@ -37,7 +37,7 @@ jobs:
           version: $z
           use-cache: false
 
-      - name: Run test step
+      - name: Run `test` step
         run: zig build test --summary all
 
   fmt:
@@ -53,5 +53,5 @@ jobs:
           version: $z
           use-cache: false
 
-      - name: Run fmt step
+      - name: Run `fmt` step
         run: zig build fmt

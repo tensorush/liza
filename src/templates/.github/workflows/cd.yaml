@@ -20,7 +20,7 @@ jobs:
         with:
           version: $z
 
-      - name: Run doc step
+      - name: Run `doc` step
         run: zig build doc
 
       - name: Upload artifact for GitHub Pages

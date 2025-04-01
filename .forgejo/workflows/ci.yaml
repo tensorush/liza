@@ -8,7 +8,7 @@ on:
     branches: [main]
 
 jobs:
-  exe:
+  run:
     runs-on: codeberg-tiny-lazy
 
     steps:
@@ -21,12 +21,12 @@ jobs:
           version: 0.14.0
           use-cache: false
 
-      - name: Run exe step
+      - name: Run `run` step
         run: |
-          zig build exe -- -r forgejo --add-doc --add-cov executable "Executable description." user-handle "User Name" && rm -rf executable/
-          zig build exe -- -c lib -r forgejo --add-doc --add-cov library "Library description." user-handle "User Name" && rm -rf library/
-          zig build exe -- -c bld -r forgejo build "Build description." user-handle "User Name" && rm -rf build/
-          zig build exe -- -c app -r forgejo application "Application description." user-handle "User Name" && rm -rf application/
+          zig build run -- -r forgejo --add-doc --add-cov executable "Executable description." user-handle "User Name" && rm -rf executable/
+          zig build run -- -c lib -r forgejo --add-doc --add-cov library "Library description." user-handle "User Name" && rm -rf library/
+          zig build run -- -c bld -r forgejo build "Build description." user-handle "User Name" && rm -rf build/
+          zig build run -- -c app -r forgejo application "Application description." user-handle "User Name" && cd application/ && zig build && cd ../ && rm -rf application/
 
   fmt:
     runs-on: codeberg-tiny-lazy
@@ -41,5 +41,5 @@ jobs:
           version: 0.14.0
           use-cache: false
 
-      - name: Run fmt step
+      - name: Run `fmt` step
         run: zig build fmt

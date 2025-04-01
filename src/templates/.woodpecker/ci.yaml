@@ -14,11 +14,11 @@ steps:
       mv zig*/ zig/
       export "PATH=$CI_WORKSPACE/zig:$PATH"
 
-      echo "Run $s step"
+      echo "Run `$s` step"
       zig build $s
 
-      echo "Run test step"
+      echo "Run `test` step"
       zig build test --summary all
 
-      echo "Run fmt step"
+      echo "Run `fmt` step"
       zig build fmt

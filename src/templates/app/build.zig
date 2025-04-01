@@ -26,7 +26,7 @@ pub fn build(b: *std.Build) !void {
     root_mod.addImport("mach", mach_mod);
 
     // Executable
-    const exe_step = b.step("exe", "Run executable");
+    const exe_step = b.step("exe", "Install executable");
 
     const exe = @import("mach").addExecutable(mach_dep.builder, .{
         .name = "$p",
@@ -34,13 +34,18 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
         .app = root_mod,
     });
-    b.installArtifact(exe);
+
+    const exe_install = b.addInstallArtifact(exe, .{});
+    exe_step.dependOn(&exe_install.step);
+    install_step.dependOn(exe_step);
+
+    const exe_run_step = b.step("run", "Run executable");
 
     const exe_run = b.addRunArtifact(exe);
     if (b.args) |args| {
         exe_run.addArgs(args);
     }
-    exe_step.dependOn(&exe_run.step);
+    exe_run_step.dependOn(&exe_run.step);
 
     // Test suite
     const tests_step = b.step("test", "Run test suite");

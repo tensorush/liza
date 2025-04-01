@@ -36,7 +36,7 @@ const LIB = "lib/";
 const BLD = "bld/";
 const APP = "app/";
 
-const EXE_CI_STEP = "exe";
+const EXE_CI_STEP = "run";
 const LIB_CI_STEP = "example";
 const BLD_CI_STEP = "lib";
 const APP_CI_STEP = "exe";
@@ -375,7 +375,7 @@ fn createWorkflows(
                     \\      - name: Set up kcov
                     \\        run: sudo apt install kcov
                     \\
-                    \\      - name: Run cov step
+                    \\      - name: Run `cov` step
                     \\        run: zig build cov
                     \\
                     \\      - name: Upload coverage to Codecov

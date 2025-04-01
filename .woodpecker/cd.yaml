@@ -16,7 +16,7 @@ steps:
       mv zig*/ zig/
       export "PATH=$CI_WORKSPACE/zig:$PATH"
 
-      echo "Run doc step"
+      echo "Run `doc` step"
       zig build doc
 
   deploy:

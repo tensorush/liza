@@ -26,7 +26,7 @@ jobs:
           tar -xf minisign.tar.gz
           echo "$GITHUB_WORKSPACE/minisign-linux/x86_64/" >> $GITHUB_PATH
 
-      - name: Run release step
+      - name: Run `release` step
         run: zig build release
 
       - name: Sign release binaries

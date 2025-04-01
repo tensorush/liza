@@ -44,45 +44,72 @@ const liza_mod = liza_dep.module("liza");
 
 ### Features
 
-- #### [Zig executable template](src/templates/exe/):
-    - Zig executable compilation.
+- #### [Zig Executable Template (`exe`)](src/templates/exe/):
     - Public API module creation.
-    - Dependency usage.
-    - Binary release.
+    - Dependency package usage.
+    - [Build steps](src/templates/exe/build.zig):
+        - `install` (default): All-step execution, except for `run` and `release`.
+        - `exe`: Zig executable installation.
+        - `run`: Zig executable run.
+        - `doc` (`$d`): Documentation emission (`--add-doc`).
+        - `test`: Test suite execution.
+        - `cov` (`$c`): Code coverage generation (`--add-cov`).
+        - `fmt`: Formatting check execution.
+        - `release`: Binary release.
 
-- #### [Zig library template](src/templates/lib/):
-    - Zig static library compilation.
+- #### [Zig Library Template (`lib`)](src/templates/lib/):
     - Public root module creation.
-    - Example suite setup.
+    - [Build steps](src/templates/lib/build.zig):
+        - `install` (default): All-step execution, except for `example-run`.
+        - `lib`: Zig static library installation.
+        - `doc` (`$d`): Documentation emission (`--add-doc`).
+        - `example`: Example suite installation.
+        - `example-run`: Example suite run.
+        - `test`: Test suite execution.
+        - `cov` (`$c`): Code coverage generation (`--add-cov`).
+        - `fmt`: Formatting check execution.
 
-- #### [Zig build template](src/templates/bld/):
-    - C/C++ static library compilation.
+- #### [Zig Build Template (`bld`)](src/templates/bld/):
+    - Public Translate-C module creation.
+    - Lazy dependency package usage.
     - Configuration option usage.
-    - Lazy dependency usage.
+    - [Build steps](src/templates/bld/build.zig):
+        - `install` (default): All-step execution.
+        - `lib`: C/C++ static library installation.
+        - `test`: Test suite execution.
+        - `fmt`: Formatting check execution.
 
-- #### [Mach application template](src/templates/app/):
-    - [Mach](https://machengine.org/) application compilation.
+- #### [Mach Application Template (`app`)](src/templates/app/):
     - [WGSL](https://www.w3.org/TR/WGSL/) shader usage.
+    - [Build steps](src/templates/app/build.zig):
+        - `install` (default): All-step execution, except for `run`.
+        - `exe`: [Mach](https://machengine.org/) executable installation.
+        - `run`: [Mach](https://machengine.org/) executable run.
+        - `test`: Test suite execution.
+        - `fmt`: Formatting check execution.
 
-- #### [GitHub](src/templates/.github/workflows/ci.yaml) / [Forgejo](src/templates/.forgejo/workflows/ci.yaml) / [Woodpecker](src/templates/.woodpecker/ci.yaml) CI workflow template:
-    - `exe`/`example`/`lib` (`$s`): executable's run, library's example suite execution, or build's installation.
-    - `test`: Test suite execution and optional (GitHub-only for now) code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration).
+- #### [GitHub](src/templates/.github/workflows/ci.yaml) / [Forgejo](src/templates/.forgejo/workflows/ci.yaml) / [Woodpecker](src/templates/.woodpecker/ci.yaml) CI Workflow Template:
+    - `run`/`example`/`lib`/`exe` (`$s`): either `exe`'s executable run, `lib`'s example suite execution, `bld`'s library installation, or `app`'s executable installation.
+    - `test`: Test suite execution and either `exe`'s or `lib`'s GitHub-only code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration) (`--add-cov`).
     - `fmt`: Formatting check execution.
 
-- #### [GitHub](src/templates/.github/workflows/cd.yaml) / [Forgejo](src/templates/.forgejo/workflows/cd.yaml) / [Woodpecker](src/templates/.woodpecker/cd.yaml) CD workflow template (optional):
-    - `emit`->`deploy`: executable's or library's documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) or [Codeberg Pages](https://codeberg.page).
-    - (Woodpecker-only) [Generate Codeberg access token](https://docs.codeberg.org/advanced/access-token/) with `repository:write` permission and add it as `TOKEN` secret available on `Push` event.
-    - (Woodpecker-only) Add email as `EMAIL` secret available on `Push` event.
+- #### [GitHub](src/templates/.github/workflows/cd.yaml) / [Forgejo](src/templates/.forgejo/workflows/cd.yaml) / [Woodpecker](src/templates/.woodpecker/cd.yaml) CD Workflow Template (`--add-doc`):
+    - `emit`→`deploy`: either `exe`'s or `lib`'s documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) or [Codeberg Pages](https://codeberg.page):
+        - (Woodpecker-only) [Generate Codeberg access token](https://docs.codeberg.org/advanced/access-token/) with `repository:write` permission and add it as `TOKEN` secret available on `Push` event.
+        - (Woodpecker-only) Add email as `EMAIL` secret available on `Push` event.
 
-- #### [GitHub](src/templates/.github/workflows/release.yaml) / [Woodpecker](src/templates/.woodpecker/release.yaml) Release workflow:
-    - `release`: executable's binary release publication using [`minisign`](https://jedisct1.github.io/minisign/):
+- #### [GitHub](src/templates/.github/workflows/release.yaml) / [Woodpecker](src/templates/.woodpecker/release.yaml) Release Workflow:
+    - `release`: `exe`'s release publication using [`minisign`](https://jedisct1.github.io/minisign/):
       - Generate key pair without password: `minisign -GW`.
       - Add `./minisign.pub` as `MINISIGN_PUBLIC_KEY` secret (available on `Tag` event in Woodpecker).
       - Add `~/.minisign/minisign.key` as `MINISIGN_SECRET_KEY` secret (available on `Tag` event in Woodpecker).
       - (Woodpecker-only) [Generate Codeberg access token](https://docs.codeberg.org/advanced/access-token/) with `misc:read` and `repository:write` permissions and add it as `TOKEN` secret available to `woodpeckerci/plugin-release` on `Tag` event.
 
-- #### [MIT license template](src/templates/LICENSE).
+- #### [MIT License Template](src/templates/LICENSE):
+    - `$y`: Current year.
+    - `$n`: User name.
+
+- #### [`.gitignore` Template](src/templates/.gitignore):
+    - `$c`: Code coverage artifacts.
 
 - #### [`.gitattributes`](src/templates/.gitattributes).
-
-- #### [`.gitignore`](src/templates/.gitignore).
