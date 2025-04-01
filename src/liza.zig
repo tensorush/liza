@@ -118,6 +118,7 @@ pub fn initialize(
     out_dir_path: []const u8,
     add_doc: bool,
     add_cov: bool,
+    add_check: bool,
     zig_version: std.SemanticVersion,
 ) !void {
     var pckg_dir = blk: {
@@ -143,7 +144,7 @@ pub fn initialize(
             try createSourceFile(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
             try createWorkflows(EXE_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(EXE_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
         .lib => {
             var src_dir = try pckg_dir.makeOpenPath(SRC, .{});
@@ -163,12 +164,12 @@ pub fn initialize(
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
             try createWorkflows(LIB_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(LIB_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
         .bld => {
             try createWorkflows(BLD_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(BLD_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
         .app => {
             var src_dir = try pckg_dir.makeOpenPath(SRC, .{});
@@ -178,7 +179,7 @@ pub fn initialize(
             try createSourceFile(APP_SHADER, APP_SHADER_TEXT, pckg_name, src_dir);
             try createWorkflows(APP_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
             try createReadmeFile(APP_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
     }
 }
@@ -224,6 +225,7 @@ fn createBuildFiles(
     version: std.SemanticVersion,
     add_doc: bool,
     add_cov: bool,
+    add_check: bool,
     zig_version: std.SemanticVersion,
     pckg_dir: std.fs.Dir,
 ) !void {
@@ -287,6 +289,39 @@ fn createBuildFiles(
                     \\    install_step.dependOn(cov_step);
                     \\
                 ),
+                's' => if (add_check) {
+                    if (codebase == .exe) {
+                        try build_writer.print(
+                            \\
+                            \\    // Static compile-time checks
+                            \\    // This is useful for running the compile-time checks against your code.
+                            \\    // See: https://zigtools.org/zls/guides/build-on-save/
+                            \\    const check_step = b.step("check", "Run static compile-time checks");
+                            \\    const check_exe = b.addExecutable(.{{
+                            \\        .name = "{s}",
+                            \\        .version = version,
+                            \\        .root_module = root_mod,
+                            \\    }});
+                            \\    check_step.dependOn(&check_exe.step);
+                            \\
+                        , .{pckg_name});
+                    } else if (codebase == .lib) {
+                        try build_writer.print(
+                            \\
+                            \\    // Static compile-time checks
+                            \\    // This is useful for running the compile-time checks against your code.
+                            \\    // See: https://zigtools.org/zls/guides/build-on-save/
+                            \\    const check_step = b.step("check", "Run static compile-time checks");
+                            \\    const check_lib = b.addLibrary(.{{
+                            \\        .name = "{s}",
+                            \\        .version = version,
+                            \\        .root_module = root_mod,
+                            \\    }});
+                            \\    check_step.dependOn(&check_lib.step);
+                            \\
+                        , .{pckg_name});
+                    }
+                },
                 else => unreachable,
             }
         }
