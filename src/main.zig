@@ -40,16 +40,16 @@ const @"import(cli.zon)" = .{
             .description = "Output directory path.",
         },
     },
-    .flags = .{
-        .{
-            .long = "add-doc",
-            .description = "Add documentation to exe or lib (add doc step, add CD workflow).",
-        },
-        .{
-            .long = "add-cov",
-            .description = "Add code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore).",
-        },
-    },
+    .flags = .{ .{
+        .long = "add-doc",
+        .description = "Add documentation to exe or lib (add doc step, add CD workflow).",
+    }, .{
+        .long = "add-cov",
+        .description = "Add code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore).",
+    }, .{
+        .long = "add-check",
+        .description = "Add compiler Check step to exe or lib",
+    } },
     .positionals = .{
         .{
             .meta = .PCKG_NAME,
@@ -95,6 +95,7 @@ pub fn main() !void {
 
     const add_doc = args.flags.@"add-doc";
     const add_cov = args.flags.@"add-cov";
+    const add_check = args.flags.@"add-check";
 
     const pckg_name = args.positionals.PCKG_NAME;
     const pckg_desc = args.positionals.PCKG_DESC;
@@ -107,8 +108,8 @@ pub fn main() !void {
 
     switch (codebase) {
         .exe, .lib => {},
-        .bld, .app => if (add_doc or add_cov) {
-            @panic("Options add-doc and add-cov are unavailable for bld and app codebases!");
+        .bld, .app => if (add_doc or add_cov or add_check) {
+            @panic("Options add-doc, add-cov and add_check, are unavailable for bld and app codebases!");
         },
     }
 
@@ -127,6 +128,7 @@ pub fn main() !void {
         out_dir_path,
         add_doc,
         add_cov,
+        add_check,
         zig_version,
     );
 }
