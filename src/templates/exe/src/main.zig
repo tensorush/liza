@@ -6,7 +6,9 @@ const argzon = @import("argzon");
 const $p = @import("$p.zig");
 
 // Command-line interface definition.
-const CLI = .{
+// TODO: extract into `cli.zon` after:
+// https://github.com/ziglang/zig/pull/22907
+const cli = .{
     .name = .exe,
     .description = "Executable template.",
     .options = .{
@@ -37,7 +39,7 @@ pub fn main() !void {
     };
 
     // Create arguments according to CLI definition
-    const Args = argzon.Args(CLI, &.{});
+    const Args = argzon.Args(cli, .{});
 
     // Parse command-line arguments
     const args = try Args.parse(gpa, std.io.getStdErr().writer(), .{});

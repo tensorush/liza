@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .argzon = .{
-            .url = "git+https://codeberg.org/tensorush/argzon.git#99bbcd791e811c13bf3a914118e9cc4a7ca51d10",
-            .hash = "argzon-0.2.0-Cl574vKbAQAkLPETn1csRSwCzbjYLQqMK1_QPVp-dKKL",
+            .url = "git+https://codeberg.org/tensorush/argzon.git#90e6087b0f0e880639a464edf86a45ceedf0c455",
+            .hash = "argzon-0.4.0-Cl574ua6AQAC3FAclYV30l0ZEgTPWHOBDf7iCVXxeGYX",
         },
         .zq = .{
             .url = "git+https://codeberg.org/tensorush/zq.git#12b1c95ad1caef317a25778633b51629f65d9aea",
