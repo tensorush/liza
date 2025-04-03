@@ -8,8 +8,7 @@ steps:
   emit:
     image: tensorush/ziglang:latest
 
-    commands: |
-      zig build doc
+    commands: zig build doc
 
   deploy:
     image: alpine/git:latest

@@ -18,5 +18,4 @@ steps:
   fmt:
     image: tensorush/ziglang:latest
 
-    commands: |
-      zig build fmt
+    commands: zig build fmt

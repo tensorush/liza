@@ -8,17 +8,14 @@ steps:
 
     depends_on: [] # enable parallel steps
 
-    commands: |
-      zig build $s
+    commands: zig build $s
 
   test:
     image: tensorush/ziglang:latest
 
-    commands: |
-      zig build test --summary all
+    commands: zig build test --summary all
 
   fmt:
     image: tensorush/ziglang:latest
 
-    commands: |
-      zig build fmt
+    commands: zig build fmt
