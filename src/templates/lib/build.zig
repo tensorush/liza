@@ -26,6 +26,10 @@ pub fn build(b: *std.Build) !void {
         .root_module = root_mod,
     });
     b.installArtifact(lib);
+
+    const lib_install = b.addInstallArtifact(lib, .{});
+    lib_step.dependOn(&lib_install.step);
+    install_step.dependOn(lib_step);
 $d
     // Example suite
     const examples_step = b.step("example", "Install example suite");
