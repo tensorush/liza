@@ -36,8 +36,6 @@ pub fn build(b: *std.Build) !void {
     _ = c.addModule("$p");
 
     // Library
-    const lib_step = b.step("lib", "Install library");
-
     const lib = b.addLibrary(.{
         .name = "$p",
         .version = version,

@@ -35,7 +35,7 @@ pub fn build(b: *std.Build) !void {
     root_mod.addImport("argzon", argzon_mod);
 
     // Executable
-    const exe_step = b.step("exe", "Install executable");
+    const exe_run_step = b.step("run", "Run executable");
 
     const exe = b.addExecutable(.{
         .name = "$p",
@@ -43,12 +43,6 @@ pub fn build(b: *std.Build) !void {
         .root_module = root_mod,
     });
     b.installArtifact(exe);
-
-    const exe_install = b.addInstallArtifact(exe, .{});
-    exe_step.dependOn(&exe_install.step);
-    install_step.dependOn(exe_step);
-
-    const exe_run_step = b.step("run", "Run executable");
 
     const exe_run = b.addRunArtifact(exe);
     if (b.args) |args| {

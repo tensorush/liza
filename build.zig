@@ -1,6 +1,18 @@
 const std = @import("std");
 
-const zon: Zon = @import("build.zig.zon");
+const zon: struct {
+    name: enum { liza },
+    version: []const u8,
+    fingerprint: u64,
+    minimum_zig_version: []const u8,
+    dependencies: struct {
+        argzon: Dependency,
+        zq: Dependency,
+    },
+    paths: []const []const u8,
+
+    const Dependency = struct { url: []const u8, hash: []const u8, lazy: bool = false };
+} = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
@@ -138,15 +150,12 @@ pub fn build(b: *std.Build) !void {
     // Next version tag
     const tag_step = b.step("tag", "Tag next version");
 
+    const bump = b.option(enum { major, minor, patch }, "bump", "Bump version number part") orelse .patch;
+    const message = b.option([]const u8, "message", "Git commit and tag message") orelse b.fmt("chore: bump {s} version", .{@tagName(bump)});
+
     var next_version = version;
-    if (b.option(enum { major, minor, patch }, "bump", "Bump version number part")) |bump| {
-        switch (bump) {
-            .major => next_version.major += 1,
-            .minor => next_version.minor += 1,
-            .patch => next_version.patch += 1,
-        }
-    } else {
-        next_version.patch += 1;
+    switch (bump) {
+        inline else => |tag| @field(next_version, @tagName(tag)) += 1,
     }
 
     const next_version_run = b.addRunArtifact(zq_art);
@@ -158,13 +167,31 @@ pub fn build(b: *std.Build) !void {
         ".version",
     });
 
-    const tag_run = b.addSystemCommand(&.{
+    const git_add_bump_run = b.addSystemCommand(&.{
+        "git",
+        "add",
+        "-A",
+    });
+    git_add_bump_run.step.dependOn(&next_version_run.step);
+
+    const git_commit_bump_run = b.addSystemCommand(&.{
+        "git",
+        "commit",
+        "-m",
+        message,
+    });
+    git_commit_bump_run.step.dependOn(&git_add_bump_run.step);
+
+    const git_tag_bump_run = b.addSystemCommand(&.{
         "git",
         "tag",
         b.fmt("v{}", .{next_version}),
+        "-m",
+        message,
     });
-    tag_run.step.dependOn(&next_version_run.step);
-    tag_step.dependOn(&tag_run.step);
+    git_tag_bump_run.step.dependOn(&git_commit_bump_run.step);
+
+    tag_step.dependOn(&git_tag_bump_run.step);
 
     // Release
     const release = b.step("release", "Install and archive release binaries");
@@ -217,18 +244,4 @@ const RELEASE_TRIPLES = .{
     "aarch64-macos",
     "x86_64-linux",
     "x86_64-windows",
-};
-
-const Zon = struct {
-    name: enum { liza },
-    version: []const u8,
-    fingerprint: u64,
-    minimum_zig_version: []const u8,
-    dependencies: struct {
-        argzon: Dependency,
-        zq: Dependency,
-    },
-    paths: []const []const u8,
-
-    const Dependency = struct { url: []const u8, hash: []const u8, lazy: bool = false };
 };

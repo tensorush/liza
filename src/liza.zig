@@ -128,7 +128,10 @@ pub fn initialize(
     };
     defer pckg_dir.close();
 
-    _ = try std.process.Child.run(.{ .allocator = arena, .argv = &.{ "git", "init" }, .cwd_dir = pckg_dir });
+    _ = try std.process.Child.run(.{ .allocator = arena, .argv = &.{
+        "git",
+        "init",
+    }, .cwd_dir = pckg_dir });
 
     try createGitFiles(add_cov, pckg_dir);
     try createLicenseFile(user_name, pckg_dir);
@@ -306,7 +309,12 @@ fn createBuildFiles(
                     \\    }});
                     \\    check_step.dependOn(&check_{s}.step);
                     \\
-                , .{ @tagName(codebase), if (codebase == .exe) "Executable" else "Library", pckg_name, @tagName(codebase) }),
+                , .{
+                    @tagName(codebase),
+                    if (codebase == .exe) "Executable" else "Library",
+                    pckg_name,
+                    @tagName(codebase),
+                }),
                 else => unreachable,
             }
         }
@@ -316,11 +324,10 @@ fn createBuildFiles(
             const build_zon = try pckg_dir.readFileAllocOptions(arena, BUILD_ZON, 1 << 12, null, @alignOf(u8), 0);
 
             const fingerprint = blk: {
-                const zig_build = try std.process.Child.run(.{
-                    .allocator = arena,
-                    .argv = &.{ "zig", "build" },
-                    .cwd_dir = pckg_dir,
-                });
+                const zig_build = try std.process.Child.run(.{ .allocator = arena, .argv = &.{
+                    "zig",
+                    "build",
+                }, .cwd_dir = pckg_dir });
                 const fp_idx = std.mem.lastIndexOfScalar(u8, zig_build.stderr, 'x') orelse return error.Fingerprint;
                 const fp = zig_build.stderr[fp_idx - 1 .. fp_idx + 17];
                 break :blk fp;

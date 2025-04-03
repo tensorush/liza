@@ -48,8 +48,9 @@ const liza_mod = liza_dep.module("liza");
     - Public API module creation.
     - Dependency package usage.
     - [Build steps](src/templates/exe/build.zig):
-        - `install` (default): All-step execution, except for `run`, `check`, and `release`.
-        - `exe`: Zig executable installation.
+        - `install` (default):
+            - Zig executable installation.
+            - All-step execution, except for `run`, `check`, and `release`.
         - `run`: Zig executable run.
         - `doc` (`$d`): Documentation emission (`--add-doc`).
         - `test`: Test suite execution.
@@ -61,11 +62,12 @@ const liza_mod = liza_dep.module("liza");
 - #### [Zig Library Template (`lib`)](src/templates/lib/):
     - Public root module creation.
     - [Build steps](src/templates/lib/build.zig):
-        - `install` (default): All-step execution, except for `example-run` and `check`.
-        - `lib`: Zig static library installation.
+        - `install` (default):
+            - Zig static library installation.
+            - Example suite installation.
+            - All-step execution, except for `run` and `check`.
         - `doc` (`$d`): Documentation emission (`--add-doc`).
-        - `example`: Example suite installation.
-        - `example-run`: Example suite execution.
+        - `run`: Example run.
         - `test`: Test suite execution.
         - `cov` (`$c`): Code coverage generation (`--add-cov`).
         - `fmt`: Formatting check execution.
@@ -76,16 +78,18 @@ const liza_mod = liza_dep.module("liza");
     - Lazy dependency package usage.
     - Configuration option usage.
     - [Build steps](src/templates/bld/build.zig):
-        - `install` (default): All-step execution.
-        - `lib`: C/C++ static library installation.
+        - `install` (default):
+            - C/C++ static library installation.
+            - All-step execution.
         - `test`: Test suite execution.
         - `fmt`: Formatting check execution.
 
 - #### [Mach Application Template (`app`)](src/templates/app/):
     - [WGSL](https://www.w3.org/TR/WGSL/) shader usage.
     - [Build steps](src/templates/app/build.zig):
-        - `install` (default): All-step execution, except for `run`.
-        - `exe`: [Mach](https://machengine.org/) executable installation.
+        - `install` (default):
+            - [Mach](https://machengine.org/) executable installation.
+            - All-step execution, except for `run`.
         - `run`: [Mach](https://machengine.org/) executable run.
         - `test`: Test suite execution.
         - `fmt`: Formatting check execution.

@@ -18,43 +18,36 @@ pub fn build(b: *std.Build) !void {
     });
 
     // Library
-    const lib_step = b.step("lib", "Install library");
-
     const lib = b.addLibrary(.{
         .name = "$p",
         .version = version,
         .root_module = root_mod,
     });
     b.installArtifact(lib);
-
-    const lib_install = b.addInstallArtifact(lib, .{});
-    lib_step.dependOn(&lib_install.step);
-    install_step.dependOn(lib_step);
 $d
     // Example suite
-    const examples_step = b.step("example", "Install example suite");
-    const examples_run_step = b.step("example-run", "Run example suite");
+    const example_run_step = b.step("run", "Run example suite");
 
-    inline for (EXAMPLE_NAMES) |EXAMPLE_NAME| {
-        const example = b.addExecutable(.{
-            .name = EXAMPLE_NAME,
+    const example_opt = b.option(Example, "example", "Run example");
+
+    inline for (comptime std.meta.tags(Example)) |EXAMPLE| {
+        const example_exe = b.addExecutable(.{
+            .name = @tagName(EXAMPLE),
             .version = version,
             .root_module = b.createModule(.{
                 .target = target,
                 .optimize = optimize,
-                .root_source_file = b.path(EXAMPLES_DIR ++ EXAMPLE_NAME ++ "/main.zig"),
+                .root_source_file = b.path(EXAMPLES_DIR ++ @tagName(EXAMPLE) ++ "/main.zig"),
             }),
         });
-        example.root_module.addImport("$p", root_mod);
+        example_exe.root_module.addImport("$p", root_mod);
+        b.installArtifact(example_exe);
 
-        const example_install = b.addInstallArtifact(example, .{});
-        examples_step.dependOn(&example_install.step);
-
-        const example_run = b.addRunArtifact(example);
-        examples_run_step.dependOn(&example_run.step);
+        if (example_opt == null or example_opt.? == EXAMPLE) {
+            const example_run = b.addRunArtifact(example_exe);
+            example_run_step.dependOn(&example_run.step);
+        }
     }
-
-    install_step.dependOn(examples_step);
 
     // Test suite
     const tests_step = b.step("test", "Run test suite");
@@ -86,7 +79,7 @@ $s}
 
 const EXAMPLES_DIR = "examples/";
 
-const EXAMPLE_NAMES = .{
-    "example1",
-    "example2",
+const Example = enum {
+    example1,
+    example2,
 };
