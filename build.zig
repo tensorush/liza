@@ -1,12 +1,13 @@
 const std = @import("std");
 
+const zon: Zon = @import("build.zig.zon");
+
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const version_str = "0.13.0";
-    const version = try std.SemanticVersion.parse(version_str);
+    const version = try std.SemanticVersion.parse(zon.version);
 
     const api_source_file = b.path("src/liza.zig");
     const root_source_file = b.path("src/main.zig");
@@ -123,7 +124,7 @@ pub fn build(b: *std.Build) !void {
     const release = b.step("release", "Install and archive release binaries");
 
     inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
-        const RELEASE_NAME = "liza-v" ++ version_str ++ "-" ++ RELEASE_TRIPLE;
+        const RELEASE_NAME = "liza-v" ++ zon.version ++ "-" ++ RELEASE_TRIPLE;
         const IS_WINDOWS_RELEASE = comptime std.mem.endsWith(u8, RELEASE_TRIPLE, "windows");
         const RELEASE_EXE_ARCHIVE_BASENAME = RELEASE_NAME ++ if (IS_WINDOWS_RELEASE) ".zip" else ".tar.xz";
 
@@ -170,4 +171,18 @@ const RELEASE_TRIPLES = .{
     "aarch64-macos",
     "x86_64-linux",
     "x86_64-windows",
+};
+
+const Zon = struct {
+    name: enum { liza },
+    version: []const u8,
+    fingerprint: u64,
+    minimum_zig_version: []const u8,
+    dependencies: struct {
+        argzon: Dependency,
+        zq: Dependency,
+    },
+    paths: []const []const u8,
+
+    const Dependency = struct { url: []const u8, hash: []const u8, lazy: bool = false };
 };

@@ -9,6 +9,7 @@ steps:
     depends_on: [] # enable parallel steps
 
     commands: |
+      apk --no-cache add git
       zig build run -- -r woodpecker --add-doc --add-cov --add-check executable "Executable description." user-handle "User Name" && rm -rf executable/
       zig build run -- -c lib -r woodpecker --add-doc --add-cov --add-check library "Library description." user-handle "User Name" && rm -rf library/
       zig build run -- -c bld -r woodpecker build "Build description." user-handle "User Name" && rm -rf build/
@@ -17,4 +18,5 @@ steps:
   fmt:
     image: tensorush/ziglang:latest
 
-    commands: zig build fmt
+    commands: |
+      zig build fmt
