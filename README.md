@@ -65,7 +65,7 @@ const liza_mod = liza_dep.module("liza");
         - `lib`: Zig static library installation.
         - `doc` (`$d`): Documentation emission (`--add-doc`).
         - `example`: Example suite installation.
-        - `example-run`: Example suite run.
+        - `example-run`: Example suite execution.
         - `test`: Test suite execution.
         - `cov` (`$c`): Code coverage generation (`--add-cov`).
         - `fmt`: Formatting check execution.

@@ -142,7 +142,7 @@ pub fn initialize(
 
             try createSourceFile(exe_core, EXE_CORE_TEXT, pckg_name, src_dir);
             try createSourceFile(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
-            try createWorkflows(EXE_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createWorkflows(EXE_CI_STEP, codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(EXE_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
@@ -162,12 +162,12 @@ pub fn initialize(
             try createSourceFile(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE1, pckg_name, example1_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
-            try createWorkflows(LIB_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createWorkflows(LIB_CI_STEP, codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(LIB_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
         .bld => {
-            try createWorkflows(BLD_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createWorkflows(BLD_CI_STEP, codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(BLD_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
@@ -177,7 +177,7 @@ pub fn initialize(
 
             try createSourceFile(APP_ROOT, APP_ROOT_TEXT, pckg_name, src_dir);
             try createSourceFile(APP_SHADER, APP_SHADER_TEXT, pckg_name, src_dir);
-            try createWorkflows(APP_CI_STEP, codebase, runner, add_doc, add_cov, zig_version, pckg_dir);
+            try createWorkflows(APP_CI_STEP, codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(APP_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
@@ -342,7 +342,6 @@ fn createWorkflows(
     runner: Runner,
     add_doc: bool,
     add_cov: bool,
-    zig_version: std.SemanticVersion,
     pckg_dir: std.fs.Dir,
 ) !void {
     const workflows_dir_path, const all_ci_workflow, const all_cd_workflow = switch (runner) {
@@ -380,11 +379,6 @@ fn createWorkflows(
             try workflow_writer.writeAll(text[idx .. idx + i]);
             switch (text[idx + i + 1]) {
                 's' => try workflow_writer.writeAll(ci_step),
-                'z' => if (zig_version.build == null) {
-                    try workflow_writer.print("{}", .{zig_version});
-                } else {
-                    try workflow_writer.writeAll("master");
-                },
                 'c' => if (add_cov and runner == .github) try workflow_writer.writeAll(
                     \\
                     \\      - name: Set up kcov

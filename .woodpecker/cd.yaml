@@ -6,21 +6,12 @@ when:
 
 steps:
   emit:
-    image: alpine:edge
+    image: tensorush/ziglang:latest
 
-    commands: |
-      echo "Set up Zig"
-      apk --no-cache add curl jq
-      curl $(curl https://ziglang.org/download/index.json | jq -r '."0.14.0"."x86_64-linux".tarball') -o zig.tar.xz
-      tar -xf zig.tar.xz
-      mv zig*/ zig/
-      export "PATH=$CI_WORKSPACE/zig:$PATH"
-
-      echo "Run `doc` step"
-      zig build doc
+    commands: zig build doc
 
   deploy:
-    image: alpine/git:edge
+    image: alpine/git:latest
 
     environment:
       TOKEN:

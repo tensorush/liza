@@ -17,8 +17,6 @@ jobs:
 
       - name: Set up Zig
         uses: mlugg/setup-zig@v1
-        with:
-          version: $z
 
       - name: Set up minisign
         run: |
