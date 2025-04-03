@@ -30,7 +30,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
-        .strip = b.option(bool, "strip", "strip the binary"),
+        .strip = b.option(bool, "strip", "Strip the binary"),
     });
     root_mod.addImport("argzon", argzon_mod);
 
@@ -42,6 +42,7 @@ pub fn build(b: *std.Build) !void {
         .version = version,
         .root_module = root_mod,
     });
+    b.installArtifact(exe);
 
     const exe_install = b.addInstallArtifact(exe, .{});
     exe_step.dependOn(&exe_install.step);

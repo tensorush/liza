@@ -4,10 +4,8 @@ const zon: Zon = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
-
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-
     const version = try std.SemanticVersion.parse(zon.version);
 
     const api_source_file = b.path("src/liza.zig");
@@ -25,6 +23,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
     const zq_mod = zq_dep.module("zq");
+    const zq_art = zq_dep.artifact("zq");
 
     // Public API module
     const api_mod = b.addModule("liza", .{
@@ -38,7 +37,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
-        .strip = b.option(bool, "strip", "strip the binary"),
+        .strip = b.option(bool, "strip", "Strip the binary"),
     });
     root_mod.addImport("argzon", argzon_mod);
     root_mod.addImport("zq", zq_mod);
@@ -51,6 +50,7 @@ pub fn build(b: *std.Build) !void {
         .version = version,
         .root_module = root_mod,
     });
+    b.installArtifact(exe);
 
     const exe_install = b.addInstallArtifact(exe, .{});
     exe_step.dependOn(&exe_install.step);
@@ -120,6 +120,51 @@ pub fn build(b: *std.Build) !void {
         .root_module = root_mod,
     });
     check_step.dependOn(&check_exe.step);
+
+    // Minimum Zig version update
+    const mzv_step = b.step("mzv", "Update minimum Zig version");
+
+    const mzv_run = b.addRunArtifact(zq_art);
+    mzv_run.addArgs(&.{
+        "--io",
+        "build.zig.zon",
+        "-s",
+        std.mem.trimRight(u8, b.run(&.{ b.graph.zig_exe, "version" }), "\n"),
+        ".minimum_zig_version",
+    });
+    mzv_step.dependOn(&mzv_run.step);
+    install_step.dependOn(mzv_step);
+
+    // Next version tag
+    const tag_step = b.step("tag", "Tag next version");
+
+    var next_version = version;
+    if (b.option(enum { major, minor, patch }, "bump", "Bump version number part")) |bump| {
+        switch (bump) {
+            .major => next_version.major += 1,
+            .minor => next_version.minor += 1,
+            .patch => next_version.patch += 1,
+        }
+    } else {
+        next_version.patch += 1;
+    }
+
+    const next_version_run = b.addRunArtifact(zq_art);
+    next_version_run.addArgs(&.{
+        "--io",
+        "build.zig.zon",
+        "-s",
+        b.fmt("{}", .{next_version}),
+        ".version",
+    });
+
+    const tag_run = b.addSystemCommand(&.{
+        "git",
+        "tag",
+        b.fmt("v{}", .{next_version}),
+    });
+    tag_run.step.dependOn(&next_version_run.step);
+    tag_step.dependOn(&tag_run.step);
 
     // Release
     const release = b.step("release", "Install and archive release binaries");

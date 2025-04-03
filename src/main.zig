@@ -29,7 +29,7 @@ const @"import(cli.zon)" = .{
             .short = 'v',
             .long = "ver",
             .type = "string",
-            .default = "0.1.0",
+            .default = "0.0.0",
             .description = "Codebase semantic version triple.",
         },
         .{

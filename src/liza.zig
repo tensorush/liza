@@ -283,7 +283,12 @@ fn createBuildFiles(
                     \\    // Code coverage
                     \\    const cov_step = b.step("cov", "Generate code coverage");
                     \\
-                    \\    const cov_run = b.addSystemCommand(&.{ "kcov", "--clean", "--include-pattern=src/", "kcov-output/" });
+                    \\    const cov_run = b.addSystemCommand(&.{
+                    \\        "kcov",
+                    \\        "--clean",
+                    \\        "--include-pattern=src/",
+                    \\        "kcov-output/",
+                    \\    });
                     \\    cov_run.addArtifactArg(tests);
                     \\    cov_step.dependOn(&cov_run.step);
                     \\    install_step.dependOn(cov_step);

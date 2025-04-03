@@ -9,8 +9,8 @@
             .hash = "argzon-0.2.0-Cl574vKbAQAkLPETn1csRSwCzbjYLQqMK1_QPVp-dKKL",
         },
         .zq = .{
-            .url = "git+https://codeberg.org/tensorush/zq.git#ea6db7b566d1aa4638b1a179cd0237e0ae2890fc",
-            .hash = "zq-0.3.7-7XsKhelfAADilrWvFOuvtiY38UDoDmD0q8Oxfp4LRcOY",
+            .url = "git+https://codeberg.org/tensorush/zq.git#12b1c95ad1caef317a25778633b51629f65d9aea",
+            .hash = "zq-0.4.2-7XsKhV9jAADYy3F9qxcTWYYsxiN17kkLfmihrie87tif",
         },
     },
     .paths = .{

@@ -14,6 +14,7 @@ steps:
 
     commands: |
       echo "Set up minisign"
+      apk --no-cache add curl
       curl -L https://github.com/jedisct1/minisign/releases/latest/download/minisign-0.12-linux.tar.gz -o minisign.tar.gz
       tar -xf minisign.tar.gz
       export "PATH=$CI_WORKSPACE/minisign-linux/x86_64/:$PATH"

@@ -34,6 +34,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
         .app = root_mod,
     });
+    b.installArtifact(exe);
 
     const exe_install = b.addInstallArtifact(exe, .{});
     exe_step.dependOn(&exe_install.step);
