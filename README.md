@@ -50,8 +50,9 @@ const liza_mod = liza_dep.module("liza");
     - [Build steps](src/templates/exe/build.zig):
         - `install` (default):
             - Zig executable installation.
-            - Common step execution, except for `tag` (see below).
-            - Common optional step execution, except for `check` (see below).
+            - Common steps execution (see below).
+            <!-- - Common steps execution, except for `tag` (see below). -->
+            - Common optional steps execution, except for `check` (see below).
         - `run`: Zig executable run.
         - `release`: Release binaries' installation and archiving.
 
@@ -61,8 +62,9 @@ const liza_mod = liza_dep.module("liza");
         - `install` (default):
             - Zig static library installation.
             - Example suite installation.
-            - Common step execution, except for `tag` (see below).
-            - Common optional step execution, except for `check` (see below).
+            - Common steps execution (see below).
+            <!-- - Common steps execution, except for `tag` (see below). -->
+            - Common optional steps execution, except for `check` (see below).
         - `run`: Example run.
 
 - #### [Zig Build Template (`bld`)](src/templates/bld/):
@@ -72,14 +74,16 @@ const liza_mod = liza_dep.module("liza");
     - [Build steps](src/templates/bld/build.zig):
         - `install` (default):
             - C/C++ static library installation.
-            - Common step execution, except for `tag` (see below).
+            - Common steps execution (see below).
+            <!-- - Common steps execution, except for `tag` (see below). -->
 
 - #### [Mach Application Template (`app`)](src/templates/app/):
     - [WGSL](https://www.w3.org/TR/WGSL/) shader usage.
     - [Build steps](src/templates/app/build.zig):
         - `install` (default):
             - [Mach](https://machengine.org/) executable installation.
-            - Common step execution, except for `tag` (see below).
+            - Common steps execution (see below).
+            <!-- - Common steps execution, except for `tag` (see below). -->
         - `run`: [Mach](https://machengine.org/) executable run.
 
 - #### Common Build Steps:
