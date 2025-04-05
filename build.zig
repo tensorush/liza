@@ -157,6 +157,14 @@ pub fn build(b: *std.Build) !void {
     switch (bump) {
         inline else => |tag| @field(next_version, @tagName(tag)) += 1,
     }
+    switch (bump) {
+        .major => {
+            next_version.minor = 0;
+            next_version.patch = 0;
+        },
+        .minor => next_version.patch = 0,
+        .patch => {},
+    }
 
     const next_version_run = b.addRunArtifact(zq_art);
     next_version_run.addArgs(&.{

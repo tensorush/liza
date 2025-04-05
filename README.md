@@ -50,13 +50,9 @@ const liza_mod = liza_dep.module("liza");
     - [Build steps](src/templates/exe/build.zig):
         - `install` (default):
             - Zig executable installation.
-            - All-step execution, except for `run`, `check`, and `release`.
+            - Common step execution, except for `tag` (see below).
+            - Common optional step execution, except for `check` (see below).
         - `run`: Zig executable run.
-        - `doc` (`$d`): Documentation emission (`--add-doc`).
-        - `test`: Test suite execution.
-        - `cov` (`$c`): Code coverage generation (`--add-cov`).
-        - `fmt`: Formatting check execution.
-        - `check` (`$s`): Compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`--add-check`).
         - `release`: Release binaries' installation and archiving.
 
 - #### [Zig Library Template (`lib`)](src/templates/lib/):
@@ -65,13 +61,9 @@ const liza_mod = liza_dep.module("liza");
         - `install` (default):
             - Zig static library installation.
             - Example suite installation.
-            - All-step execution, except for `run` and `check`.
-        - `doc` (`$d`): Documentation emission (`--add-doc`).
+            - Common step execution, except for `tag` (see below).
+            - Common optional step execution, except for `check` (see below).
         - `run`: Example run.
-        - `test`: Test suite execution.
-        - `cov` (`$c`): Code coverage generation (`--add-cov`).
-        - `fmt`: Formatting check execution.
-        - `check` (`$s`): Compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`--add-check`).
 
 - #### [Zig Build Template (`bld`)](src/templates/bld/):
     - Public Translate-C module creation.
@@ -80,19 +72,26 @@ const liza_mod = liza_dep.module("liza");
     - [Build steps](src/templates/bld/build.zig):
         - `install` (default):
             - C/C++ static library installation.
-            - All-step execution.
-        - `test`: Test suite execution.
-        - `fmt`: Formatting check execution.
+            - Common step execution, except for `tag` (see below).
 
 - #### [Mach Application Template (`app`)](src/templates/app/):
     - [WGSL](https://www.w3.org/TR/WGSL/) shader usage.
     - [Build steps](src/templates/app/build.zig):
         - `install` (default):
             - [Mach](https://machengine.org/) executable installation.
-            - All-step execution, except for `run`.
+            - Common step execution, except for `tag` (see below).
         - `run`: [Mach](https://machengine.org/) executable run.
-        - `test`: Test suite execution.
-        - `fmt`: Formatting check execution.
+
+- #### Common Build Steps:
+    - `test`: Test suite execution.
+    - `fmt`: Formatting check execution.
+    <!-- - `mzv`: Minimum Zig version update.
+    - `tag`: Next version tag. -->
+
+- #### Common Optional Build Steps:
+    - `doc` (`$d`): Documentation emission (`--add-doc`).
+    - `cov` (`$c`): Code coverage generation (`--add-cov`).
+    - `check` (`$s`): Compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`--add-check`).
 
 - #### [GitHub](src/templates/.github/workflows/ci.yaml) / [Forgejo](src/templates/.forgejo/workflows/ci.yaml) / [Woodpecker](src/templates/.woodpecker/ci.yaml) CI Workflow Template:
     - `run`/`example`/`lib`/`exe` (`$s`): either `exe`'s executable run, `lib`'s example suite execution, `bld`'s library installation, or `app`'s executable installation.
