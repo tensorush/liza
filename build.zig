@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const zon: struct {
+const manifest: struct {
     name: enum { liza },
     version: []const u8,
     fingerprint: u64,
@@ -18,7 +18,7 @@ pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const version = try std.SemanticVersion.parse(zon.version);
+    const version = try std.SemanticVersion.parse(manifest.version);
 
     const api_source_file = b.path("src/liza.zig");
     const root_source_file = b.path("src/main.zig");
@@ -142,6 +142,7 @@ pub fn build(b: *std.Build) !void {
         "build.zig.zon",
         "-s",
         std.mem.trimRight(u8, b.run(&.{ b.graph.zig_exe, "version" }), "\n"),
+        "-q",
         ".minimum_zig_version",
     });
     mzv_step.dependOn(&mzv_run.step);
@@ -172,6 +173,7 @@ pub fn build(b: *std.Build) !void {
         "build.zig.zon",
         "-s",
         b.fmt("{}", .{next_version}),
+        "-q",
         ".version",
     });
 
@@ -205,7 +207,7 @@ pub fn build(b: *std.Build) !void {
     const release = b.step("release", "Install and archive release binaries");
 
     inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
-        const RELEASE_NAME = "liza-v" ++ zon.version ++ "-" ++ RELEASE_TRIPLE;
+        const RELEASE_NAME = "liza-v" ++ manifest.version ++ "-" ++ RELEASE_TRIPLE;
         const IS_WINDOWS_RELEASE = comptime std.mem.endsWith(u8, RELEASE_TRIPLE, "windows");
         const RELEASE_EXE_ARCHIVE_BASENAME = RELEASE_NAME ++ if (IS_WINDOWS_RELEASE) ".zip" else ".tar.xz";
 

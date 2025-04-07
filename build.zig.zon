@@ -5,12 +5,12 @@
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .argzon = .{
-            .url = "git+https://codeberg.org/tensorush/argzon.git#18aee08a579259b788b05d7dacf1614085f34373",
-            .hash = "argzon-0.4.0-Cl574gjFAQCWSLUH_VzIAE18hxR4GNne6RbpZO5gfFGV",
+            .url = "git+https://codeberg.org/tensorush/argzon.git#8ea1af5f4a07bb9938f4c0c219cd7f96cdcca6f8",
+            .hash = "argzon-0.4.0-Cl574p_EAQCOu-wg_QWESqR1jUfldSvg_VsZW12HGtOg",
         },
         .zq = .{
-            .url = "git+https://codeberg.org/tensorush/zq.git#60970574b7e4583effae3cc82a06c245b08ce0e8",
-            .hash = "zq-0.5.0-7XsKhQt0AABNF-ykY8FziB_9Ci13lZFlIwggj3FTSEMs",
+            .url = "git+https://codeberg.org/tensorush/zq.git#1715c9a55218f02e4767914d7f1e18c2b1bbce65",
+            .hash = "zq-0.7.0-7XsKhYzCAADmGPKQq9MYeeUM6i5SMCPis0KTqzQlmRxD",
         },
     },
     .paths = .{

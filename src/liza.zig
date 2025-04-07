@@ -90,7 +90,7 @@ const APP_ROOT_TEXT = @embedFile(TEMPLATES ++ APP ++ SRC ++ APP_ROOT);
 const APP_SHADER_TEXT = @embedFile(TEMPLATES ++ APP ++ SRC ++ APP_SHADER);
 
 const Error = error{
-    Fingerprint,
+    NoFingerprint,
 };
 
 pub const Codebase = enum {
@@ -328,7 +328,7 @@ fn createBuildFiles(
                     "zig",
                     "build",
                 }, .cwd_dir = pckg_dir });
-                const fp_idx = std.mem.lastIndexOfScalar(u8, zig_build.stderr, 'x') orelse return error.Fingerprint;
+                const fp_idx = std.mem.lastIndexOfScalar(u8, zig_build.stderr, 'x') orelse return Error.NoFingerprint;
                 const fp = zig_build.stderr[fp_idx - 1 .. fp_idx + 17];
                 break :blk fp;
             };
@@ -337,7 +337,7 @@ fn createBuildFiles(
             const new_build_writer = new_build_file.writer();
             defer new_build_file.close();
 
-            try zq.process(
+            try zq.processQuery(
                 arena,
                 build_zon,
                 ".fingerprint",

@@ -12,6 +12,11 @@ pub fn main() !void {
         @panic("Memory leak has occurred!");
     };
 
+    // Set up arena allocator
+    var arena_state = std.heap.ArenaAllocator.init(gpa);
+    const arena = arena_state.allocator();
+    defer arena_state.deinit();
+
     // Set up PRNG
     var prng = std.Random.DefaultPrng.init(blk: {
         var seed: u64 = undefined;
@@ -19,11 +24,6 @@ pub fn main() !void {
         break :blk seed;
     });
     const random = prng.random();
-
-    // Set up arena allocator
-    var arena_state = std.heap.ArenaAllocator.init(gpa);
-    const arena = arena_state.allocator();
-    defer arena_state.deinit();
 
     // Set up buffered standard output writer
     const std_out = std.io.getStdOut();
