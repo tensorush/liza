@@ -11,7 +11,7 @@
 ```sh
 git clone https://codeberg.org/tensorush/liza.git
 cd liza/
-zig build exe -- -h
+zig build run -- -h
 ```
 
 - Download latest release:

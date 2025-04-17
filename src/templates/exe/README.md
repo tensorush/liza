@@ -11,7 +11,7 @@
 ```sh
 git clone https://$g/$u/$p.git
 cd $p/
-zig build exe -- -h
+zig build run -- -h
 ```
 
 - Download latest release:
