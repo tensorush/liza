@@ -11,6 +11,13 @@ const cli = .{
     .description = "Zig codebase initializer",
     .options = .{
         .{
+            .short = 'c',
+            .long = "cbs",
+            .type = "Codebase",
+            .default = .exe,
+            .description = "Codebase type",
+        },
+        .{
             .short = 'r',
             .long = "rnr",
             .type = "Runner",
@@ -36,22 +43,29 @@ const cli = .{
         .{
             .long = "add-doc",
             .description = "Add documentation to exe or lib (add doc step, add CD workflow)",
+            .excludes = .{
+                "cbs bld",
+                "cbs app",
+            },
         },
         .{
             .long = "add-cov",
             .description = "Add code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore)",
+            .excludes = .{
+                "cbs bld",
+                "cbs app",
+            },
         },
         .{
             .long = "add-check",
             .description = "Add compilation check for ZLS Build-On-Save to exe or lib (add check step)",
+            .excludes = .{
+                "cbs bld",
+                "cbs app",
+            },
         },
     },
     .positionals = .{
-        .{
-            .meta = .CODEBASE,
-            .type = "Codebase",
-            .description = "Codebase type",
-        },
         .{
             .meta = .PCKG_NAME,
             .type = "string",
@@ -89,6 +103,7 @@ pub fn main() !void {
     const Args = argzon.Args(cli, .{ .enums = &.{ liza.Codebase, liza.Runner } });
     const args = try Args.parse(arena, std.io.getStdErr().writer(), .{ .is_gpa = false });
 
+    const codebase = args.options.cbs;
     const runner = args.options.rnr;
     const version = try std.SemanticVersion.parse(args.options.ver);
     const out_dir_path = args.options.out;
@@ -97,7 +112,6 @@ pub fn main() !void {
     const add_cov = args.flags.@"add-cov";
     const add_check = args.flags.@"add-check";
 
-    const codebase = args.positionals.CODEBASE;
     const pckg_name = args.positionals.PCKG_NAME;
     const pckg_desc = args.positionals.PCKG_DESC;
     const user_hndl = args.positionals.USER_HNDL;
@@ -105,13 +119,6 @@ pub fn main() !void {
 
     if (!std.zig.isValidId(pckg_name)) {
         @panic("Package name must be a valid Zig identifier!");
-    }
-
-    switch (codebase) {
-        .exe, .lib => {},
-        .bld, .app => if (add_doc or add_cov or add_check) {
-            @panic("Flags add-doc, add-cov, and add-check, are unavailable for bld and app codebases!");
-        },
     }
 
     const zig_version_run = try std.process.Child.run(.{ .allocator = arena, .argv = &.{ "zig", "version" } });
