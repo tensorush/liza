@@ -4,10 +4,9 @@ const argzon = @import("argzon");
 
 const liza = @import("liza.zig");
 
-// TODO: extract into `cli.zon` after:
-// https://github.com/ziglang/zig/pull/22907
+// TODO: Extract into `cli.zon` after Zig 0.14.1 release.
 const cli = .{
-    .name = .liza,
+    .name = "liza",
     .description = "Zig codebase initializer",
     .options = .{
         .{

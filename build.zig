@@ -84,7 +84,6 @@ pub fn build(b: *std.Build) !void {
         .source_dir = lib.getEmittedDocs(),
     });
     docs_step.dependOn(&docs_install.step);
-    install_step.dependOn(docs_step);
 
     // Formatting check
     const fmt_step = b.step("fmt", "Check formatting");

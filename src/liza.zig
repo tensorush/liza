@@ -36,11 +36,6 @@ const LIB = "lib/";
 const BLD = "bld/";
 const APP = "app/";
 
-const EXE_CI_STEP = "run";
-const LIB_CI_STEP = "example";
-const BLD_CI_STEP = "lib";
-const APP_CI_STEP = "exe";
-
 const EXE_CORE = "$p.zig";
 const EXE_ROOT = "main.zig";
 const LIB_CORE = "$p.zig";
@@ -143,9 +138,9 @@ pub fn initialize(
 
             const exe_core = try std.mem.concat(arena, u8, &.{ pckg_name, ".zig" });
 
+            try createWorkflows(codebase, runner, add_doc, add_cov, pckg_dir);
             try createSourceFile(exe_core, EXE_CORE_TEXT, pckg_name, src_dir);
             try createSourceFile(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
-            try createWorkflows(EXE_CI_STEP, codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(EXE_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
@@ -161,16 +156,16 @@ pub fn initialize(
 
             const lib_core = try std.mem.concat(arena, u8, &.{ pckg_name, ".zig" });
 
+            try createWorkflows(codebase, runner, add_doc, add_cov, pckg_dir);
             try createSourceFile(lib_core, LIB_CORE_TEXT, pckg_name, src_dir);
             try createSourceFile(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE1, pckg_name, example1_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
-            try createWorkflows(LIB_CI_STEP, codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(LIB_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
         .bld => {
-            try createWorkflows(BLD_CI_STEP, codebase, runner, add_doc, add_cov, pckg_dir);
+            try createWorkflows(codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(BLD_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
@@ -178,9 +173,9 @@ pub fn initialize(
             var src_dir = try pckg_dir.makeOpenPath(SRC, .{});
             defer src_dir.close();
 
+            try createWorkflows(codebase, runner, add_doc, add_cov, pckg_dir);
             try createSourceFile(APP_ROOT, APP_ROOT_TEXT, pckg_name, src_dir);
             try createSourceFile(APP_SHADER, APP_SHADER_TEXT, pckg_name, src_dir);
-            try createWorkflows(APP_CI_STEP, codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(APP_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
@@ -277,7 +272,6 @@ fn createBuildFiles(
                         \\        .source_dir = lib.getEmittedDocs(),
                         \\    });
                         \\    docs_step.dependOn(&docs_install.step);
-                        \\    install_step.dependOn(docs_step);
                         \\
                     );
                 },
@@ -294,7 +288,6 @@ fn createBuildFiles(
                     \\    });
                     \\    cov_run.addArtifactArg(tests);
                     \\    cov_step.dependOn(&cov_run.step);
-                    \\    install_step.dependOn(cov_step);
                     \\
                 ),
                 's' => if (add_check) try build_writer.print(
@@ -349,7 +342,6 @@ fn createBuildFiles(
 }
 
 fn createWorkflows(
-    comptime ci_step: []const u8,
     codebase: Codebase,
     runner: Runner,
     add_doc: bool,
@@ -390,8 +382,8 @@ fn createWorkflows(
         while (std.mem.indexOfScalar(u8, text[idx..], '$')) |i| : (idx += i + 2) {
             try workflow_writer.writeAll(text[idx .. idx + i]);
             switch (text[idx + i + 1]) {
-                's' => try workflow_writer.writeAll(ci_step),
                 'c' => if (add_cov and runner == .github) try workflow_writer.writeAll(
+                    \\
                     \\
                     \\      - name: Set up kcov
                     \\        run: sudo apt install kcov
@@ -406,7 +398,6 @@ fn createWorkflows(
                     \\          directory: kcov-output/
                     \\          fail_ci_if_error: true
                     \\          verbose: true
-                    \\
                 ),
                 else => try workflow_writer.writeAll(text[idx + i .. idx + i + 2]),
             }

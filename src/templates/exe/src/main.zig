@@ -6,11 +6,10 @@ const argzon = @import("argzon");
 const $p = @import("$p.zig");
 
 // Command-line interface definition.
-// TODO: extract into `cli.zon` after:
-// https://github.com/ziglang/zig/pull/22907
+// TODO: Extract into `cli.zon` after Zig 0.14.1 release.
 const cli = .{
-    .name = .exe,
-    .description = "Executable template.",
+    .name = "exe",
+    .description = "Executable CLI template.",
     .options = .{
         .{
             .short = 'n',
@@ -25,7 +24,7 @@ const cli = .{
             .meta = .STRING,
             .type = "string",
             .default = "All your codebase are belong to us.",
-            .description = "String to print to standard output.",
+            .description = "String to print.",
         },
     },
 };

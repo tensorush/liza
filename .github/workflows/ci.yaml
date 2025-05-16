@@ -16,10 +16,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Zig
-        uses: mlugg/setup-zig@v1
+        uses: mlugg/setup-zig@v2
 
       - name: Set up kcov
         run: sudo apt install kcov
+
+      - name: Run `install` step
+        run: zig build install
 
       - name: Run `run` step
         run: |
@@ -27,16 +30,3 @@ jobs:
           zig build run -- -c lib --add-doc --add-cov --add-check library "Library description." user-handle "User Name" && cd library/ && zig build && zig build run && zig build check && cd ../ && rm -rf library/
           zig build run -- -c bld build "Build description." user-handle "User Name" && rm -rf build/
           zig build run -- -c app application "Application description." user-handle "User Name" && rm -rf application/
-
-  fmt:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Zig
-        uses: mlugg/setup-zig@v1
-
-      - name: Run `fmt` step
-        run: zig build fmt
