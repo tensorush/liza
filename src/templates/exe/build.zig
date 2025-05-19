@@ -75,7 +75,7 @@ $c
     });
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
-$s
+$k
     // Release
     const release = b.step("release", "Install and archive release binaries");
 

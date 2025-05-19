@@ -103,6 +103,7 @@ pub const Runner = enum {
 
 pub fn initialize(
     arena: std.mem.Allocator,
+    pckg_name_with_prefix_opt: ?[]const u8,
     pckg_name: []const u8,
     pckg_desc: []const u8,
     user_hndl: []const u8,
@@ -118,7 +119,8 @@ pub fn initialize(
 ) !void {
     var pckg_dir = blk: {
         const out_dir = try std.fs.cwd().openDir(out_dir_path, .{});
-        _ = out_dir.access(pckg_name, .{}) catch break :blk try out_dir.makeOpenPath(pckg_name, .{});
+        const out_dir_name = pckg_name_with_prefix_opt orelse pckg_name;
+        _ = out_dir.access(out_dir_name, .{}) catch break :blk try out_dir.makeOpenPath(out_dir_name, .{});
         @panic("Directory already exists!");
     };
     defer pckg_dir.close();
@@ -141,7 +143,7 @@ pub fn initialize(
             try createWorkflows(codebase, runner, add_doc, add_cov, pckg_dir);
             try createSourceFile(exe_core, EXE_CORE_TEXT, pckg_name, src_dir);
             try createSourceFile(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, src_dir);
-            try createReadmeFile(EXE_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
+            try createReadmeFile(EXE_README, pckg_name_with_prefix_opt, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
         .lib => {
@@ -161,12 +163,12 @@ pub fn initialize(
             try createSourceFile(LIB_ROOT, LIB_ROOT_TEXT, pckg_name, src_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE1, pckg_name, example1_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE2, pckg_name, example2_dir);
-            try createReadmeFile(LIB_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
+            try createReadmeFile(LIB_README, pckg_name_with_prefix_opt, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
         .bld => {
             try createWorkflows(codebase, runner, add_doc, add_cov, pckg_dir);
-            try createReadmeFile(BLD_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
+            try createReadmeFile(BLD_README, pckg_name_with_prefix_opt, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
         .app => {
@@ -176,7 +178,7 @@ pub fn initialize(
             try createWorkflows(codebase, runner, add_doc, add_cov, pckg_dir);
             try createSourceFile(APP_ROOT, APP_ROOT_TEXT, pckg_name, src_dir);
             try createSourceFile(APP_SHADER, APP_SHADER_TEXT, pckg_name, src_dir);
-            try createReadmeFile(APP_README, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
+            try createReadmeFile(APP_README, pckg_name_with_prefix_opt, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
             try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
         },
     }
@@ -184,6 +186,7 @@ pub fn initialize(
 
 fn createReadmeFile(
     comptime text: []const u8,
+    pckg_name_with_prefix_opt: ?[]const u8,
     pckg_name: []const u8,
     pckg_desc: []const u8,
     user_hndl: []const u8,
@@ -198,6 +201,7 @@ fn createReadmeFile(
     while (std.mem.indexOfScalar(u8, text[idx..], '$')) |i| : (idx += i + 2) {
         try readme_writer.writeAll(text[idx .. idx + i]);
         switch (text[idx + i + 1]) {
+            'x' => try readme_writer.writeAll(if (pckg_name_with_prefix_opt) |pckg_name_with_prefix| pckg_name_with_prefix else pckg_name),
             'p' => try readme_writer.writeAll(pckg_name),
             'd' => try readme_writer.writeAll(pckg_desc),
             'u' => try readme_writer.writeAll(user_hndl),
@@ -290,7 +294,7 @@ fn createBuildFiles(
                     \\    cov_step.dependOn(&cov_run.step);
                     \\
                 ),
-                's' => if (add_check) try build_writer.print(
+                'k' => if (add_check) try build_writer.print(
                     \\
                     \\    // Compilation check for ZLS Build-On-Save
                     \\    // See: https://zigtools.org/zls/guides/build-on-save/

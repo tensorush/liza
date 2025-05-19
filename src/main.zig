@@ -88,6 +88,8 @@ const cli = .{
     },
 };
 
+const PCKG_NAME_PREFIX = "zig-";
+
 pub fn main() !void {
     var gpa_state: std.heap.DebugAllocator(.{}) = .init;
     const gpa = gpa_state.allocator();
@@ -111,13 +113,21 @@ pub fn main() !void {
     const add_cov = args.flags.@"add-cov";
     const add_check = args.flags.@"add-check";
 
-    const pckg_name = args.positionals.PCKG_NAME;
+    const pckg_name_with_prefix_opt = if (codebase == .lib and std.mem.startsWith(u8, args.positionals.PCKG_NAME, PCKG_NAME_PREFIX))
+        args.positionals.PCKG_NAME
+    else
+        null;
+    const pckg_name = if (pckg_name_with_prefix_opt) |pckg_name_with_prefix|
+        pckg_name_with_prefix[PCKG_NAME_PREFIX.len..]
+    else
+        args.positionals.PCKG_NAME;
+
     const pckg_desc = args.positionals.PCKG_DESC;
     const user_hndl = args.positionals.USER_HNDL;
     const user_name = args.positionals.USER_NAME;
 
     if (!std.zig.isValidId(pckg_name)) {
-        @panic("Package name must be a valid Zig identifier!");
+        @panic("Package name must be a valid Zig identifier, only library's name can be prefixed with \"" ++ PCKG_NAME_PREFIX ++ "\"!");
     }
 
     const zig_version_run = try std.process.Child.run(.{ .allocator = arena, .argv = &.{ "zig", "version" } });
@@ -125,6 +135,7 @@ pub fn main() !void {
 
     try liza.initialize(
         arena,
+        pckg_name_with_prefix_opt,
         pckg_name,
         pckg_desc,
         user_hndl,

@@ -95,7 +95,7 @@ const liza_mod = liza_dep.module("liza");
 - #### Common Optional Build Steps:
     - `doc` (`$d`): Documentation emission (`--add-doc`).
     - `cov` (`$c`): Code coverage generation (`--add-cov`).
-    - `check` (`$s`): Compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`--add-check`).
+    - `check` (`$k`): Compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`--add-check`).
 
 - #### [GitHub](src/templates/.github/workflows/ci.yaml) / [Forgejo](src/templates/.forgejo/workflows/ci.yaml) / [Woodpecker](src/templates/.woodpecker/ci.yaml) CI Workflow Template Jobs:
     - `install`:

@@ -1,4 +1,4 @@
-# $p
+# $x
 
 ## $d
 
@@ -7,7 +7,7 @@
 1. Add `$p` dependency to `build.zig.zon`:
 
 ```sh
-zig fetch --save git+https://$g/$u/$p.git
+zig fetch --save git+https://$g/$u/$x.git
 ```
 
 2. Use `$p` dependency in `build.zig`:
