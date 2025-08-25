@@ -5,6 +5,7 @@ when:
 steps:
   release:
     image: tensorush/ziglang:latest
+    pull: true
 
     environment:
       MINISIGN_SECRET_KEY:

@@ -1,15 +1,14 @@
 const std = @import("std");
 
+const manifest = @import("build.zig.zon");
+
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-
-    const version_str = "$v";
-    const version = try std.SemanticVersion.parse(version_str);
-
     const api_source_file = b.path("src/$p.zig");
     const root_source_file = b.path("src/main.zig");
+    const version: std.SemanticVersion = try .parse(manifest.version);
 
     // Dependencies
     const argzon_dep = b.dependency("argzon", .{
@@ -23,16 +22,19 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
         .root_source_file = api_source_file,
+        .strip = b.option(bool, "strip", "Strip the binary"),
     });
 
-    // Root module
+    // Private root module
     const root_mod = b.createModule(.{
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
-        .strip = b.option(bool, "strip", "Strip the binary"),
+        .strip = api_mod.strip,
+        .imports = &.{
+            .{ .name = "argzon", .module = argzon_mod },
+        },
     });
-    root_mod.addImport("argzon", argzon_mod);
 
     // Executable
     const exe_run_step = b.step("run", "Run executable");
@@ -54,7 +56,6 @@ $d
     const tests_step = b.step("test", "Run test suite");
 
     const tests = b.addTest(.{
-        .version = version,
         .root_module = api_mod,
     });
 
@@ -80,7 +81,7 @@ $k
     const release = b.step("release", "Install and archive release binaries");
 
     inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
-        const RELEASE_NAME = "$p-v" ++ version_str ++ "-" ++ RELEASE_TRIPLE;
+        const RELEASE_NAME = "$p-v" ++ manifest.version ++ "-" ++ RELEASE_TRIPLE;
         const IS_WINDOWS_RELEASE = comptime std.mem.endsWith(u8, RELEASE_TRIPLE, "windows");
         const RELEASE_EXE_ARCHIVE_BASENAME = RELEASE_NAME ++ if (IS_WINDOWS_RELEASE) ".zip" else ".tar.xz";
 
@@ -91,10 +92,12 @@ $k
                 .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = RELEASE_TRIPLE })),
                 .optimize = .ReleaseSafe,
                 .root_source_file = root_source_file,
+                .imports = &.{
+                    .{ .name = "argzon", .module = argzon_mod },
+                },
                 .strip = true,
             }),
         });
-        release_exe.root_module.addImport("argzon", argzon_mod);
 
         const release_exe_install = b.addInstallArtifact(release_exe, .{});
 

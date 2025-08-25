@@ -3,7 +3,7 @@
 const std = @import("std");
 
 /// Run core logic.
-pub fn run(string: []const u8, number: u8, writer: anytype) !void {
+pub fn run(string: []const u8, number: u8, writer: *std.io.Writer) std.io.Writer.Error!void {
     for (0..number) |_| {
         try writer.print("{s}\n", .{string});
     }

@@ -5,6 +5,7 @@ when:
 steps:
   install:
     image: tensorush/ziglang:latest
+    pull: true
 
     depends_on: [] # Enable parallel steps
 

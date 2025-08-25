@@ -1,16 +1,16 @@
 .{
     .name = .liza,
-    .version = "0.13.2",
+    .version = "0.15.0",
     .fingerprint = 0xf8d7a7ba1acabddb, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.14.0",
+    .minimum_zig_version = "0.15.1",
     .dependencies = .{
         .argzon = .{
-            .url = "git+https://codeberg.org/tensorush/argzon.git#23f466431f307bbb06d10513a9cc8469c5a69f17",
-            .hash = "argzon-0.4.0-Cl574tyUAgDt4sSidMretYRnsYOLYFGUu3E1tQ21EhHW",
+            .url = "git+https://codeberg.org/tensorush/argzon.git#894663fe2ae3aea7b7d6e1d04fd1059ff4b41967",
+            .hash = "argzon-0.5.1-Cl574uqlAgAUpwVTGz9B2_ZReqYg2HxyadGHO0DEuQ27",
         },
         .zq = .{
-            .url = "git+https://codeberg.org/tensorush/zq.git#d1450f20373c6e9e7145900348b56051aba8ee48",
-            .hash = "zq-0.8.0-7XsKheXoAADsnSDho3BPl6C5E-KAlGFNqLRsLVLVgurJ",
+            .url = "git+https://codeberg.org/tensorush/zq.git#74128ddb9b9a6a90905589a1e00fbc0c318cd88a",
+            .hash = "zq-0.9.0-7XsKhTzuAACmXi1S7AVJ-Fv9Bll7UWpFkoVTc2l4bA5f",
         },
     },
     .paths = .{

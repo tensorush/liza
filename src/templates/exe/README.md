@@ -39,5 +39,12 @@ const $p_dep = b.dependency("$p", .{
     .optimize = optimize,
 });
 const $p_mod = $p_dep.module("$p");
-<std.Build.Step.Compile>.root_module.addImport("$p", $p_mod);
+
+const root_mod = b.createModule(.{
+    .target = target,
+    .optimize = optimize,
+    .imports = &.{
+        .{ .name = "$p", .module = $p_mod },
+    },
+});
 ```

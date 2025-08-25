@@ -5,13 +5,13 @@ when:
 steps:
   run:
     image: tensorush/ziglang:latest
+    pull: true
 
     depends_on: [] # Enable parallel steps
 
     commands: |
       apk --no-cache add git
       zig build install
-      zig build run -- -r woodpecker --add-doc --add-cov --add-check executable "Executable description." user-handle "User Name" && rm -rf executable/
-      zig build run -- -c lib -r woodpecker --add-doc --add-cov --add-check library "Library description." user-handle "User Name" && rm -rf library/
-      zig build run -- -c bld -r woodpecker build "Build description." user-handle "User Name" && rm -rf build/
-      zig build run -- -c app -r woodpecker application "Application description." user-handle "User Name" && rm -rf application/
+      zig build run -- --add-doc --add-cov --add-check executable "Executable description." user-handle "User Name" && rm -rf executable/
+      zig build run -- -c lib --add-doc --add-cov --add-check library "Library description." user-handle "User Name" && rm -rf library/
+      zig build run -- -c bld build "Build description." user-handle "User Name" && rm -rf build/

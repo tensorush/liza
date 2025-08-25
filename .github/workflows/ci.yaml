@@ -7,13 +7,19 @@ on:
   pull_request:
     branches: [main]
 
+  workflow_dispatch:
+
+concurrency:
+  group: ci
+  cancel-in-progress: true
+
 jobs:
   run:
     runs-on: ubuntu-22.04
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Zig
         uses: mlugg/setup-zig@v2
@@ -26,7 +32,6 @@ jobs:
 
       - name: Run `run` step
         run: |
-          zig build run -- --add-doc --add-cov --add-check executable "Executable description." user-handle "User Name" && cd executable/ && zig fetch --save git+https://codeberg.org/tensorush/argzon.git && zig build && zig build run && zig build check && zig build release && cd ../ && rm -rf executable/
-          zig build run -- -c lib --add-doc --add-cov --add-check library "Library description." user-handle "User Name" && cd library/ && zig build && zig build run && zig build check && cd ../ && rm -rf library/
-          zig build run -- -c bld build "Build description." user-handle "User Name" && rm -rf build/
-          zig build run -- -c app application "Application description." user-handle "User Name" && rm -rf application/
+          zig build run -- -r github --add-doc --add-cov --add-check executable "Executable description." user-handle "User Name" && cd executable/ && zig build && zig build run && zig build check && zig build release && cd ../ && rm -rf executable/
+          zig build run -- -c lib -r github --add-doc --add-cov --add-check library "Library description." user-handle "User Name" && cd library/ && zig build && zig build run && zig build check && cd ../ && rm -rf library/
+          zig build run -- -c bld -r github build "Build description." user-handle "User Name" && rm -rf build/

@@ -7,11 +7,13 @@ when:
 steps:
   emit:
     image: tensorush/ziglang:latest
+    pull: true
 
     commands: zig build doc
 
   deploy:
     image: alpine/git:latest
+    pull: true
 
     environment:
       TOKEN:

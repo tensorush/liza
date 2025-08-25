@@ -1,12 +1,12 @@
 const std = @import("std");
 
+const manifest = @import("build.zig.zon");
+
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-
-    const version_str = "$v";
-    const version = try std.SemanticVersion.parse(version_str);
+    const version: std.SemanticVersion = try .parse(manifest.version);
 
     // Configuration options
     const use_zlib = b.option(bool, "use_zlib", "Use zlib built with Zig") orelse false;
@@ -68,7 +68,7 @@ pub fn build(b: *std.Build) !void {
             .target = target,
             .link_libc = true,
             // .link_libcpp = true,
-            .root_source_file = $p_test_path.path("main.c"),
+            .root_source_file = $p_test_path.path(b, "main.c"),
         }),
     });
     tests.addCSourceFiles(.{ .root = $p_test_path, .files = &TEST_SOURCES, .flags = &TEST_FLAGS });

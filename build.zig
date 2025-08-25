@@ -1,27 +1,13 @@
 const std = @import("std");
 
-const manifest: struct {
-    name: enum { liza },
-    version: []const u8,
-    fingerprint: u64,
-    minimum_zig_version: []const u8,
-    dependencies: struct {
-        argzon: Dependency,
-        zq: Dependency,
-    },
-    paths: []const []const u8,
-
-    const Dependency = struct { url: []const u8, hash: []const u8, lazy: bool = false };
-} = @import("build.zig.zon");
+const manifest = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const version = try std.SemanticVersion.parse(manifest.version);
-
-    const api_source_file = b.path("src/liza.zig");
     const root_source_file = b.path("src/main.zig");
+    const version: std.SemanticVersion = try .parse(manifest.version);
 
     // Dependencies
     const argzon_dep = b.dependency("argzon", .{
@@ -37,22 +23,17 @@ pub fn build(b: *std.Build) !void {
     const zq_mod = zq_dep.module("zq");
     const zq_art = zq_dep.artifact("zq");
 
-    // Public API module
-    const api_mod = b.addModule("liza", .{
-        .target = target,
-        .optimize = optimize,
-        .root_source_file = api_source_file,
-    });
-
-    // Root module
+    // Private root module
     const root_mod = b.createModule(.{
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
         .strip = b.option(bool, "strip", "Strip the binary"),
+        .imports = &.{
+            .{ .name = "argzon", .module = argzon_mod },
+            .{ .name = "zq", .module = zq_mod },
+        },
     });
-    root_mod.addImport("argzon", argzon_mod);
-    root_mod.addImport("zq", zq_mod);
 
     // Executable
     const exe_run_step = b.step("run", "Run executable");
@@ -70,21 +51,6 @@ pub fn build(b: *std.Build) !void {
     }
     exe_run_step.dependOn(&exe_run.step);
 
-    // Documentation
-    const docs_step = b.step("doc", "Emit documentation");
-
-    const lib = b.addLibrary(.{
-        .name = "liza",
-        .version = version,
-        .root_module = api_mod,
-    });
-    const docs_install = b.addInstallDirectory(.{
-        .install_dir = .prefix,
-        .install_subdir = "docs",
-        .source_dir = lib.getEmittedDocs(),
-    });
-    docs_step.dependOn(&docs_install.step);
-
     // Formatting check
     const fmt_step = b.step("fmt", "Check formatting");
 
@@ -95,21 +61,19 @@ pub fn build(b: *std.Build) !void {
             "build.zig.zon",
         },
         .exclude_paths = &.{
+            // Executable template
             "src/templates/exe/build.zig",
             "src/templates/exe/src/main.zig",
             "src/templates/exe/build.zig.zon",
-
+            // Library template
             "src/templates/lib/build.zig",
             "src/templates/lib/src/root.zig",
             "src/templates/lib/build.zig.zon",
             "src/templates/lib/examples/example1/main.zig",
             "src/templates/lib/examples/example2/main.zig",
-
+            // Build template
             "src/templates/bld/build.zig",
             "src/templates/bld/build.zig.zon",
-
-            "src/templates/app/build.zig",
-            "src/templates/app/build.zig.zon",
         },
         .check = true,
     });
@@ -126,11 +90,26 @@ pub fn build(b: *std.Build) !void {
     });
     check_step.dependOn(&check_exe.step);
 
-    // Minimum Zig version update
-    const mzv_step = b.step("mzv", "Update minimum Zig version");
+    // Dependencies and minimum Zig version update
+    const upd_step = b.step("upd", "Update dependencies and minimum Zig version");
 
-    const mzv_run = b.addRunArtifact(zq_art);
-    mzv_run.addArgs(&.{
+    inline for (comptime std.meta.fieldNames(@TypeOf(manifest.dependencies))) |dep_name| {
+        const dep_url = @field(manifest.dependencies, dep_name).url;
+        if (std.mem.startsWith(u8, dep_url, "git+")) {
+            if (std.mem.indexOfScalar(u8, dep_url, '#')) |hash_idx| {
+                const upd_dep_run = b.addSystemCommand(&.{
+                    b.graph.zig_exe,
+                    "fetch",
+                    "--save=" ++ dep_name,
+                    dep_url[0..hash_idx],
+                });
+                upd_step.dependOn(&upd_dep_run.step);
+            }
+        }
+    }
+
+    const upd_mzv_run = b.addRunArtifact(zq_art);
+    upd_mzv_run.addArgs(&.{
         "--io",
         "build.zig.zon",
         "-s",
@@ -138,14 +117,13 @@ pub fn build(b: *std.Build) !void {
         "-q",
         ".minimum_zig_version",
     });
-    mzv_step.dependOn(&mzv_run.step);
-    install_step.dependOn(mzv_step);
+    upd_step.dependOn(&upd_mzv_run.step);
 
     // Next version tag
     const tag_step = b.step("tag", "Tag next version");
 
     const bump = b.option(enum { major, minor, patch }, "bump", "Bump version number part") orelse .patch;
-    const message = b.option([]const u8, "message", "Git commit and tag message") orelse b.fmt("chore: bump {s} version", .{@tagName(bump)});
+    const message = b.option([]const u8, "message", "Git commit and tag message") orelse b.fmt("chore: bump {t} version", .{bump});
 
     var next_version = version;
     switch (bump) {
@@ -165,7 +143,7 @@ pub fn build(b: *std.Build) !void {
         "--io",
         "build.zig.zon",
         "-s",
-        b.fmt("{}", .{next_version}),
+        b.fmt("{f}", .{next_version}),
         "-q",
         ".version",
     });
@@ -188,7 +166,7 @@ pub fn build(b: *std.Build) !void {
     const git_tag_bump_run = b.addSystemCommand(&.{
         "git",
         "tag",
-        b.fmt("v{}", .{next_version}),
+        b.fmt("v{f}", .{next_version}),
         "-m",
         message,
     });
@@ -211,11 +189,13 @@ pub fn build(b: *std.Build) !void {
                 .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = RELEASE_TRIPLE })),
                 .optimize = .ReleaseSafe,
                 .root_source_file = root_source_file,
+                .imports = &.{
+                    .{ .name = "argzon", .module = argzon_mod },
+                    .{ .name = "zq", .module = zq_mod },
+                },
                 .strip = true,
             }),
         });
-        release_exe.root_module.addImport("argzon", argzon_mod);
-        release_exe.root_module.addImport("zq", zq_mod);
 
         const release_exe_install = b.addInstallArtifact(release_exe, .{});
 

@@ -1,12 +1,13 @@
 const std = @import("std");
 
+const manifest = @import("build.zig.zon");
+
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const version_str = "$v";
-    const version = try std.SemanticVersion.parse(version_str);
+    const version: std.SemanticVersion = try .parse(manifest.version);
 
     const root_source_file = b.path("src/root.zig");
 
@@ -15,6 +16,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
+        .strip = b.option(bool, "strip", "Strip the binary"),
     });
 
     // Library
@@ -26,7 +28,7 @@ pub fn build(b: *std.Build) !void {
     b.installArtifact(lib);
 $d
     // Example suite
-    const example_run_step = b.step("run", "Run example suite");
+    const examples_step = b.step("run", "Run example suite");
 
     const example_opt = b.option(Example, "example", "Run example");
 
@@ -38,14 +40,15 @@ $d
                 .target = target,
                 .optimize = optimize,
                 .root_source_file = b.path(EXAMPLES_DIR ++ @tagName(EXAMPLE) ++ "/main.zig"),
+                .imports = &.{
+                    .{ .name = "$p", .module = root_mod },
+                },
             }),
         });
-        example_exe.root_module.addImport("$p", root_mod);
-        b.installArtifact(example_exe);
 
         if (example_opt == null or example_opt.? == EXAMPLE) {
             const example_run = b.addRunArtifact(example_exe);
-            example_run_step.dependOn(&example_run.step);
+            examples_step.dependOn(&example_run.step);
         }
     }
 
@@ -53,7 +56,6 @@ $d
     const tests_step = b.step("test", "Run test suite");
 
     const tests = b.addTest(.{
-        .version = version,
         .root_module = root_mod,
     });
 
