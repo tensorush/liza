@@ -56,7 +56,11 @@ pub fn build(b: *std.Build) !void {
         lib.root_module.addCMacro("HAVE_Z", "1");
         lib.linkLibrary(zlib_art);
     }
-    b.installArtifact(lib);
+    if (b.option(bool, "no-bin", "Skip emitting binary") orelse false) {
+        install_step.dependOn(&lib.step);
+    } else {
+        b.installArtifact(lib);
+    }
 
     // Test suite
     const tests_step = b.step("test", "Run test suite");

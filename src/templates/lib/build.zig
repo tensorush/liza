@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
-        .strip = b.option(bool, "strip", "Strip the binary"),
+        .strip = b.option(bool, "strip", "Strip binary"),
     });
 
     // Library
@@ -25,7 +25,11 @@ pub fn build(b: *std.Build) !void {
         .version = version,
         .root_module = root_mod,
     });
-    b.installArtifact(lib);
+    if (b.option(bool, "no-bin", "Skip emitting binary") orelse false) {
+        install_step.dependOn(&lib.step);
+    } else {
+        b.installArtifact(lib);
+    }
 $d
     // Example suite
     const examples_step = b.step("run", "Run example suite");

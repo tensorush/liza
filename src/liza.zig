@@ -191,16 +191,6 @@ fn createReadmeFile(
     while (std.mem.indexOfScalar(u8, text[idx..], '$')) |i| : (idx += i + 2) {
         try writer.print("{s}{s}", .{
             text[idx .. idx + i], switch (text[idx + i + 1]) {
-                // ### Setup
-                // > [!NOTE]
-                // > On Windows, make sure to allow running scripts:
-                // >
-                // > ```powershell
-                // > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-                // > ```
-                // ```sh
-                // ./zig/download.ps1
-                // ```
                 'x' => if (pckg_name_with_prefix_opt) |pckg_name_with_prefix| pckg_name_with_prefix else pckg_name,
                 'p' => pckg_name,
                 'd' => pckg_desc,

@@ -28,6 +28,7 @@ unzip <archive> # Windows
 - #### [Zig Executable Template (`exe`)](src/templates/exe/):
     - Public API module creation.
     - Dependency package usage.
+    - Common build options exposure (see below).
     - [Build steps](src/templates/exe/build.zig):
         - `install` (default):
             - Zig executable installation.
@@ -38,6 +39,7 @@ unzip <archive> # Windows
 
 - #### [Zig Library Template (`lib`)](src/templates/lib/):
     - Public root module creation.
+    - Common build options exposure (see below).
     - [Build steps](src/templates/lib/build.zig):
         - `install` (default):
             - Zig static library installation.
@@ -49,6 +51,7 @@ unzip <archive> # Windows
     - Public Translate-C module creation.
     - Lazy dependency package usage.
     - Configuration option usage.
+    - Common build options exposure (see below).
     - [Build steps](src/templates/bld/build.zig):
         - `install` (default):
             - C/C++ static library installation.
@@ -57,6 +60,10 @@ unzip <archive> # Windows
 - #### Common Build Steps:
     - `test`: Test suite execution.
     - `fmt`: Formatting check execution.
+
+- #### Common Build Options:
+    - `-Dstrip`: Binary stripping.
+    - `-Dno-bin -fincremental --watch`: Binary-free incremental compilation.
 
 - #### Optional Build Steps:
     - `doc` (`$d`): Documentation emission (`--add-doc`).

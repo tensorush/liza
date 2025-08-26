@@ -28,7 +28,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
         .root_source_file = root_source_file,
-        .strip = b.option(bool, "strip", "Strip the binary"),
+        .strip = b.option(bool, "strip", "Strip binary"),
         .imports = &.{
             .{ .name = "argzon", .module = argzon_mod },
             .{ .name = "zq", .module = zq_mod },
@@ -43,7 +43,11 @@ pub fn build(b: *std.Build) !void {
         .version = version,
         .root_module = root_mod,
     });
-    b.installArtifact(exe);
+    if (b.option(bool, "no-bin", "Skip emitting binary") orelse false) {
+        install_step.dependOn(&exe.step);
+    } else {
+        b.installArtifact(exe);
+    }
 
     const exe_run = b.addRunArtifact(exe);
     if (b.args) |args| {
