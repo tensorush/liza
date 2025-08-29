@@ -62,8 +62,8 @@ unzip <archive> # Windows
     - `fmt`: Formatting check execution.
 
 - #### Common Build Options:
-    - `-Dstrip`: Binary stripping.
-    - `-Dno-bin -fincremental --watch`: Binary-free incremental compilation.
+    - `-Dstrip`: Binary compilation without stack trace printing code.
+    - `-Dno-bin -fincremental --watch`: Incremental compilation without binary emission.
 
 - #### Optional Build Steps:
     - `doc` (`$d`): Documentation emission (`--add-doc`).
