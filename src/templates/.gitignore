@@ -1,3 +1,3 @@
 # Zig artifacts
 .zig-cache/
-zig-out/$c
+zig-out/$g

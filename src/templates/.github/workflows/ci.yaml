@@ -25,4 +25,4 @@ jobs:
         uses: mlugg/setup-zig@v2
 
       - name: Run `install` step
-        run: zig build install$c
+        run: zig build install$g

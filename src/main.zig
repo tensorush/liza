@@ -34,6 +34,7 @@ pub fn main() !void {
     const add_doc = args.flags.@"add-doc";
     const add_cov = args.flags.@"add-cov";
     const add_check = args.flags.@"add-check";
+    const fetch_deps = args.flags.@"fetch-deps";
 
     const pckg_name_with_prefix_opt = if (codebase == .lib and std.mem.startsWith(u8, args.positionals.PCKG_NAME, PCKG_NAME_PREFIX))
         args.positionals.PCKG_NAME
@@ -69,6 +70,7 @@ pub fn main() !void {
         add_doc,
         add_cov,
         add_check,
+        fetch_deps,
         zig_version,
     );
 }

@@ -34,6 +34,7 @@
     .flags = .{
         .{
             .long = "add-doc",
+            .short = 'd',
             .description = "Add documentation to exe or lib (add doc step, add CD workflow)",
             .excludes = .{
                 "cbs bld",
@@ -41,17 +42,24 @@
         },
         .{
             .long = "add-cov",
-            .description = "Add code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore)",
+            .short = 'g',
+            .description = "Add Kcov source code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore)",
             .excludes = .{
                 "cbs bld",
             },
         },
         .{
             .long = "add-check",
+            .short = 'k',
             .description = "Add compilation check for ZLS Build-On-Save to exe or lib (add check step)",
             .excludes = .{
                 "cbs bld",
             },
+        },
+        .{
+            .long = "fetch-deps",
+            .short = 'f',
+            .description = "Fetch package dependencies",
         },
     },
     .positionals = .{

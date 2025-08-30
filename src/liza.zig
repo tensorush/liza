@@ -108,6 +108,7 @@ pub fn initialize(
     add_doc: bool,
     add_cov: bool,
     add_check: bool,
+    fetch_deps: bool,
     zig_version: std.SemanticVersion,
 ) !void {
     var pckg_dir = blk: {
@@ -141,7 +142,7 @@ pub fn initialize(
             try createSourceFile(EXE_ROOT, EXE_ROOT_TEXT, pckg_name, pckg_desc, src_dir);
             try createWorkflows(codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(EXE_README, pckg_name_with_prefix_opt, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, runner, pckg_name, user_hndl, version, add_doc, add_cov, add_check, fetch_deps, zig_version, pckg_dir);
         },
         .lib => {
             var src_dir = try pckg_dir.makeOpenPath(SRC, .{});
@@ -161,12 +162,12 @@ pub fn initialize(
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE1, pckg_name, pckg_desc, example1_dir);
             try createSourceFile(EXE_ROOT, LIB_EXAMPLE2, pckg_name, pckg_desc, example2_dir);
             try createReadmeFile(LIB_README, pckg_name_with_prefix_opt, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, runner, pckg_name, user_hndl, version, add_doc, add_cov, add_check, fetch_deps, zig_version, pckg_dir);
         },
         .bld => {
             try createWorkflows(codebase, runner, add_doc, add_cov, pckg_dir);
             try createReadmeFile(BLD_README, pckg_name_with_prefix_opt, pckg_name, pckg_desc, user_hndl, runner, pckg_dir);
-            try createBuildFiles(arena, codebase, pckg_name, user_hndl, version, add_doc, add_cov, add_check, zig_version, pckg_dir);
+            try createBuildFiles(arena, codebase, runner, pckg_name, user_hndl, version, add_doc, add_cov, add_check, fetch_deps, zig_version, pckg_dir);
         },
     }
 }
@@ -215,12 +216,14 @@ fn createReadmeFile(
 fn createBuildFiles(
     arena: std.mem.Allocator,
     codebase: Codebase,
+    runner: Runner,
     pckg_name: []const u8,
     user_hndl: []const u8,
     version: std.SemanticVersion,
     add_doc: bool,
     add_cov: bool,
     add_check: bool,
+    fetch_deps: bool,
     zig_version: std.SemanticVersion,
     pckg_dir: std.fs.Dir,
 ) !void {
@@ -246,6 +249,10 @@ fn createBuildFiles(
                 'u' => try writer.writeAll(user_hndl),
                 'v' => try writer.print("{f}", .{version}),
                 'z' => try writer.print("{f}", .{zig_version}),
+                'g' => try writer.writeAll(switch (runner) {
+                    .github => GITHUB,
+                    .forgejo, .woodpecker => CODEBERG,
+                }),
                 'd' => if (add_doc) {
                     try writer.writeAll(
                         \\
@@ -274,10 +281,10 @@ fn createBuildFiles(
                         \\
                     );
                 },
-                'c' => if (add_cov) try writer.writeAll(
+                'g' => if (add_cov) try writer.writeAll(
                     \\
-                    \\    // Code coverage
-                    \\    const cov_step = b.step("cov", "Generate code coverage");
+                    \\    // Source code coverage
+                    \\    const cov_step = b.step("cov", "Generate source code coverage with Kcov");
                     \\
                     \\    const cov_run = b.addSystemCommand(&.{
                     \\        "kcov",
@@ -343,13 +350,39 @@ fn createBuildFiles(
 
             try new_writer.flush();
 
-            if (codebase == .exe) {
-                _ = try std.process.Child.run(.{ .allocator = arena, .argv = &.{
-                    "zig",
-                    "fetch",
-                    "--save",
-                    "git+https://codeberg.org/tensorush/argzon.git",
-                }, .cwd_dir = pckg_dir });
+            if (fetch_deps) {
+                if (codebase == .exe) {
+                    _ = try std.process.Child.run(.{ .allocator = arena, .argv = &.{
+                        "zig",
+                        "fetch",
+                        "--save",
+                        "git+https://codeberg.org/tensorush/argzon.git",
+                    }, .cwd_dir = pckg_dir });
+                }
+                if (codebase == .exe or codebase == .lib) {
+                    _ = try std.process.Child.run(.{ .allocator = arena, .argv = &.{
+                        "zig",
+                        "fetch",
+                        "--save",
+                        "git+https://github.com/Games-by-Mason/tracy_zig.git",
+                    }, .cwd_dir = pckg_dir });
+                }
+                if (codebase == .bld) {
+                    _ = try std.process.Child.run(.{ .allocator = arena, .argv = &.{
+                        "zig",
+                        "fetch",
+                        try std.fmt.allocPrint(arena, "--save={s}", .{pckg_name}),
+                        try std.fmt.allocPrint(arena, "git+https://{s}/{s}/{s}.git#v{f}", .{
+                            switch (runner) {
+                                .github => GITHUB,
+                                .forgejo, .woodpecker => CODEBERG,
+                            },
+                            user_hndl,
+                            pckg_name,
+                            version,
+                        }),
+                    }, .cwd_dir = pckg_dir });
+                }
             }
         }
     }
@@ -404,10 +437,10 @@ fn createWorkflows(
         while (std.mem.indexOfScalar(u8, text[idx..], '$')) |i| : (idx += i + 2) {
             try writer.writeAll(text[idx .. idx + i]);
             switch (text[idx + i + 1]) {
-                'c' => if (add_cov and runner == .github) try writer.writeAll(
+                'g' => if (add_cov and runner == .github) try writer.writeAll(
                     \\
                     \\
-                    \\      - name: Set up kcov
+                    \\      - name: Set up Kcov
                     \\        run: sudo apt install kcov
                     \\
                     \\      - name: Run `cov` step
@@ -503,10 +536,10 @@ fn createGitFiles(
         while (std.mem.indexOfScalar(u8, text[idx..], '$')) |i| : (idx += i + 2) {
             try writer.writeAll(text[idx .. idx + i]);
             switch (text[idx + i + 1]) {
-                'c' => if (add_cov) try writer.writeAll(
+                'g' => if (add_cov) try writer.writeAll(
                     \\
                     \\
-                    \\# Kcov artifacts
+                    \\# Kcov source code coverage artifacts
                     \\kcov-output/
                 ),
                 else => unreachable,

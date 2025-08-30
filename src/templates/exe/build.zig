@@ -17,6 +17,16 @@ pub fn build(b: *std.Build) !void {
     });
     const argzon_mod = argzon_dep.module("argzon");
 
+    const tracy_dep = b.dependency("tracy", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const tracy_mod = tracy_dep.module("tracy");
+    const tracy_impl_mod = tracy_dep.module(if (b.option(bool, "profile", "Profile binary with Tracy") orelse false)
+        "tracy_impl_enabled"
+    else
+        "tracy_impl_disabled");
+
     // Public API module
     const api_mod = b.addModule("$p", .{
         .target = target,
@@ -33,6 +43,8 @@ pub fn build(b: *std.Build) !void {
         .strip = api_mod.strip,
         .imports = &.{
             .{ .name = "argzon", .module = argzon_mod },
+            .{ .name = "tracy", .module = tracy_mod },
+            .{ .name = "tracy_impl", .module = tracy_impl_mod },
         },
     });
 
@@ -64,9 +76,19 @@ $d
     });
 
     const tests_run = b.addRunArtifact(tests);
-    tests_step.dependOn(&tests_run.step);
+    if (b.option(bool, "debug", "Debug test suite with LLDB") orelse false) {
+        // LLDB Zig config: https://github.com/ziglang/zig/blob/master/tools/lldb_pretty_printers.py#L2-L6
+        const lldb_run = b.addSystemCommand(&.{
+            "lldb",
+            "--",
+        });
+        lldb_run.addArtifactArg(tests);
+        tests_step.dependOn(&lldb_run.step);
+    } else {
+        tests_step.dependOn(&tests_run.step);
+    }
     install_step.dependOn(tests_step);
-$c
+$g
     // Formatting check
     const fmt_step = b.step("fmt", "Check formatting");
 

@@ -51,7 +51,6 @@ unzip <archive> # Windows
     - Public Translate-C module creation.
     - Lazy dependency package usage.
     - Configuration option usage.
-    - Common build options exposure (see below).
     - [Build steps](src/templates/bld/build.zig):
         - `install` (default):
             - C/C++ static library installation.
@@ -62,30 +61,36 @@ unzip <archive> # Windows
     - `fmt`: Formatting check execution.
 
 - #### Common Build Options:
+    - `-Ddebug`: Test suite execution under [LLDB debugger](https://lldb.llvm.org/).
     - `-Dstrip`: Binary compilation without stack trace printing code.
+    - `-Dprofile`: Binary compilation with [Tracy profiler Zig bindings](https://github.com/Games-by-Mason/tracy_zig) support.
     - `-Dno-bin -fincremental --watch`: Incremental compilation without binary emission.
 
 - #### Optional Build Steps:
-    - `doc` (`$d`): Documentation emission (`--add-doc`).
-    - `cov` (`$c`): Code coverage generation (`--add-cov`).
-    <!-- - `tag` (`$t`): Next version tag using [`zq`](https://codeberg.org/tensorush/zq) (`--add-tag`). -->
-    - `check` (`$k`): Compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`--add-check`).
-    <!-- - `upd` (`$u`): Dependencies and minimum Zig version update using [`zq`](https://codeberg.org/tensorush/zq) (`--add-upd`). -->
+    - `doc` (`$d`): Documentation emission (`-d`, `--add-doc`).
+    - `cov` (`$g`): [Kcov source code coverage](https://github.com/SimonKagstrom/kcov) generation (`-g`, `--add-cov`).
+    - `check` (`$k`): Compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`-k`, `--add-check`).
+    <!-- - `lnt` (`$l`): [Vale markup prose linter](https://github.com/errata-ai/vale) execution (`--add-lnt`). -->
+    <!-- - `spl` (`$s`): [Typos source code spell checker](https://github.com/crate-ci/typos) execution (`--add-spl`). -->
+
+<!-- - #### Custom Build Steps: -->
+<!-- - `tag` (`$t`): Next version tag using [`zq`](https://codeberg.org/tensorush/zq) (`--add-tag`). -->
+<!-- - `upd` (`$u`): Dependencies and minimum Zig version update using [`zq`](https://codeberg.org/tensorush/zq) (`--add-upd`). -->
 
 - #### [GitHub](src/templates/.github/workflows/ci.yaml) / [Forgejo](src/templates/.forgejo/workflows/ci.yaml) / [Woodpecker](src/templates/.woodpecker/ci.yaml) CI Workflow Template Jobs:
     - `install`:
         - Main artifacts' installation.
         - `test`: Test suite execution.
         - `fmt`: Formatting check execution.
-        - (**GitHub-only**) `cov` (`$c`): Code coverage publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration) (`--add-cov`).
+        - (**GitHub-only**) `cov` (`$g`): [Kcov source code coverage](https://github.com/SimonKagstrom/kcov) publication to [Codecov](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage#install-the-github-app-integration) (`-g`, `--add-cov`).
 
 - #### [GitHub](src/templates/.github/workflows/cd.yaml) / [Forgejo](src/templates/.forgejo/workflows/cd.yaml) / [Woodpecker](src/templates/.woodpecker/cd.yaml) CD Workflow Template Jobs:
-    - (**`exe`-/`lib`-only**) `emit`→`deploy`: Documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) or [Codeberg Pages](https://codeberg.page) (`--add-doc`):
+    - (**`exe`-/`lib`-only**) `emit`→`deploy`: Documentation emission and deployment to [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow) or [Codeberg Pages](https://codeberg.page) (`-d`, `--add-doc`):
         - (**Woodpecker-only**) [Generate Codeberg access token](https://docs.codeberg.org/advanced/access-token/) with `repository:write` permission and add it as `TOKEN` secret available on `Push` event.
         - (**Woodpecker-only**) Add email as `EMAIL` secret available on `Push` event.
 
 - #### [GitHub](src/templates/.github/workflows/release.yaml) / [Woodpecker](src/templates/.woodpecker/release.yaml) Release Workflow Jobs:
-    - (**`exe`-only**) `release`: Release publication using [`minisign`](https://jedisct1.github.io/minisign/):
+    - (**`exe`-only**) `release`: Release publication using [minisign](https://jedisct1.github.io/minisign/):
       - Generate key pair without password: `minisign -GW`.
       - Add `./minisign.pub` as `MINISIGN_PUBLIC_KEY` secret (available on `Tag` event in Woodpecker).
       - Add `~/.minisign/minisign.key` as `MINISIGN_SECRET_KEY` secret (available on `Tag` event in Woodpecker).
@@ -96,6 +101,6 @@ unzip <archive> # Windows
     - `$n`: User name.
 
 - #### [`.gitignore` Template](src/templates/.gitignore):
-    - `$c`: Code coverage artifacts (`--add-cov`).
+    - `$g`: [Kcov source code coverage](https://github.com/SimonKagstrom/kcov) artifacts (`-g`, `--add-cov`).
 
 - #### [`.gitattributes`](src/templates/.gitattributes).
