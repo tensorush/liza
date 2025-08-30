@@ -196,7 +196,7 @@ fn createReadmeFile(
                 'p' => pckg_name,
                 'd' => pckg_desc,
                 'u' => user_hndl,
-                'g' => switch (runner) {
+                'h' => switch (runner) {
                     .github => GITHUB,
                     .forgejo, .woodpecker => CODEBERG,
                 },
@@ -249,7 +249,7 @@ fn createBuildFiles(
                 'u' => try writer.writeAll(user_hndl),
                 'v' => try writer.print("{f}", .{version}),
                 'z' => try writer.print("{f}", .{zig_version}),
-                'g' => try writer.writeAll(switch (runner) {
+                'h' => try writer.writeAll(switch (runner) {
                     .github => GITHUB,
                     .forgejo, .woodpecker => CODEBERG,
                 }),

@@ -9,7 +9,7 @@
 - Build from source:
 
 ```sh
-git clone https://$g/$u/$p.git
+git clone https://$h/$u/$p.git
 cd $p/
 zig build run -- -h
 ```
@@ -17,7 +17,7 @@ zig build run -- -h
 - Download latest release:
 
 ```sh
-wget https://$g/$u/$p/releases/$l/<archive>
+wget https://$h/$u/$p/releases/$l/<archive>
 tar -xf <archive> # Unix
 unzip <archive> # Windows
 ./<binary> -h
@@ -28,7 +28,7 @@ unzip <archive> # Windows
 1. Add `$p` dependency to `build.zig.zon`:
 
 ```sh
-zig fetch --save git+https://$g/$u/$p.git
+zig fetch --save git+https://$h/$u/$p.git
 ```
 
 2. Use `$p` dependency in `build.zig`:
