@@ -10,14 +10,13 @@ steps:
     depends_on: [] # Enable parallel steps
 
     commands: |
-      apk --no-cache add git tar zip
+      apk --no-cache add git
 
       zig build run -- -d -k executable "Executable description." user-handle "User Name"
       cd executable/
       zig build
       zig build run
       zig build doc
-      zig build release
       cd ../
       rm -rf executable/
 
