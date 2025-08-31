@@ -103,10 +103,10 @@ $c
     install_step.dependOn(fmt_step);
 $s2$l2$k
     // Next version tag with Zq
-    liza.tag(b, exe, version);
+    liza.tag(b, lib, version);
 
     // Dependencies and minimum Zig version update with Zq
-    liza.update(b, exe, manifest.dependencies);
+    liza.update(b, lib, manifest.dependencies);
 }
 
 const EXAMPLES_DIR = "examples/";
