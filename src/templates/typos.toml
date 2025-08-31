@@ -1,0 +1,5 @@
+[files]
+extend-exclude = [
+    "LICENSE",
+    "README.md",$l
+]

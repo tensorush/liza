@@ -23,20 +23,21 @@ pub fn main() !void {
     var arg_str_iter = try std.process.argsWithAllocator(gpa);
     defer arg_str_iter.deinit();
 
-    const Args = argzon.Args(CLI, .{ .enums = &.{ liza.Codebase, liza.Runner } });
+    const Args = argzon.Args(CLI, .{ .enums = &.{ liza.Template, liza.Runner } });
     const args: Args = try .parse(arena, &arg_str_iter, &stderr_writer.interface, .{ .is_gpa = false });
 
-    const codebase = args.options.cbs;
+    const template = args.options.tmp;
     const runner = args.options.rnr;
     const version: std.SemanticVersion = try .parse(args.options.ver);
     const out_dir_path = args.options.out;
 
-    const add_doc = args.flags.@"add-doc";
-    const add_cov = args.flags.@"add-cov";
-    const add_check = args.flags.@"add-check";
-    const fetch_deps = args.flags.@"fetch-deps";
+    const with_doc = args.flags.doc;
+    const with_cov = args.flags.cov;
+    const with_lint = args.flags.lint;
+    const with_spell = args.flags.spell;
+    const with_check = args.flags.check;
 
-    const pckg_name_with_prefix_opt = if (codebase == .lib and std.mem.startsWith(u8, args.positionals.PCKG_NAME, PCKG_NAME_PREFIX))
+    const pckg_name_with_prefix_opt = if (template == .lib and std.mem.startsWith(u8, args.positionals.PCKG_NAME, PCKG_NAME_PREFIX))
         args.positionals.PCKG_NAME
     else
         null;
@@ -63,14 +64,15 @@ pub fn main() !void {
         pckg_desc,
         user_hndl,
         user_name,
-        codebase,
+        template,
         runner,
         version,
         out_dir_path,
-        add_doc,
-        add_cov,
-        add_check,
-        fetch_deps,
+        with_doc,
+        with_cov,
+        with_spell,
+        with_lint,
+        with_check,
         zig_version,
     );
 }

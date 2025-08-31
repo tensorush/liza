@@ -11,7 +11,12 @@ steps:
 
     commands: |
       apk --no-cache add git
-      zig build install
-      zig build run -- -d -g -k -f executable "Executable description." user-handle "User Name" && rm -rf executable/
-      zig build run -- -c lib -d -g -k -f library "Library description." user-handle "User Name" && rm -rf library/
-      zig build run -- -c bld build https://upstream.repo.link user-handle "User Name" && rm -rf build/
+      zig build run -- -d -c -l -k executable "Executable description." user-handle "User Name" && cd executable/ && zig build && zig build run && zig build doc && zig build cov && zig build release && cd ../ && rm -rf executable/
+      zig build run -- -t lib -d -c -l -k library "Library description." user-handle "User Name" && cd library/ && zig build && zig build run && zig build doc && zig build cov && cd ../ && rm -rf library/
+      zig build run -- -t bld build https://upstream.repo.link user-handle "User Name" && rm -rf build/
+
+  fmt:
+    image: tensorush/ziglang:latest
+    pull: true
+
+    commands: zig build fmt

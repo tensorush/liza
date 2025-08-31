@@ -20,5 +20,11 @@ jobs:
         with:
           use-cache: false
 
-      - name: Run `install` step
-        run: zig build install
+      - name: Run `run` step
+        run: zig build run
+
+      - name: Run `test` step
+        run: zig build test --summary all
+
+      - name: Run `fmt` step
+        run: zig build fmt$s$l

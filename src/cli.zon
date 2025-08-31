@@ -3,11 +3,11 @@
     .description = "Zig codebase initializer",
     .options = .{
         .{
-            .short = 'c',
-            .long = "cbs",
-            .type = "Codebase",
+            .short = 't',
+            .long = "tmp",
+            .type = "Template",
             .default = .exe,
-            .description = "Codebase type",
+            .description = "Template type",
         },
         .{
             .short = 'r',
@@ -21,7 +21,7 @@
             .long = "ver",
             .type = "string",
             .default = "0.0.0",
-            .description = "Codebase semantic version triple",
+            .description = "Semantic version triple",
         },
         .{
             .short = 'o',
@@ -33,33 +33,44 @@
     },
     .flags = .{
         .{
-            .long = "add-doc",
             .short = 'd',
+            .long = "doc",
             .description = "Add documentation to exe or lib (add doc step, add CD workflow)",
             .excludes = .{
-                "cbs bld",
+                "tmp bld",
             },
         },
         .{
-            .long = "add-cov",
-            .short = 'g',
+            .short = 'c',
+            .long = "cov",
             .description = "Add Kcov source code coverage to exe or lib (add cov step, edit CI workflow, edit .gitignore)",
             .excludes = .{
-                "cbs bld",
+                "tmp bld",
             },
         },
         .{
-            .long = "add-check",
-            .short = 'k',
-            .description = "Add compilation check for ZLS Build-On-Save to exe or lib (add check step)",
+            .short = 's',
+            .long = "spell",
+            .description = "Add Typos source code spell checker to exe or lib (add spell step, add typos.toml config, edit CI workflow)",
             .excludes = .{
-                "cbs bld",
+                "tmp bld",
             },
         },
         .{
-            .long = "fetch-deps",
-            .short = 'f',
-            .description = "Fetch package dependencies",
+            .short = 'l',
+            .long = "lint",
+            .description = "Add Vale markup prose linter to exe or lib (add lint step, add .vale.ini, styles/ configs, edit CI workflow)",
+            .excludes = .{
+                "tmp bld",
+            },
+        },
+        .{
+            .short = 'k',
+            .long = "check",
+            .description = "Add build compilation check for ZLS Build-On-Save to exe or lib (add check step)",
+            .excludes = .{
+                "tmp bld",
+            },
         },
     },
     .positionals = .{

@@ -5,7 +5,7 @@
     .minimum_zig_version = "$z",
     .dependencies = .{
         // Depend on tracy by running:
-        // zig fetch --save git+https://github.com/Games-by-Mason/tracy_zig.git
+        // zig fetch --save git+https://github.com/Games-by-Mason/tracy_zig.git$s$l
     },
     .paths = .{
         "src/",

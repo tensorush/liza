@@ -14,7 +14,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
     });
-    const tracy_mod = tracy_dep.module("tracy");
+    const tracy_mod = tracy_dep.module("tracy");$s1$l1
 
     // Public root module
     const root_mod = b.addModule("$p", .{
@@ -84,7 +84,7 @@ $d
         tests_step.dependOn(&tests_run.step);
     }
     install_step.dependOn(tests_step);
-$g
+$c
     // Formatting check
     const fmt_step = b.step("fmt", "Check formatting");
 
@@ -99,7 +99,7 @@ $g
     });
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
-$k}
+$s2$l2$k}
 
 const EXAMPLES_DIR = "examples/";
 

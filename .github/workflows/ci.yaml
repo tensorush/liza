@@ -27,11 +27,11 @@ jobs:
       - name: Set up Kcov
         run: sudo apt install kcov
 
-      - name: Run `install` step
-        run: zig build install
-
       - name: Run `run` step
         run: |
-          zig build run -- -r github -d -g -k -f executable "Executable description." user-handle "User Name" && cd executable/ && zig build && zig build run && zig build check && zig build release && cd ../ && rm -rf executable/
-          zig build run -- -c lib -r github -d -g -k -f library "Library description." user-handle "User Name" && cd library/ && zig build && zig build run && zig build check && cd ../ && rm -rf library/
-          zig build run -- -c bld -r github build https://upstream.repo.link user-handle "User Name" && rm -rf build/
+          zig build run -- -r github -d -c -l -k executable "Executable description." user-handle "User Name" && cd executable/ && zig build && zig build run && zig build doc && zig build cov && zig build release && cd ../ && rm -rf executable/
+          zig build run -- -t lib -r github -d -c -l -k library "Library description." user-handle "User Name" && cd library/ && zig build && zig build run && zig build doc && zig build cov && cd ../ && rm -rf library/
+          zig build run -- -t bld -r github build https://upstream.repo.link user-handle "User Name" && rm -rf build/
+
+      - name: Run `fmt` step
+        run: zig build fmt

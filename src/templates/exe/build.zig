@@ -15,7 +15,7 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
     });
-    const argzon_mod = argzon_dep.module("argzon");
+    const argzon_mod = argzon_dep.module("argzon");$s1$l1
 
     const tracy_dep = b.dependency("tracy", .{
         .target = target,
@@ -88,7 +88,7 @@ $d
         tests_step.dependOn(&tests_run.step);
     }
     install_step.dependOn(tests_step);
-$g
+$c
     // Formatting check
     const fmt_step = b.step("fmt", "Check formatting");
 
@@ -102,7 +102,7 @@ $g
     });
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
-$k
+$s2$l2$k
     // Release
     const release = b.step("release", "Install and archive release binaries");
 

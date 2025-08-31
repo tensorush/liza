@@ -3,10 +3,22 @@ when:
   branch: main
 
 steps:
-  install:
+  run:
     image: tensorush/ziglang:latest
     pull: true
 
     depends_on: [] # Enable parallel steps
 
-    commands: zig build install
+    commands: zig build run
+
+  test:
+    image: tensorush/ziglang:latest
+    pull: true
+
+    commands: zig build test --summary all
+
+  fmt:
+    image: tensorush/ziglang:latest
+    pull: true
+
+    commands: zig build fmt$s$l

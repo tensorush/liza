@@ -24,5 +24,11 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v2
 
-      - name: Run `install` step
-        run: zig build install$g
+      - name: Run `run` step
+        run: zig build run
+
+      - name: Run `test` step
+        run: zig build test --summary all$c
+
+      - name: Run `fmt` step
+        run: zig build fmt$s$l
