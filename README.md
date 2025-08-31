@@ -60,11 +60,9 @@ unzip <archive> # Windows
     - `test`: Test suite execution.
     - `fmt`: Formatting check execution.
 
-- #### Common Build Options:
-    - `-Ddebug`: Test suite execution under [LLDB debugger](https://lldb.llvm.org/).
-    - `-Dstrip`: Compilation without stack trace printing code.
-    - `-Dprofile`: Compilation with [Tracy profiler Zig bindings](https://github.com/Games-by-Mason/tracy_zig) support.
-    - `-Dno-bin -fincremental --watch`: Incremental compilation without binary emission.
+- #### Custom Build Steps:
+    - `tag` (`$t`): Next version tag with [Zq](https://codeberg.org/tensorush/zq).
+    - `update` (`$u`): Dependencies and minimum Zig version update with [Zq](https://codeberg.org/tensorush/zq).
 
 - #### Optional Build Steps:
     - `doc` (`$d`): Documentation emission (`-d`, `doc`).
@@ -73,9 +71,11 @@ unzip <archive> # Windows
     - `spell` (`$s`): [Typos source code spelling check](https://github.com/crate-ci/typos) execution (`-s`, `spell`).
     - `check` (`$k`): Build compilation check for [ZLS Build-On-Save](https://zigtools.org/zls/guides/build-on-save/) (`-k`, `check`).
 
-<!-- - #### Custom Build Steps: -->
-<!-- - `tag` (`$t`): Next version tag using [`zq`](https://codeberg.org/tensorush/zq) (`tag`). -->
-<!-- - `upd` (`$u`): Dependencies and minimum Zig version update using [`zq`](https://codeberg.org/tensorush/zq) (`upd`). -->
+- #### Common Build Options:
+    - `-Ddebug`: Test suite execution under [LLDB debugger](https://lldb.llvm.org/).
+    - `-Dstrip`: Compilation without stack trace printing code.
+    - `-Dprofile`: Compilation with [Tracy profiler Zig bindings](https://github.com/Games-by-Mason/tracy_zig) support.
+    - `-Dno-bin -fincremental --watch`: Incremental compilation without binary emission.
 
 - #### [GitHub](src/templates/.github/workflows/ci.yaml) / [Forgejo](src/templates/.forgejo/workflows/ci.yaml) / [Woodpecker](src/templates/.woodpecker/ci.yaml) CI Workflow Template Jobs:
     - `install`:

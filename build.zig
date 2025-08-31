@@ -94,89 +94,11 @@ pub fn build(b: *std.Build) !void {
     });
     check_step.dependOn(&check_exe.step);
 
-    // Dependencies and minimum Zig version update
-    const upd_step = b.step("upd", "Update dependencies and minimum Zig version");
+    // Next version tag with Zq
+    tag(b, zq_art, version);
 
-    inline for (comptime std.meta.fieldNames(@TypeOf(manifest.dependencies))) |dep_name| {
-        const dep_url = @field(manifest.dependencies, dep_name).url;
-        if (std.mem.startsWith(u8, dep_url, "git+")) {
-            if (std.mem.indexOfScalar(u8, dep_url, '#')) |hash_idx| {
-                const upd_dep_run = b.addSystemCommand(&.{
-                    b.graph.zig_exe,
-                    "fetch",
-                    "--save=" ++ dep_name,
-                    dep_url[0..hash_idx],
-                });
-                upd_step.dependOn(&upd_dep_run.step);
-            }
-        }
-    }
-
-    const upd_mzv_run = b.addRunArtifact(zq_art);
-    upd_mzv_run.addArgs(&.{
-        "--io",
-        "build.zig.zon",
-        "-s",
-        std.mem.trimRight(u8, b.run(&.{ b.graph.zig_exe, "version" }), "\n"),
-        "-q",
-        ".minimum_zig_version",
-    });
-    upd_step.dependOn(&upd_mzv_run.step);
-
-    // Next version tag
-    const tag_step = b.step("tag", "Tag next version");
-
-    const bump = b.option(enum { major, minor, patch }, "bump", "Bump version number part") orelse .patch;
-    const message = b.option([]const u8, "message", "Git commit and tag message") orelse b.fmt("chore: bump {t} version", .{bump});
-
-    var next_version = version;
-    switch (bump) {
-        inline else => |tag| @field(next_version, @tagName(tag)) += 1,
-    }
-    switch (bump) {
-        .major => {
-            next_version.minor = 0;
-            next_version.patch = 0;
-        },
-        .minor => next_version.patch = 0,
-        .patch => {},
-    }
-
-    const next_version_run = b.addRunArtifact(zq_art);
-    next_version_run.addArgs(&.{
-        "--io",
-        "build.zig.zon",
-        "-s",
-        b.fmt("{f}", .{next_version}),
-        "-q",
-        ".version",
-    });
-
-    const git_add_bump_run = b.addSystemCommand(&.{
-        "git",
-        "add",
-        "-A",
-    });
-    git_add_bump_run.step.dependOn(&next_version_run.step);
-
-    const git_commit_bump_run = b.addSystemCommand(&.{
-        "git",
-        "commit",
-        "-m",
-        message,
-    });
-    git_commit_bump_run.step.dependOn(&git_add_bump_run.step);
-
-    const git_tag_bump_run = b.addSystemCommand(&.{
-        "git",
-        "tag",
-        b.fmt("v{f}", .{next_version}),
-        "-m",
-        message,
-    });
-    git_tag_bump_run.step.dependOn(&git_commit_bump_run.step);
-
-    tag_step.dependOn(&git_tag_bump_run.step);
+    // Dependencies and minimum Zig version update with Zq
+    update(b, zq_art);
 
     // Release
     const release = b.step("release", "Install and archive release binaries");
@@ -225,6 +147,101 @@ pub fn build(b: *std.Build) !void {
 
         release.dependOn(&release_exe_archive_install.step);
     }
+}
+
+/// Tag next version with Zq.
+pub fn tag(
+    b: *std.Build,
+    zq_art: *std.Build.Step.Compile,
+    version: std.SemanticVersion,
+) void {
+    const tag_step = b.step("tag", "Tag next version with Zq");
+
+    const bump = b.option(enum { major, minor, patch }, "bump", "Bump version number part") orelse .patch;
+    const message = b.option([]const u8, "message", "Git commit and tag message") orelse b.fmt("chore: bump {t} version", .{bump});
+
+    var next_version = version;
+    switch (bump) {
+        inline else => |bump_tag| @field(next_version, @tagName(bump_tag)) += 1,
+    }
+    switch (bump) {
+        .major => {
+            next_version.minor = 0;
+            next_version.patch = 0;
+        },
+        .minor => next_version.patch = 0,
+        .patch => {},
+    }
+
+    const next_version_run = b.addRunArtifact(zq_art);
+    next_version_run.addArgs(&.{
+        "--io",
+        "build.zig.zon",
+        "-s",
+        b.fmt("{f}", .{next_version}),
+        "-q",
+        ".version",
+    });
+
+    const git_add_bump_run = b.addSystemCommand(&.{
+        "git",
+        "add",
+        "-A",
+    });
+    git_add_bump_run.step.dependOn(&next_version_run.step);
+
+    const git_commit_bump_run = b.addSystemCommand(&.{
+        "git",
+        "commit",
+        "-m",
+        message,
+    });
+    git_commit_bump_run.step.dependOn(&git_add_bump_run.step);
+
+    const git_tag_bump_run = b.addSystemCommand(&.{
+        "git",
+        "tag",
+        b.fmt("v{f}", .{next_version}),
+        "-m",
+        message,
+    });
+    git_tag_bump_run.step.dependOn(&git_commit_bump_run.step);
+
+    tag_step.dependOn(&git_tag_bump_run.step);
+}
+
+/// Update dependencies and minimum Zig version with Zq.
+pub fn update(
+    b: *std.Build,
+    zq_art: *std.Build.Step.Compile,
+) void {
+    const update_step = b.step("update", "Update dependencies and minimum Zig version with Zq");
+
+    inline for (comptime std.meta.fieldNames(@TypeOf(manifest.dependencies))) |dep_name| {
+        const dep_url = @field(manifest.dependencies, dep_name).url;
+        if (std.mem.startsWith(u8, dep_url, "git+")) {
+            if (std.mem.indexOfScalar(u8, dep_url, '#')) |hash_idx| {
+                const update_dep_run = b.addSystemCommand(&.{
+                    b.graph.zig_exe,
+                    "fetch",
+                    "--save=" ++ dep_name,
+                    dep_url[0..hash_idx],
+                });
+                update_step.dependOn(&update_dep_run.step);
+            }
+        }
+    }
+
+    const update_mzv_run = b.addRunArtifact(zq_art);
+    update_mzv_run.addArgs(&.{
+        "--io",
+        "build.zig.zon",
+        "-s",
+        std.mem.trimRight(u8, b.run(&.{ b.graph.zig_exe, "version" }), "\n"),
+        "-q",
+        ".minimum_zig_version",
+    });
+    update_step.dependOn(&update_mzv_run.step);
 }
 
 const RELEASE_TRIPLES = .{
