@@ -1,13 +1,13 @@
 const std = @import("std");
 
-const MANIFEST = @import("build.zig.zon");
+const manifest = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/main.zig");
-    const version: std.SemanticVersion = try .parse(MANIFEST.version);
+    const version: std.SemanticVersion = try .parse(manifest.version);
 
     // Dependencies
     const argzon_dep = b.dependency("argzon", .{
@@ -98,10 +98,10 @@ pub fn build(b: *std.Build) !void {
     tag(b, zq_art, version);
 
     // Dependencies and minimum Zig version update with Zq
-    update(b, zq_art, MANIFEST.dependencies);
+    update(b, zq_art, manifest.dependencies);
 
     // Archived binary release with Tar (Unix) and Zip (Windows)
-    try release(b, RELEASE_TRIPLES, MANIFEST, .ReleaseSafe, root_source_file, &.{
+    try release(b, RELEASE_TRIPLES, manifest, .ReleaseSafe, root_source_file, &.{
         .{ .name = "argzon", .module = argzon_mod },
         .{ .name = "zq", .module = zq_mod },
     });

@@ -1,12 +1,12 @@
 const std = @import("std");
 
-const MANIFEST = @import("build.zig.zon");
+const manifest = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const version: std.SemanticVersion = try .parse(MANIFEST.version);
+    const version: std.SemanticVersion = try .parse(manifest.version);
 
     // Configuration options
     const use_zlib = b.option(bool, "use_zlib", "Use zlib built with Zig") orelse false;
