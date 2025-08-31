@@ -12,7 +12,7 @@ steps:
     commands: |
       apk --no-cache add git
 
-      zig build run -- -d -c -k executable "Executable description." user-handle "User Name"
+      zig build run -- -d -k executable "Executable description." user-handle "User Name"
       cd executable/
       zig build
       zig build run
@@ -22,7 +22,7 @@ steps:
       cd ../
       rm -rf executable/
 
-      zig build run -- -t lib -d -c -k library "Library description." user-handle "User Name"
+      zig build run -- -t lib -d -k library "Library description." user-handle "User Name"
       cd library/
       zig build
       zig build run
