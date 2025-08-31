@@ -17,7 +17,6 @@ steps:
       zig build
       zig build run
       zig build doc
-      zig build cov
       zig build release
       cd ../
       rm -rf executable/
@@ -27,7 +26,6 @@ steps:
       zig build
       zig build run
       zig build doc
-      zig build cov
       cd ../
       rm -rf library/
 
