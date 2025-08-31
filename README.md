@@ -34,7 +34,6 @@ unzip <archive> # Windows
             - Zig executable installation.
             - Common build steps execution (see below).
         - `run`: Zig executable run.
-        - `release`: Release binaries' installation and archiving.
         - Optional build steps (see below).
 
 - #### [Zig Library Template (`lib`)](src/templates/lib/):
@@ -61,8 +60,9 @@ unzip <archive> # Windows
     - `fmt`: Formatting check execution.
 
 - #### Custom Build Steps:
-    - `tag` (`$t`): Next version tag with [Zq](https://codeberg.org/tensorush/zq).
-    - `update` (`$u`): Dependencies and minimum Zig version update with [Zq](https://codeberg.org/tensorush/zq).
+    - `tag`: Next version tag with [Zq](https://codeberg.org/tensorush/zq).
+    - `update`: Dependencies and minimum Zig version update with [Zq](https://codeberg.org/tensorush/zq).
+    - `release`: Archived binary release with Tar (Unix) and Zip (Windows).
 
 - #### Optional Build Steps:
     - `doc` (`$d`): Documentation emission (`-d`, `doc`).

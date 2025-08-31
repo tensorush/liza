@@ -7,7 +7,9 @@
         // Depend on argzon by running:
         // zig fetch --save git+https://codeberg.org/tensorush/argzon.git
         // Depend on tracy by running:
-        // zig fetch --save git+https://github.com/Games-by-Mason/tracy_zig.git$s$l
+        // zig fetch --save git+https://github.com/Games-by-Mason/tracy_zig.git
+        // Depend on liza by running:
+        // zig fetch --save git+https://codeberg.org/tensorush/liza.git$s$l
     },
     .paths = .{
         "src/",

@@ -1,5 +1,7 @@
 const std = @import("std");
 
+const liza = @import("liza");
+
 const manifest = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
@@ -103,56 +105,8 @@ $c
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
 $s2$l2$k
-    // Release
-    const release = b.step("release", "Install and archive release binaries");
-
-    inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
-        const RELEASE_NAME = "$p-v" ++ manifest.version ++ "-" ++ RELEASE_TRIPLE;
-        const IS_WINDOWS_RELEASE = comptime std.mem.endsWith(u8, RELEASE_TRIPLE, "windows");
-        const RELEASE_EXE_ARCHIVE_BASENAME = RELEASE_NAME ++ if (IS_WINDOWS_RELEASE) ".zip" else ".tar.xz";
-
-        const release_exe = b.addExecutable(.{
-            .name = RELEASE_NAME,
-            .version = version,
-            .root_module = b.createModule(.{
-                .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = RELEASE_TRIPLE })),
-                .optimize = .ReleaseSafe,
-                .root_source_file = root_source_file,
-                .imports = &.{
-                    .{ .name = "argzon", .module = argzon_mod },
-                },
-                .strip = true,
-            }),
-        });
-
-        const release_exe_install = b.addInstallArtifact(release_exe, .{});
-
-        const release_exe_archive = b.addSystemCommand(if (IS_WINDOWS_RELEASE) &.{
-            "zip",
-            "-9",
-        } else &.{
-            "tar",
-            "-cJf",
-        });
-        release_exe_archive.setCwd(release_exe.getEmittedBinDirectory());
-        if (!IS_WINDOWS_RELEASE) release_exe_archive.setEnvironmentVariable("XZ_OPT", "-9");
-        const release_exe_archive_path = release_exe_archive.addOutputFileArg(RELEASE_EXE_ARCHIVE_BASENAME);
-        release_exe_archive.addArg(release_exe.out_filename);
-        release_exe_archive.step.dependOn(&release_exe_install.step);
-
-        const release_exe_archive_install = b.addInstallFileWithDir(
-            release_exe_archive_path,
-            .{ .custom = "release" },
-            RELEASE_EXE_ARCHIVE_BASENAME,
-        );
-        release_exe_archive_install.step.dependOn(&release_exe_archive.step);
-
-        release.dependOn(&release_exe_archive_install.step);
-    }
+    // Archived binary release with Tar (Unix) and Zip (Windows)
+    try liza.release(b, liza.RELEASE_TRIPLES, manifest.version, .ReleaseSafe, root_source_file, &.{
+        .{ .name = "argzon", .module = argzon_mod },
+    });
 }
-
-const RELEASE_TRIPLES = .{
-    "aarch64-macos",
-    "x86_64-linux",
-    "x86_64-windows",
-};

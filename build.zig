@@ -98,55 +98,13 @@ pub fn build(b: *std.Build) !void {
     tag(b, zq_art, version);
 
     // Dependencies and minimum Zig version update with Zq
-    update(b, zq_art);
+    update(b, zq_art, manifest.dependencies);
 
-    // Release
-    const release = b.step("release", "Install and archive release binaries");
-
-    inline for (RELEASE_TRIPLES) |RELEASE_TRIPLE| {
-        const RELEASE_NAME = "liza-v" ++ manifest.version ++ "-" ++ RELEASE_TRIPLE;
-        const IS_WINDOWS_RELEASE = comptime std.mem.endsWith(u8, RELEASE_TRIPLE, "windows");
-        const RELEASE_EXE_ARCHIVE_BASENAME = RELEASE_NAME ++ if (IS_WINDOWS_RELEASE) ".zip" else ".tar.xz";
-
-        const release_exe = b.addExecutable(.{
-            .name = RELEASE_NAME,
-            .version = version,
-            .root_module = b.createModule(.{
-                .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = RELEASE_TRIPLE })),
-                .optimize = .ReleaseSafe,
-                .root_source_file = root_source_file,
-                .imports = &.{
-                    .{ .name = "argzon", .module = argzon_mod },
-                    .{ .name = "zq", .module = zq_mod },
-                },
-                .strip = true,
-            }),
-        });
-
-        const release_exe_install = b.addInstallArtifact(release_exe, .{});
-
-        const release_exe_archive = b.addSystemCommand(if (IS_WINDOWS_RELEASE) &.{
-            "zip",
-            "-9",
-        } else &.{
-            "tar",
-            "-cJf",
-        });
-        release_exe_archive.setCwd(release_exe.getEmittedBinDirectory());
-        if (!IS_WINDOWS_RELEASE) release_exe_archive.setEnvironmentVariable("XZ_OPT", "-9");
-        const release_exe_archive_path = release_exe_archive.addOutputFileArg(RELEASE_EXE_ARCHIVE_BASENAME);
-        release_exe_archive.addArg(release_exe.out_filename);
-        release_exe_archive.step.dependOn(&release_exe_install.step);
-
-        const release_exe_archive_install = b.addInstallFileWithDir(
-            release_exe_archive_path,
-            .{ .custom = "release" },
-            RELEASE_EXE_ARCHIVE_BASENAME,
-        );
-        release_exe_archive_install.step.dependOn(&release_exe_archive.step);
-
-        release.dependOn(&release_exe_archive_install.step);
-    }
+    // Archived binary release with Tar (Unix) and Zip (Windows)
+    try release(b, RELEASE_TRIPLES, manifest.version, .ReleaseSafe, root_source_file, &.{
+        .{ .name = "argzon", .module = argzon_mod },
+        .{ .name = "zq", .module = zq_mod },
+    });
 }
 
 /// Tag next version with Zq.
@@ -214,11 +172,12 @@ pub fn tag(
 pub fn update(
     b: *std.Build,
     zq_art: *std.Build.Step.Compile,
+    dependencies: anytype,
 ) void {
     const update_step = b.step("update", "Update dependencies and minimum Zig version with Zq");
 
-    inline for (comptime std.meta.fieldNames(@TypeOf(manifest.dependencies))) |dep_name| {
-        const dep_url = @field(manifest.dependencies, dep_name).url;
+    inline for (comptime std.meta.fieldNames(@TypeOf(dependencies))) |dep_name| {
+        const dep_url = @field(dependencies, dep_name).url;
         if (std.mem.startsWith(u8, dep_url, "git+")) {
             if (std.mem.indexOfScalar(u8, dep_url, '#')) |hash_idx| {
                 const update_dep_run = b.addSystemCommand(&.{
@@ -244,7 +203,61 @@ pub fn update(
     update_step.dependOn(&update_mzv_run.step);
 }
 
-const RELEASE_TRIPLES = .{
+/// Install and archive release binaries with Tar (Unix) and Zip (Windows).
+pub fn release(
+    b: *std.Build,
+    comptime TRIPLES: anytype,
+    comptime VERSION_STR: []const u8,
+    optimize: std.builtin.OptimizeMode,
+    root_source_file: std.Build.LazyPath,
+    imports: []const std.Build.Module.Import,
+) !void {
+    const release_step = b.step("release", "Install and archive release binaries");
+
+    inline for (TRIPLES) |TRIPLE| {
+        const NAME = "liza-v" ++ VERSION_STR ++ "-" ++ TRIPLE;
+        const IS_WINDOWS = comptime std.mem.endsWith(u8, TRIPLE, "windows");
+        const EXE_ARCHIVE_BASENAME = NAME ++ if (IS_WINDOWS) ".zip" else ".tar.xz";
+
+        const exe = b.addExecutable(.{
+            .name = NAME,
+            .version = try .parse(VERSION_STR),
+            .root_module = b.createModule(.{
+                .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = TRIPLE })),
+                .optimize = optimize,
+                .root_source_file = root_source_file,
+                .imports = imports,
+                .strip = true,
+            }),
+        });
+
+        const exe_install = b.addInstallArtifact(exe, .{});
+
+        const exe_archive = b.addSystemCommand(if (IS_WINDOWS) &.{
+            "zip",
+            "-9",
+        } else &.{
+            "tar",
+            "-cJf",
+        });
+        exe_archive.setCwd(exe.getEmittedBinDirectory());
+        if (!IS_WINDOWS) exe_archive.setEnvironmentVariable("XZ_OPT", "-9");
+        const exe_archive_path = exe_archive.addOutputFileArg(EXE_ARCHIVE_BASENAME);
+        exe_archive.addArg(exe.out_filename);
+        exe_archive.step.dependOn(&exe_install.step);
+
+        const exe_archive_install = b.addInstallFileWithDir(
+            exe_archive_path,
+            .{ .custom = "release" },
+            EXE_ARCHIVE_BASENAME,
+        );
+        exe_archive_install.step.dependOn(&exe_archive.step);
+
+        release_step.dependOn(&exe_archive_install.step);
+    }
+}
+
+pub const RELEASE_TRIPLES = .{
     "aarch64-macos",
     "x86_64-linux",
     "x86_64-windows",
