@@ -1,13 +1,13 @@
 const std = @import("std");
 
-const manifest = @import("build.zig.zon");
+const MANIFEST = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/root.zig");
-    const version: std.SemanticVersion = try .parse(manifest.version);
+    const version: std.SemanticVersion = try .parse(MANIFEST.version);
 
     // Dependencies
     const tracy_dep = b.dependency("tracy", .{

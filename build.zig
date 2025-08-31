@@ -1,13 +1,13 @@
 const std = @import("std");
 
-const manifest = @import("build.zig.zon");
+const MANIFEST = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const root_source_file = b.path("src/main.zig");
-    const version: std.SemanticVersion = try .parse(manifest.version);
+    const version: std.SemanticVersion = try .parse(MANIFEST.version);
 
     // Dependencies
     const argzon_dep = b.dependency("argzon", .{
@@ -98,10 +98,10 @@ pub fn build(b: *std.Build) !void {
     tag(b, zq_art, version);
 
     // Dependencies and minimum Zig version update with Zq
-    update(b, zq_art, manifest.dependencies);
+    update(b, zq_art, MANIFEST.dependencies);
 
     // Archived binary release with Tar (Unix) and Zip (Windows)
-    try release(b, RELEASE_TRIPLES, manifest.version, .ReleaseSafe, root_source_file, &.{
+    try release(b, RELEASE_TRIPLES, MANIFEST, .ReleaseSafe, root_source_file, &.{
         .{ .name = "argzon", .module = argzon_mod },
         .{ .name = "zq", .module = zq_mod },
     });
@@ -207,7 +207,7 @@ pub fn update(
 pub fn release(
     b: *std.Build,
     comptime TRIPLES: anytype,
-    comptime VERSION_STR: []const u8,
+    comptime MANIFEST: anytype,
     optimize: std.builtin.OptimizeMode,
     root_source_file: std.Build.LazyPath,
     imports: []const std.Build.Module.Import,
@@ -215,13 +215,13 @@ pub fn release(
     const release_step = b.step("release", "Install and archive release binaries");
 
     inline for (TRIPLES) |TRIPLE| {
-        const NAME = "liza-v" ++ VERSION_STR ++ "-" ++ TRIPLE;
+        const NAME = @tagName(MANIFEST.name) ++ "-v" ++ MANIFEST.version ++ "-" ++ TRIPLE;
         const IS_WINDOWS = comptime std.mem.endsWith(u8, TRIPLE, "windows");
         const EXE_ARCHIVE_BASENAME = NAME ++ if (IS_WINDOWS) ".zip" else ".tar.xz";
 
         const exe = b.addExecutable(.{
             .name = NAME,
-            .version = try .parse(VERSION_STR),
+            .version = try .parse(MANIFEST.version),
             .root_module = b.createModule(.{
                 .target = b.resolveTargetQuery(try std.Build.parseTargetQuery(.{ .arch_os_abi = TRIPLE })),
                 .optimize = optimize,

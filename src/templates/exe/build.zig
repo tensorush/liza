@@ -2,7 +2,7 @@ const std = @import("std");
 
 const liza = @import("liza");
 
-const manifest = @import("build.zig.zon");
+const MANIFEST = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
     const install_step = b.getInstallStep();
@@ -10,7 +10,7 @@ pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{});
     const api_source_file = b.path("src/$p.zig");
     const root_source_file = b.path("src/main.zig");
-    const version: std.SemanticVersion = try .parse(manifest.version);
+    const version: std.SemanticVersion = try .parse(MANIFEST.version);
 
     // Dependencies
     const argzon_dep = b.dependency("argzon", .{
@@ -106,7 +106,7 @@ $c
     install_step.dependOn(fmt_step);
 $s2$l2$k
     // Archived binary release with Tar (Unix) and Zip (Windows)
-    try liza.release(b, liza.RELEASE_TRIPLES, manifest.version, .ReleaseSafe, root_source_file, &.{
+    try liza.release(b, liza.RELEASE_TRIPLES, MANIFEST, .ReleaseSafe, root_source_file, &.{
         .{ .name = "argzon", .module = argzon_mod },
     });
 }
