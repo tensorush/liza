@@ -105,6 +105,12 @@ $c
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
 $s2$l2$k
+    // Next version tag with Zq
+    liza.tag(b, exe, version);
+
+    // Dependencies and minimum Zig version update with Zq
+    liza.update(b, exe, manifest.dependencies);
+
     // Archived binary release with Tar (Unix) and Zip (Windows)
     try liza.release(b, liza.RELEASE_TRIPLES, manifest, .ReleaseSafe, root_source_file, &.{
         .{ .name = "argzon", .module = argzon_mod },

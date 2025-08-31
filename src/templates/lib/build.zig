@@ -1,5 +1,7 @@
 const std = @import("std");
 
+const liza = @import("liza");
+
 const manifest = @import("build.zig.zon");
 
 pub fn build(b: *std.Build) !void {
@@ -99,7 +101,13 @@ $c
     });
     fmt_step.dependOn(&fmt.step);
     install_step.dependOn(fmt_step);
-$s2$l2$k}
+$s2$l2$k
+    // Next version tag with Zq
+    liza.tag(b, exe, version);
+
+    // Dependencies and minimum Zig version update with Zq
+    liza.update(b, exe, manifest.dependencies);
+}
 
 const EXAMPLES_DIR = "examples/";
 
