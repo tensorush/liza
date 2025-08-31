@@ -17,7 +17,6 @@ steps:
       zig build
       zig build run
       zig build doc
-      zig build release
       cd ../
       rm -rf executable/
 
