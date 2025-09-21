@@ -14,8 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  install:
-    runs-on: ubuntu-22.04
+  run:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
@@ -27,8 +27,28 @@ jobs:
       - name: Run `run` step
         run: zig build run
 
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Zig
+        uses: mlugg/setup-zig@v2
+
       - name: Run `test` step
         run: zig build test --summary all$c
+
+  fmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Zig
+        uses: mlugg/setup-zig@v2
 
       - name: Run `fmt` step
         run: zig build fmt$s$l

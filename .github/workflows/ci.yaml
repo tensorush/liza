@@ -51,5 +51,15 @@ jobs:
           zig build run -- -t bld -r github build https://upstream.repo.link user-handle "User Name"
           rm -rf build/
 
+  fmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Zig
+        uses: mlugg/setup-zig@v2
+
       - name: Run `fmt` step
         run: zig build fmt

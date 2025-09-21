@@ -8,7 +8,7 @@ on:
     branches: [main]
 
 jobs:
-  install:
+  run:
     runs-on: codeberg-tiny-lazy
 
     steps:
@@ -23,8 +23,32 @@ jobs:
       - name: Run `run` step
         run: zig build run
 
+  test:
+    runs-on: codeberg-tiny-lazy
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Zig
+        uses: https://github.com/mlugg/setup-zig@v2
+        with:
+          use-cache: false
+
       - name: Run `test` step
         run: zig build test --summary all
+
+  fmt:
+    runs-on: codeberg-tiny-lazy
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Zig
+        uses: https://github.com/mlugg/setup-zig@v2
+        with:
+          use-cache: false
 
       - name: Run `fmt` step
         run: zig build fmt$s$l
