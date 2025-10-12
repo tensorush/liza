@@ -2,7 +2,7 @@
     .name = .liza,
     .version = "0.15.0",
     .fingerprint = 0xf8d7a7ba1acabddb, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.15.1",
+    .minimum_zig_version = "0.15.2",
     .dependencies = .{
         .argzon = .{
             .url = "git+https://codeberg.org/tensorush/argzon.git#83201eeb255045d988690077317caa1bb565288f",
