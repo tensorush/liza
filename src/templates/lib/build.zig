@@ -12,6 +12,12 @@ pub fn build(b: *std.Build) !void {
     const version: std.SemanticVersion = try .parse(manifest.version);
 
     // Dependencies
+    const zq_dep = b.dependency("zq", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const zq_art = zq_dep.artifact("zq");
+
     const tracy_dep = b.dependency("tracy", .{
         .target = target,
         .optimize = optimize,
@@ -103,10 +109,10 @@ $c
     install_step.dependOn(fmt_step);
 $s2$l2$k
     // Next version tag with Zq
-    liza.tag(b, lib, version);
+    liza.tag(b, zq_art, version);
 
     // Dependencies and minimum Zig version update with Zq
-    liza.update(b, lib, manifest.dependencies);
+    liza.update(b, zq_art, manifest.dependencies);
 }
 
 const EXAMPLES_DIR = "examples/";

@@ -17,7 +17,13 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
     });
-    const argzon_mod = argzon_dep.module("argzon");$s1$l1
+    const argzon_mod = argzon_dep.module("argzon");
+
+    const zq_dep = b.dependency("zq", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    const zq_art = zq_dep.artifact("zq");
 
     const tracy_dep = b.dependency("tracy", .{
         .target = target,
@@ -27,7 +33,7 @@ pub fn build(b: *std.Build) !void {
     const tracy_impl_mod = tracy_dep.module(if (b.option(bool, "profile", "Profile binary with Tracy") orelse false)
         "tracy_impl_enabled"
     else
-        "tracy_impl_disabled");
+        "tracy_impl_disabled");$s1$l1
 
     // Public API module
     const api_mod = b.addModule("$p", .{
@@ -106,10 +112,10 @@ $c
     install_step.dependOn(fmt_step);
 $s2$l2$k
     // Next version tag with Zq
-    liza.tag(b, exe, version);
+    liza.tag(b, zq_art, version);
 
     // Dependencies and minimum Zig version update with Zq
-    liza.update(b, exe, manifest.dependencies);
+    liza.update(b, zq_art, manifest.dependencies);
 
     // Archived binary release with Tar (Unix) and Zip (Windows)
     try liza.release(b, liza.RELEASE_TRIPLES, manifest, .ReleaseSafe, root_source_file, &.{

@@ -493,13 +493,19 @@ fn createBuildFiles(
             "zig",
             "fetch",
             "--save",
-            "git+https://github.com/Games-by-Mason/tracy_zig.git",
+            "git+https://codeberg.org/tensorush/zq.git",
         }, .cwd_dir = dir });
         _ = try std.process.Child.run(.{ .allocator = arena, .argv = &.{
             "zig",
             "fetch",
             "--save",
             "git+https://codeberg.org/tensorush/liza.git",
+        }, .cwd_dir = dir });
+        _ = try std.process.Child.run(.{ .allocator = arena, .argv = &.{
+            "zig",
+            "fetch",
+            "--save",
+            "git+https://github.com/Games-by-Mason/tracy_zig.git",
         }, .cwd_dir = dir });
     }
     if (template == .bld) {
