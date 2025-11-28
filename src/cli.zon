@@ -92,7 +92,7 @@
         .{
             .meta = .USER_NAME,
             .type = "string",
-            .description = "User name (e.g. \"Jora Troosh\")",
+            .description = "User name (e.g. \"First name Last name\")",
         },
     },
 }
