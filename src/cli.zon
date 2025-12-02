@@ -13,7 +13,7 @@
             .short = 'r',
             .long = "rnr",
             .type = "Runner",
-            .default = .woodpecker,
+            .default = .forgejo,
             .description = "CI/CD runner type",
         },
         .{

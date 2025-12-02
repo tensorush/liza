@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: https://code.forgejo.org/actions/checkout@v6
 
       - name: Set up Zig
         uses: https://codeberg.org/mlugg/setup-zig@v2
@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: https://code.forgejo.org/actions/checkout@v6
 
       - name: Set up Zig
         uses: https://codeberg.org/mlugg/setup-zig@v2
@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: https://code.forgejo.org/actions/checkout@v6
 
       - name: Set up Zig
         uses: https://codeberg.org/mlugg/setup-zig@v2
